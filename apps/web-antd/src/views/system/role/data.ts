@@ -6,17 +6,38 @@ export function useFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'id',
+      label: '角色ID',
+      componentProps: { disabled: true },
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleName',
       label: '角色名称',
       rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleKey',
+      label: '角色标识',
+      rules: 'required',
+    },
+    {
+      component: 'InputNumber',
+      componentProps: {
+        min: 0,
+        class: 'w-full',
+      },
+      fieldName: 'sort',
+      label: '排序',
     },
     {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: '已启用', value: 1 },
-          { label: '已禁用', value: 0 },
+          { label: '已启用', value: 0 },
+          { label: '已禁用', value: 1 },
         ],
         optionType: 'button',
       },
@@ -29,13 +50,6 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'remark',
       label: '备注',
     },
-    {
-      component: 'Input',
-      fieldName: 'permissions',
-      formItemClass: 'items-start',
-      label: '授权',
-      modelPropName: 'modelValue',
-    },
   ];
 }
 
@@ -43,17 +57,26 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'roleName',
       label: '角色名称',
     },
-    { component: 'Input', fieldName: 'id', label: '角色ID' },
+    {
+      component: 'Input',
+      fieldName: 'roleId',
+      label: '角色ID',
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleKey',
+      label: '角色标识',
+    },
     {
       component: 'Select',
       componentProps: {
         allowClear: true,
         options: [
-          { label: '已启用', value: 1 },
-          { label: '已禁用', value: 0 },
+          { label: '已启用', value: 0 },
+          { label: '已禁用', value: 1 },
         ],
       },
       fieldName: 'status',
@@ -78,19 +101,29 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
 ): VxeTableGridOptions['columns'] {
   return [
     {
-      field: 'name',
+      field: 'roleName',
       title: '角色名称',
-      width: 200,
+      width: 180,
     },
     {
-      field: 'id',
-      title: '角色ID',
-      width: 200,
+      field: 'roleKey',
+      title: '角色标识',
+      width: 150,
     },
     {
       cellRender: {
         attrs: { beforeChange: onStatusChange },
         name: onStatusChange ? 'CellSwitch' : 'CellTag',
+        props: {
+          checkedValue: 0,
+          unCheckedValue: 1,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        options: [
+          { color: 'success', label: '已启用', value: 1 },
+          { color: 'error', label: '已禁用', value: 0 },
+        ],
       },
       field: 'status',
       title: '状态',
@@ -98,19 +131,19 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
     },
     {
       field: 'remark',
-      minWidth: 100,
+      minWidth: 120,
       title: '备注',
     },
     {
       field: 'createTime',
       title: '创建时间',
-      width: 200,
+      width: 180,
     },
     {
       align: 'center',
       cellRender: {
         attrs: {
-          nameField: 'name',
+          nameField: 'roleName',
           nameTitle: '角色',
           onClick: onActionClick,
         },

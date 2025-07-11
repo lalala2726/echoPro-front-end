@@ -33,12 +33,15 @@ const [Grid, gridApi] = useVbenVxeGrid({
     columns: useColumns(onActionClick, onStatusChange),
     height: 'auto',
     keepSource: true,
+    pagerConfig: {
+      enabled: true,
+    },
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
           return await getRoleList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
+            pageNum: page?.currentPage,
+            pageSize: page?.pageSize,
             ...formValues,
           });
         },
@@ -47,7 +50,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
     rowConfig: {
       keyField: 'id',
     },
-
     toolbarConfig: {
       custom: true,
       export: false,
@@ -102,15 +104,15 @@ async function onStatusChange(
   row: SystemRoleApi.SystemRole,
 ) {
   const status: Recordable<string> = {
-    0: '禁用',
-    1: '启用',
+    1: '禁用',
+    0: '启用',
   };
   try {
     await confirm(
-      `你要将${row.name}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
+      `你要将${row.roleName}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateRole(row.id, { status: newStatus });
+    await updateRole({ id: row.id, status: newStatus as 0 | 1 });
     return true;
   } catch {
     return false;
@@ -123,14 +125,14 @@ function onEdit(row: SystemRoleApi.SystemRole) {
 
 function onDelete(row: SystemRoleApi.SystemRole) {
   const hideLoading = message.loading({
-    content: `正在删除 ${row.name} ...`,
+    content: `正在删除 ${row.roleName} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
   deleteRole(row.id)
     .then(() => {
       message.success({
-        content: `${row.name} 删除成功`,
+        content: `${row.roleName} 删除成功`,
         key: 'action_process_msg',
       });
       onRefresh();
@@ -150,7 +152,7 @@ function onCreate() {
 </script>
 <template>
   <Page auto-content-height>
-    <FormDrawer />
+    <FormDrawer @success="onRefresh" />
     <Grid table-title="角色列表">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">

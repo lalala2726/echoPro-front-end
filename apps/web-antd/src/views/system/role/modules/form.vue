@@ -1,19 +1,11 @@
 <script lang="ts" setup>
-import type { DataNode } from 'ant-design-vue/es/tree';
-
-import type { Recordable } from '@vben/types';
-
 import type { SystemRoleApi } from '#/api/system/role';
 
 import { computed, ref } from 'vue';
 
-import { useVbenDrawer, VbenTree } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
-
-import { Spin } from 'ant-design-vue';
+import { useVbenDrawer } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuList } from '#/api/system/menu';
 import { createRole, updateRole } from '#/api/system/role';
 
 import { useFormSchema } from '../data';
@@ -27,24 +19,26 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
-const loadingPermissions = ref(false);
+const roleId = ref<string>();
 
-const id = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? updateRole(id.value, values) : createRole(values))
-      .then(() => {
-        emits('success');
-        drawerApi.close();
-      })
-      .catch(() => {
-        drawerApi.unlock();
-      });
+
+    try {
+      await (roleId.value
+        ? updateRole(roleId.value, values as any)
+        : createRole(values as any));
+      emits('success');
+      drawerApi.close();
+    } catch (error) {
+      console.error('保存角色失败:', error);
+    } finally {
+      drawerApi.unlock();
+    }
   },
   onOpenChange(isOpen) {
     if (isOpen) {
@@ -52,68 +46,22 @@ const [Drawer, drawerApi] = useVbenDrawer({
       formApi.resetForm();
       if (data) {
         formData.value = data;
-        id.value = data.id;
+        roleId.value = data.roleId;
         formApi.setValues(data);
       } else {
-        id.value = undefined;
-      }
-
-      if (permissions.value.length === 0) {
-        loadPermissions();
+        formData.value = undefined;
+        roleId.value = undefined;
       }
     }
   },
 });
 
-async function loadPermissions() {
-  loadingPermissions.value = true;
-  try {
-    const res = await getMenuList();
-    permissions.value = res as unknown as DataNode[];
-  } finally {
-    loadingPermissions.value = false;
-  }
-}
-
 const getDrawerTitle = computed(() => {
-  return formData.value?.id ? '修改角色' : '新增角色';
+  return formData.value?.roleId ? '修改角色' : '新增角色';
 });
-
-function getNodeClass(node: Recordable<any>) {
-  const classes: string[] = [];
-  if (node.value?.type === 'button') {
-    classes.push('inline-flex');
-    if (node.index % 3 >= 1) {
-      classes.push('!pl-0');
-    }
-  }
-
-  return classes.join(' ');
-}
 </script>
 <template>
   <Drawer :title="getDrawerTitle">
-    <Form>
-      <template #permissions="slotProps">
-        <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
-          <VbenTree
-            :tree-data="permissions"
-            multiple
-            bordered
-            :default-expanded-level="2"
-            :get-node-class="getNodeClass"
-            v-bind="slotProps"
-            value-field="id"
-            label-field="meta.title"
-            icon-field="meta.icon"
-          >
-            <template #node="{ value }">
-              <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
-              {{ value.meta.title }}
-            </template>
-          </VbenTree>
-        </Spin>
-      </template>
-    </Form>
+    <Form />
   </Drawer>
 </template>
