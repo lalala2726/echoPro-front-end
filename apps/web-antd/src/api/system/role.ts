@@ -1,5 +1,6 @@
 import type { Recordable } from '@vben/types';
 
+import { exportFile } from '#/api/export';
 import { requestClient } from '#/api/request';
 
 /**
@@ -59,6 +60,18 @@ async function updateRole(
 }
 
 /**
+ * 导出角色列表
+ * @param fileName 文件名（可选，不需要扩展名）
+ * @param params 查询参数（可选）
+ */
+async function exportRoleList(fileName?: string, params?: Recordable<any>) {
+  return exportFile('/system/role/export', {
+    fileName: fileName || '角色列表',
+    params,
+  });
+}
+
+/**
  * 删除角色
  * @param roleId 角色ID
  */
@@ -66,4 +79,4 @@ async function deleteRole(roleId: string) {
   return requestClient.delete(`/system/role/${roleId}`);
 }
 
-export { createRole, deleteRole, getRoleList, updateRole };
+export { createRole, deleteRole, exportRoleList, getRoleList, updateRole };

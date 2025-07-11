@@ -13,7 +13,12 @@ import { Plus } from '@vben/icons';
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRoleList, updateRole } from '#/api/system/role';
+import {
+  deleteRole,
+  exportRoleList,
+  getRoleList,
+  updateRole,
+} from '#/api/system/role';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -149,6 +154,10 @@ function onRefresh() {
 function onCreate() {
   formDrawerApi.setData({}).open();
 }
+
+async function onExport() {
+  await exportRoleList('角色列表');
+}
 </script>
 <template>
   <Page auto-content-height>
@@ -159,6 +168,8 @@ function onCreate() {
           <Plus class="size-5" />
           新增角色
         </Button>
+        <span class="mx-2"></span>
+        <Button @click="onExport"> 导出</Button>
       </template>
     </Grid>
   </Page>

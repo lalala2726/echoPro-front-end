@@ -30,7 +30,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (roleId.value
-        ? updateRole(roleId.value, values as any)
+        ? updateRole({ id: roleId.value, ...values } as any)
         : createRole(values as any));
       emits('success');
       drawerApi.close();
@@ -46,7 +46,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       formApi.resetForm();
       if (data) {
         formData.value = data;
-        roleId.value = data.roleId;
+        roleId.value = data.id;
         formApi.setValues(data);
       } else {
         formData.value = undefined;
@@ -57,7 +57,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const getDrawerTitle = computed(() => {
-  return formData.value?.roleId ? '修改角色' : '新增角色';
+  return formData.value?.id ? '修改角色' : '新增角色';
 });
 </script>
 <template>

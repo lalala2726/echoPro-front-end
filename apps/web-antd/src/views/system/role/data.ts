@@ -62,11 +62,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'roleId',
-      label: '角色ID',
-    },
-    {
-      component: 'Input',
       fieldName: 'roleKey',
       label: '角色标识',
     },
