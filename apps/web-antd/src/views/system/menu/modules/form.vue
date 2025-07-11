@@ -13,7 +13,7 @@ import {
   createMenu,
   getMenuTree,
   isMenuNameExists,
-  isMenuPathExists,
+  isMenuPathExists, type SysMenu,
   SystemMenuApi,
   updateMenu,
 } from '#/api/system/menu';
@@ -24,7 +24,7 @@ import { getMenuTypeOptions } from '../data';
 const emit = defineEmits<{
   success: [];
 }>();
-const formData = ref<SystemMenuApi.SystemMenu>();
+const formData = ref<any>();
 const titleSuffix = ref<string>();
 const schema: VbenFormSchema[] = [
   {
@@ -392,7 +392,7 @@ const schema: VbenFormSchema[] = [
       },
       triggerFields: ['type'],
     },
-    fieldName: 'hideInBreadcrumb', // 修改为顶层字段
+    fieldName: 'hideInBreadcrumb',
     renderComponentContent() {
       return {
         default: () => '在面包屑中隐藏',
@@ -407,7 +407,7 @@ const schema: VbenFormSchema[] = [
       },
       triggerFields: ['type'],
     },
-    fieldName: 'hideInTab', // 修改为顶层字段
+    fieldName: 'hideInTab',
     renderComponentContent() {
       return {
         default: () => '在标签栏中隐藏',
@@ -433,11 +433,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: onSubmit,
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<SystemMenuApi.SystemMenu>();
+      const data = drawerApi.getData<any>();
       if (data?.type === 'link') {
-        data.linkSrc = data.meta?.link;
+        (data as any).linkSrc = data.meta?.link;
       } else if (data?.type === 'embedded') {
-        data.linkSrc = data.meta?.iframeSrc;
+        (data as any).linkSrc = data.meta?.iframeSrc;
       }
       if (data) {
         formData.value = data;
@@ -455,20 +455,30 @@ async function onSubmit() {
   const { valid } = await formApi.validate();
   if (valid) {
     drawerApi.lock();
-    const data =
-      await formApi.getValues<
-        Omit<SystemMenuApi.SystemMenu, 'children' | 'id'>
-      >();
+    const data = await formApi.getValues();
+
+    // 构建提交数据，将ID包含在data中
+    const submitData = {
+      ...data,
+    };
+
     if (data.type === 'link') {
-      data.meta = { ...data.meta, link: data.linkSrc };
+      submitData.meta = { ...data.meta, link: data.linkSrc };
     } else if (data.type === 'embedded') {
-      data.meta = { ...data.meta, iframeSrc: data.linkSrc };
+      submitData.meta = { ...data.meta, iframeSrc: data.linkSrc };
     }
-    delete data.linkSrc;
+
+    // 如果是编辑模式，将ID包含在data中
+    if (formData.value?.id) {
+      submitData.id = formData.value.id;
+    }
+
+    delete submitData.linkSrc;
+
     try {
       await (formData.value?.id
-        ? updateMenu(formData.value.id, data)
-        : createMenu(data));
+        ? updateMenu(submitData as SysMenu)
+        : createMenu(submitData as SysMenu));
       await drawerApi.close();
       emit('success');
     } finally {

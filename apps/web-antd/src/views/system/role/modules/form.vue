@@ -117,20 +117,3 @@ function getNodeClass(node: Recordable<any>) {
     </Form>
   </Drawer>
 </template>
-<style lang="css" scoped>
-:deep(.ant-tree-title) {
-  .tree-actions {
-    display: none;
-    margin-left: 20px;
-  }
-}
-
-:deep(.ant-tree-title:hover) {
-  .tree-actions {
-    display: flex;
-    flex: auto;
-    justify-content: flex-end;
-    margin-left: 20px;
-  }
-}
-</style>
