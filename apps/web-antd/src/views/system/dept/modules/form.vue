@@ -8,14 +8,14 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createDept, updateDept } from '#/api/system/dept';
+import { addDept, updateDept } from '#/api/system/dept';
 
 import { useSchema } from '../data';
 
 const emit = defineEmits(['success']);
 const formData = ref<SystemDeptApi.SystemDept>();
 const getTitle = computed(() => {
-  return formData.value?.id ? '修改部门' : '新增部门';
+  return formData.value?.deptId ? '修改部门' : '新增部门';
 });
 
 const [Form, formApi] = useVbenForm({
@@ -36,10 +36,8 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.lock();
       const data = await formApi.getValues();
       try {
-        await (formData.value?.id
-          ? updateDept(formData.value.id, data)
-          : createDept(data));
-        modalApi.close();
+        await (formData.value?.deptId ? updateDept(data) : addDept(data));
+        await modalApi.close();
         emit('success');
       } finally {
         modalApi.lock(false);
@@ -50,11 +48,13 @@ const [Modal, modalApi] = useVbenModal({
     if (isOpen) {
       const data = modalApi.getData<SystemDeptApi.SystemDept>();
       if (data) {
-        if (data.parentId === 0) {
-          data.pid = undefined;
+        // 处理根节点的parentId
+        const processedData = { ...data };
+        if (processedData.parentId === '0') {
+          processedData.parentId = '';
         }
-        formData.value = data;
-        formApi.setValues(formData.value);
+        formData.value = processedData;
+        formApi.setValues(processedData);
       }
     }
   },

@@ -81,7 +81,7 @@ const { isMobile } = usePreferences();
 const isSeparator = computed(() => {
   if (
     !formOptions.value ||
-    showSearchForm.value === false ||
+    !showSearchForm.value ||
     separator.value === false
   ) {
     return false;
@@ -245,10 +245,39 @@ function onSearchBtnClick() {
   props.api?.toggleSearchForm?.();
 }
 
+/**
+ * 双击单元格事件处理
+ * @param event 事件参数
+ */
+function onCellDblclick(event: VxeGridDefines.CellDblclickEventParams) {
+  const { row } = event;
+  const treeConfig = options.value.treeConfig;
+
+  // 只有在启用树形结构时才处理双击事件
+  if (treeConfig && treeConfig.transform) {
+    const grid = gridRef.value;
+    if (grid) {
+      // 检查当前行是否已展开
+      const isExpanded = grid.isTreeExpandByRow(row);
+      if (isExpanded) {
+        // 如果已展开，则折叠
+        grid.setTreeExpand(row, false);
+      } else {
+        // 如果未展开，则展开
+        grid.setTreeExpand(row, true);
+      }
+    }
+  }
+
+  // 调用用户自定义的双击事件处理器
+  (gridEvents.value?.cellDblclick as VxeGridListeners['cellDblclick'])?.(event);
+}
+
 const events = computed(() => {
   return {
     ...gridEvents.value,
     toolbarToolClick: onToolbarToolClick,
+    cellDblclick: onCellDblclick,
   };
 });
 
@@ -458,7 +487,9 @@ onUnmounted(() => {
               ...(separatorBg ? { backgroundColor: separatorBg } : undefined),
             }"
             class="bg-background-deep z-100 absolute -left-2 bottom-1 h-2 w-[calc(100%+1rem)] overflow-hidden md:bottom-2 md:h-3"
-          ></div>
+          >
+            >
+          </div>
         </div>
       </template>
       <!-- loading -->

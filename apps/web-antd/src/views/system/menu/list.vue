@@ -148,15 +148,3 @@ function onDelete(row: any) {
     </Grid>
   </Page>
 </template>
-<style lang="scss" scoped>
-.menu-badge {
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-
-  & > :deep(div) {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-}
-</style>

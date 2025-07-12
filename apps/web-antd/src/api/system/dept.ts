@@ -4,19 +4,38 @@ export namespace SystemDeptApi {
   export interface SystemDept {
     [key: string]: any;
     children?: SystemDept[];
-    id: string;
-    name: string;
-    remark?: string;
-    status: 0 | 1;
+    deptId: string;
+    deptName: string;
+    parentId: string;
+    status: string;
+    createTime: string;
+    manager?: string;
+    description?: string;
+  }
+
+  export interface DeptOption {
+    value: string;
+    label: string;
+    children?: DeptOption[];
   }
 }
 
 /**
  * 获取部门列表数据
  */
-async function getDeptList() {
+async function getDeptList(params?: any) {
   return requestClient.get<Array<SystemDeptApi.SystemDept>>(
     '/system/dept/list',
+    { params },
+  );
+}
+
+/**
+ * 获取部门选项数据（树形结构）
+ */
+async function getDeptOptions() {
+  return requestClient.get<Array<SystemDeptApi.DeptOption>>(
+    '/system/dept/options',
   );
 }
 
@@ -24,7 +43,7 @@ async function getDeptList() {
  * 创建部门
  * @param data 部门数据
  */
-async function createDept(
+async function addDept(
   data: Omit<SystemDeptApi.SystemDept, 'children' | 'id'>,
 ) {
   return requestClient.post('/system/dept', data);
@@ -33,14 +52,12 @@ async function createDept(
 /**
  * 更新部门
  *
- * @param id 部门 ID
  * @param data 部门数据
  */
 async function updateDept(
-  id: string,
   data: Omit<SystemDeptApi.SystemDept, 'children' | 'id'>,
 ) {
-  return requestClient.put(`/system/dept/${id}`, data);
+  return requestClient.put(`/system/dept`, data);
 }
 
 /**
@@ -51,4 +68,4 @@ async function deleteDept(id: string) {
   return requestClient.delete(`/system/dept/${id}`);
 }
 
-export { createDept, deleteDept, getDeptList, updateDept };
+export { addDept, deleteDept, getDeptList, getDeptOptions, updateDept };

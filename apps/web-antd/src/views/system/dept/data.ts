@@ -5,7 +5,37 @@ import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
 import { z } from '#/adapter/form';
-import { getDeptList } from '#/api/system/dept';
+import { getDeptOptions } from '#/api/system/dept';
+
+/**
+ * 获取搜索表单的字段配置
+ */
+export function useGridFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      fieldName: 'deptName',
+      label: '部门名称',
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        allowClear: true,
+        options: [
+          { label: '已启用', value: '0' },
+          { label: '已禁用', value: '1' },
+        ],
+      },
+      fieldName: 'status',
+      label: '状态',
+    },
+    {
+      component: 'Input',
+      fieldName: 'manager',
+      label: '负责人',
+    },
+  ];
+}
 
 /**
  * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
@@ -14,7 +44,24 @@ export function useSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'name',
+      fieldName: 'deptId',
+      label: '部门ID',
+      componentProps: {
+        disabled: true,
+        class: 'w-full',
+      },
+      dependencies: {
+        triggerFields: ['deptId'],
+        show: (values) => !!values.deptId,
+      },
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        class: 'w-full',
+        placeholder: '请输入部门名称',
+      },
+      fieldName: 'deptName',
       label: '部门名称',
       rules: z
         .string()
@@ -25,39 +72,53 @@ export function useSchema(): VbenFormSchema[] {
       component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        api: getDeptList,
+        api: getDeptOptions,
         class: 'w-full',
-        labelField: 'name',
-        valueField: 'id',
+        labelField: 'label',
+        valueField: 'value',
         childrenField: 'children',
+        placeholder: '请选择上级部门',
       },
-      fieldName: 'pid',
+      fieldName: 'parentId',
       label: '上级部门',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        class: 'w-full',
+        placeholder: '请输入负责人姓名',
+      },
+      fieldName: 'manager',
+      label: '负责人',
+      rules: z.string().max(50, '负责人名称最多50个字符').optional(),
     },
     {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: '已启用', value: 1 },
-          { label: '已禁用', value: 0 },
+          { label: '已启用', value: 0 },
+          { label: '已禁用', value: 1 },
         ],
         optionType: 'button',
+        class: 'w-full',
       },
-      defaultValue: 1,
+      defaultValue: '0',
       fieldName: 'status',
       label: '状态',
     },
     {
       component: 'Textarea',
       componentProps: {
-        maxLength: 50,
+        maxLength: 200,
         rows: 3,
         showCount: true,
+        class: 'w-full',
+        placeholder: '请输入部门描述',
       },
-      fieldName: 'remark',
-      label: '备注',
-      rules: z.string().max(50, '备注最多50个字符').optional(),
+      fieldName: 'description',
+      label: '描述',
+      rules: z.string().max(200, '描述最多200个字符').optional(),
     },
   ];
 }
@@ -73,17 +134,33 @@ export function useColumns(
   return [
     {
       align: 'left',
-      field: 'name',
+      field: 'deptName',
       fixed: 'left',
       title: '部门名称',
       treeNode: true,
-      width: 150,
+      minWidth: 200,
+      slots: { default: 'deptName' }, // 使用自定义插槽
     },
     {
-      cellRender: { name: 'CellTag' },
+      cellRender: {
+        name: 'CellTag',
+        options: [
+          { label: '已启用', value: 0, color: 'success' },
+          { label: '已禁用', value: 1, color: 'error' },
+        ],
+      },
       field: 'status',
       title: '状态',
       width: 100,
+      align: 'center',
+    },
+    {
+      field: 'manager',
+      title: '负责人',
+      width: 120,
+      formatter: ({ row }: { row: SystemDeptApi.SystemDept }) => {
+        return row.manager || '--';
+      },
     },
     {
       field: 'createTime',
@@ -91,14 +168,18 @@ export function useColumns(
       width: 180,
     },
     {
-      field: 'remark',
-      title: '备注',
+      field: 'description',
+      title: '描述',
+      minWidth: 150,
+      formatter: ({ row }: { row: SystemDeptApi.SystemDept }) => {
+        return row.description || '--';
+      },
     },
     {
       align: 'right',
       cellRender: {
         attrs: {
-          nameField: 'name',
+          nameField: 'deptName',
           nameTitle: '部门',
           onClick: onActionClick,
         },
