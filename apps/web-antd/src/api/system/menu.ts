@@ -51,12 +51,12 @@ export namespace SystemMenuApi {
     badgeType?: 'dot' | 'normal' | string;
     /** 徽标颜色，可选 default, destructive, primary, success, warning, 或自定义字符串 */
     badgeVariants?:
-    | 'default'
-    | 'destructive'
-    | 'primary'
-    | 'success'
-    | 'warning'
-    | string;
+      | 'default'
+      | 'destructive'
+      | 'primary'
+      | 'success'
+      | 'warning'
+      | string;
     /** 路由的完整路径作为key（默认 true） */
     fullPathKey?: boolean;
     /** 当前路由的子级在菜单中不展现，默认 false */

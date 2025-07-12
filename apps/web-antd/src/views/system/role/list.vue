@@ -156,7 +156,9 @@ function onCreate() {
 }
 
 async function onExport() {
-  await exportRoleList('角色列表');
+  // 获取当前搜索表单的参数
+  const formValues = await gridApi.formApi.getValues();
+  await exportRoleList('角色列表', formValues);
 }
 </script>
 <template>

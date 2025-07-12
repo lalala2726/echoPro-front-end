@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '#/adapter/form';
+import type { SysMenu } from '#/api/system/menu';
 
 import { computed, h, ref } from 'vue';
 
@@ -13,7 +14,7 @@ import {
   createMenu,
   getMenuTree,
   isMenuNameExists,
-  isMenuPathExists, type SysMenu,
+  isMenuPathExists,
   SystemMenuApi,
   updateMenu,
 } from '#/api/system/menu';

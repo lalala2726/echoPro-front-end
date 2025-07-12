@@ -1,6 +1,6 @@
 import type { Recordable } from '@vben/types';
 
-import { exportFile } from '#/api/export';
+import { exportFile } from '#/api/download';
 import { requestClient } from '#/api/request';
 
 /**

@@ -123,14 +123,27 @@ function onDelete(row: any) {
       <template #title="{ row }">
         <div class="flex w-full items-center gap-1">
           <div class="size-5 flex-shrink-0">
-            <IconifyIcon v-if="row.type === 'button'" icon="carbon:security" class="size-full" />
-            <IconifyIcon v-else-if="row?.icon" :icon="row?.icon || 'carbon:circle-dash'" class="size-full" />
+            <IconifyIcon
+              v-if="row.type === 'button'"
+              icon="carbon:security"
+              class="size-full"
+            />
+            <IconifyIcon
+              v-else-if="row?.icon"
+              :icon="row?.icon || 'carbon:circle-dash'"
+              class="size-full"
+            />
           </div>
           <span class="flex-auto">{{ row.title }}</span>
           <div class="items-center justify-end"></div>
         </div>
-        <MenuBadge v-if="row?.badgeType" class="menu-badge" :badge="row.badge" :badge-type="row.badgeType"
-          :badge-variants="row.badgeVariants" />
+        <MenuBadge
+          v-if="row?.badgeType"
+          class="menu-badge"
+          :badge="row.badge"
+          :badge-type="row.badgeType"
+          :badge-variants="row.badgeVariants"
+        />
       </template>
     </Grid>
   </Page>
@@ -141,7 +154,7 @@ function onDelete(row: any) {
   right: 0;
   transform: translateY(-50%);
 
-  &> :deep(div) {
+  & > :deep(div) {
     padding-top: 0;
     padding-bottom: 0;
   }
