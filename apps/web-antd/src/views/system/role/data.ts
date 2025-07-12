@@ -9,6 +9,10 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'id',
       label: '角色ID',
       componentProps: { disabled: true },
+      dependencies: {
+        triggerFields: ['id'],
+        show: (values) => !!values.id,
+      },
     },
     {
       component: 'Input',
