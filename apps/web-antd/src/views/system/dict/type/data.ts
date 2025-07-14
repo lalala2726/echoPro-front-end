@@ -1,13 +1,13 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemDictApi } from '#/api/system/dict';
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
       fieldName: 'id',
-      label: '角色ID',
+      label: '字典ID',
       componentProps: { disabled: true },
       dependencies: {
         triggerFields: ['id'],
@@ -16,14 +16,14 @@ export function useFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'roleName',
-      label: '角色名称',
+      fieldName: 'dictName',
+      label: '字典名称',
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'roleKey',
-      label: '角色标识',
+      fieldName: 'dictKey',
+      label: '字典键',
       rules: 'required',
     },
     {
@@ -45,7 +45,7 @@ export function useFormSchema(): VbenFormSchema[] {
         ],
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: 0,
       fieldName: 'status',
       label: '状态',
     },
@@ -61,13 +61,13 @@ export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'roleName',
-      label: '角色名称',
+      fieldName: 'dictName',
+      label: '字典名称',
     },
     {
       component: 'Input',
-      fieldName: 'roleKey',
-      label: '角色标识',
+      fieldName: 'dictKey',
+      label: '字典键',
     },
     {
       component: 'Select',
@@ -94,20 +94,25 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemRoleApi.SystemRole>(
+export function useColumns<T = SystemDictApi.SystemDictKey>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
   return [
     {
-      field: 'roleName',
-      title: '角色名称',
-      width: 180,
+      field: 'dictName',
+      title: '字典名称',
+      width: 200,
     },
     {
-      field: 'roleKey',
-      title: '角色标识',
-      width: 150,
+      field: 'dictKey',
+      title: '字典键',
+      width: 200,
+    },
+    {
+      field: 'sort',
+      title: '排序',
+      width: 100,
     },
     {
       cellRender: {
@@ -120,17 +125,17 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
           unCheckedChildren: '禁用',
         },
         options: [
-          { color: 'success', label: '已启用', value: 1 },
-          { color: 'error', label: '已禁用', value: 0 },
+          { color: 'success', label: '已启用', value: 0 },
+          { color: 'error', label: '已禁用', value: 1 },
         ],
       },
       field: 'status',
       title: '状态',
-      width: 100,
+      width: 120,
     },
     {
       field: 'remark',
-      minWidth: 120,
+      minWidth: 200,
       title: '备注',
       formatter: ({ cellValue }) => cellValue || '--',
     },
@@ -143,16 +148,24 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       align: 'center',
       cellRender: {
         attrs: {
-          nameField: 'roleName',
-          nameTitle: '角色',
+          nameField: 'dictName',
+          nameTitle: '字典',
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          'edit', // 默认的编辑按钮
+          {
+            code: 'view',
+            text: '查看字典值',
+          },
+          'delete', // 默认的删除按钮
+        ],
       },
       field: 'operation',
       fixed: 'right',
       title: '操作',
-      width: 130,
+      width: 180,
     },
   ];
 }

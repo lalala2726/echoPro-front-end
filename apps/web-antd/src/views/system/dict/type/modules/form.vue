@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemDictApi } from '#/api/system/dict';
 
 import { computed, ref } from 'vue';
 
@@ -8,14 +8,14 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createRole, updateRole } from '#/api/system/role';
+import { createDictKey, updateDictKey } from '#/api/system/dict';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemRoleApi.SystemRole>();
+const formData = ref<SystemDictApi.SystemDictKey>();
 const getTitle = computed(() => {
-  return formData.value?.id ? '修改角色' : '新增角色';
+  return formData.value?.id ? '修改字典' : '新增字典';
 });
 
 const [Form, formApi] = useVbenForm({
@@ -36,7 +36,12 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.lock();
       const data = await formApi.getValues();
       try {
-        await (formData.value?.id ? updateRole({ id: formData.value.id, ...data } as any) : createRole(data as any));
+        await (formData.value?.id
+          ? updateDictKey({
+              id: formData.value.id,
+              ...data,
+            } as SystemDictApi.SystemDictKey)
+          : createDictKey(data as any));
         await modalApi.close();
         emit('success');
       } finally {
@@ -46,7 +51,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemRoleApi.SystemRole>();
+      const data = modalApi.getData<SystemDictApi.SystemDictKey>();
       if (data) {
         formData.value = data;
         formApi.setValues(data);

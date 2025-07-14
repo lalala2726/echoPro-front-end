@@ -103,7 +103,7 @@ export function useSchema(): VbenFormSchema[] {
         optionType: 'button',
         class: 'w-full',
       },
-      defaultValue: '0',
+      defaultValue: 0,
       fieldName: 'status',
       label: '状态',
     },

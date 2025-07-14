@@ -1,20 +1,10 @@
-import type { Recordable } from '@vben/types';
+import type { BaseType, PageResult, Recordable } from '@vben/types';
 
 import { exportFile } from '#/api/download';
 import { requestClient } from '#/api/request';
 
-/**
- * 分页结果接口
- */
-interface PageResult<T = any> {
-  total: number;
-  pageNum: number;
-  pageSize: number;
-  rows: T[];
-}
-
 export namespace SystemRoleApi {
-  export interface SystemRole {
+  export interface SystemRole extends BaseType {
     /** 角色ID */
     id: string;
     /** 角色名称 */
@@ -27,8 +17,6 @@ export namespace SystemRoleApi {
     status?: 0 | 1;
     /** 排序 */
     sort?: number;
-    /** 创建时间 */
-    createTime?: string;
   }
 }
 
