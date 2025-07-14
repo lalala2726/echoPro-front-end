@@ -1,0 +1,153 @@
+import type { VbenFormSchema } from '#/adapter/form';
+import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { SystemDictApi } from '#/api/system/dict/dictData';
+
+export function useFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入字典标签',
+      },
+      fieldName: 'dictLabel',
+      label: '字典标签',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入字典值',
+      },
+      fieldName: 'dictValue',
+      label: '字典值',
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        options: [
+          { label: '启用', value: 0 },
+          { label: '禁用', value: 1 },
+        ],
+        placeholder: '请选择状态',
+      },
+      fieldName: 'status',
+      label: '状态',
+    },
+  ];
+}
+
+export function useGridFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入字典标签',
+      },
+      fieldName: 'dictLabel',
+      label: '字典标签',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入字典值',
+      },
+      fieldName: 'dictValue',
+      label: '字典值',
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        options: [
+          { label: '启用', value: 0 },
+          { label: '禁用', value: 1 },
+        ],
+        placeholder: '请选择状态',
+      },
+      fieldName: 'status',
+      label: '状态',
+    },
+  ];
+}
+
+export function useColumns<T = SystemDictApi.SystemDictData>(
+  onActionClick: OnActionClickFn<T>,
+  onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
+): VxeTableGridOptions['columns'] {
+  return [
+    {
+      field: 'dictLabel',
+      title: '字典标签',
+      width: 150,
+    },
+    {
+      field: 'dictValue',
+      title: '字典值',
+      width: 150,
+    },
+    {
+      field: 'isDefault',
+      title: '是否默认',
+      width: 100,
+      cellRender: {
+        name: 'CellTag',
+        options: [
+          { color: 'success', label: '是', value: 1 },
+          { color: 'default', label: '否', value: 0 },
+        ],
+      },
+    },
+    {
+      field: 'sort',
+      title: '排序',
+      width: 80,
+    },
+    {
+      cellRender: {
+        attrs: { beforeChange: onStatusChange },
+        name: onStatusChange ? 'CellSwitch' : 'CellTag',
+        props: {
+          checkedValue: 0,
+          unCheckedValue: 1,
+          checkedChildren: '启用',
+          unCheckedChildren: '禁用',
+        },
+        options: [
+          { color: 'success', label: '已启用', value: 0 },
+          { color: 'error', label: '已禁用', value: 1 },
+        ],
+      },
+      field: 'status',
+      title: '状态',
+      width: 120,
+    },
+    {
+      field: 'remark',
+      minWidth: 200,
+      title: '备注',
+      formatter: ({ cellValue }) => cellValue || '--',
+    },
+    {
+      field: 'createTime',
+      title: '创建时间',
+      width: 180,
+    },
+    {
+      align: 'center',
+      cellRender: {
+        attrs: {
+          nameField: 'dict_label',
+          nameTitle: '字典值',
+          onClick: onActionClick,
+        },
+        name: 'CellOperation',
+        options: [
+          'edit', // 默认的编辑按钮
+          'delete', // 默认的删除按钮
+        ],
+      },
+      field: 'operation',
+      fixed: 'right',
+      title: '操作',
+      width: 150,
+    },
+  ];
+}

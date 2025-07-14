@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -22,18 +22,9 @@ export function useFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'dictKey',
-      label: '字典键',
+      fieldName: 'dictType',
+      label: '字典类型',
       rules: 'required',
-    },
-    {
-      component: 'InputNumber',
-      componentProps: {
-        min: 0,
-        class: 'w-full',
-      },
-      fieldName: 'sort',
-      label: '排序',
     },
     {
       component: 'RadioGroup',
@@ -66,8 +57,8 @@ export function useGridFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'dictKey',
-      label: '字典键',
+      fieldName: 'dictType',
+      label: '字典类型',
     },
     {
       component: 'Select',
@@ -94,7 +85,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemDictApi.SystemDictKey>(
+export function useColumns<T = SystemDictApi.SystemDictType>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
@@ -105,14 +96,9 @@ export function useColumns<T = SystemDictApi.SystemDictKey>(
       width: 200,
     },
     {
-      field: 'dictKey',
-      title: '字典键',
+      field: 'dictType',
+      title: '字典类型',
       width: 200,
-    },
-    {
-      field: 'sort',
-      title: '排序',
-      width: 100,
     },
     {
       cellRender: {

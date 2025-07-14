@@ -5,21 +5,21 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
+
+import { useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
-import { useRouter } from 'vue-router';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteDictKey,
-  exportDictKeyList,
-  getDictKeyList,
-  updateDictKey,
-} from '#/api/system/dict';
+  deleteDictType,
+  getDictTypeList,
+  updateDictType,
+} from '#/api/system/dict/dictType';
 import { useGridFormSchema } from '#/views/system/dict/type/data';
 
 import { useColumns } from './data';
@@ -48,7 +48,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getDictKeyList({
+          return await getDictTypeList({
             pageNum: page?.currentPage,
             pageSize: page?.pageSize,
             ...formValues,
@@ -66,10 +66,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemDictApi.SystemDictKey>,
+  } as VxeTableGridOptions<SystemDictApi.SystemDictType>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemDictApi.SystemDictKey>) {
+function onActionClick(e: OnActionClickParams<SystemDictApi.SystemDictType>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -114,7 +114,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: number,
-  row: SystemDictApi.SystemDictKey,
+  row: SystemDictApi.SystemDictType,
 ) {
   const status: Recordable<string> = {
     1: '禁用',
@@ -125,7 +125,7 @@ async function onStatusChange(
       `你要将${row.dictName}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateDictKey({ ...row, status: newStatus as 0 | 1 });
+    await updateDictType({ ...row, status: newStatus as 0 | 1 });
     return true;
   } catch {
     return false;
@@ -135,33 +135,29 @@ async function onStatusChange(
 /**
  * 编辑字典
  */
-function onEdit(row: SystemDictApi.SystemDictKey) {
+function onEdit(row: SystemDictApi.SystemDictType) {
   formModalApi.setData(row).open();
 }
 
 /**
  * 查看字典值
  */
-function onViewDict(row: SystemDictApi.SystemDictKey) {
+function onViewDict(row: SystemDictApi.SystemDictType) {
   router.push({
     path: `/system/dict/${row.id}`,
-    query: {
-      dictKey: row.dictKey,
-      dictName: row.dictName,
-    },
   });
 }
 
 /**
  * 删除字典
  */
-function onDelete(row: SystemDictApi.SystemDictKey) {
+function onDelete(row: SystemDictApi.SystemDictType) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictName} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteDictKey(row.id)
+  deleteDictType(row.id)
     .then(() => {
       message.success({
         content: `${row.dictName} 删除成功`,
@@ -184,15 +180,6 @@ function onRefresh() {
 function onCreate() {
   formModalApi.setData({}).open();
 }
-
-/**
- * 导出字典列表
- */
-async function onExport() {
-  // 获取当前搜索表单的参数
-  const formValues = await gridApi.formApi.getValues();
-  await exportDictKeyList('字典列表', formValues);
-}
 </script>
 <template>
   <Page auto-content-height>
@@ -203,8 +190,6 @@ async function onExport() {
           <Plus class="size-5" />
           新增字典
         </Button>
-        <span class="mx-2"></span>
-        <Button @click="onExport"> 导出</Button>
       </template>
     </Grid>
   </Page>

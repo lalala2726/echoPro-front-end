@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDictApi } from '#/api/system/dict';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
 
 import { computed, ref } from 'vue';
 
@@ -8,12 +8,12 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createDictKey, updateDictKey } from '#/api/system/dict';
+import { addDictType, updateDictType } from '#/api/system/dict/dictType';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictApi.SystemDictKey>();
+const formData = ref<SystemDictApi.SystemDictType>();
 const getTitle = computed(() => {
   return formData.value?.id ? '修改字典' : '新增字典';
 });
@@ -37,11 +37,11 @@ const [Modal, modalApi] = useVbenModal({
       const data = await formApi.getValues();
       try {
         await (formData.value?.id
-          ? updateDictKey({
+          ? updateDictType({
               id: formData.value.id,
               ...data,
-            } as SystemDictApi.SystemDictKey)
-          : createDictKey(data as any));
+            } as SystemDictApi.SystemDictType)
+          : addDictType(data as any));
         await modalApi.close();
         emit('success');
       } finally {
@@ -51,7 +51,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDictApi.SystemDictKey>();
+      const data = modalApi.getData<SystemDictApi.SystemDictType>();
       if (data) {
         formData.value = data;
         formApi.setValues(data);
