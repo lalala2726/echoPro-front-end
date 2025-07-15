@@ -2,15 +2,24 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    name: 'DictItem',
-    path: '/system/dict/:id',
-    component: () => import('#/views/system/dict/item/index.vue'),
+    path: '/system',
+    name: 'System',
     meta: {
-      activePath: '/system/dict',
-      hideInBreadcrumb: false,
       hideInMenu: true,
-      title: '字典数据',
+      title: '系统管理',
     },
+    children: [
+      {
+        name: 'DictItem',
+        path: '/system/dict/:id',
+        component: () => import('#/views/system/dict/item/index.vue'),
+        meta: {
+          activePath: '/system/dict',
+          hideInMenu: true,
+          title: '字典数据',
+        },
+      },
+    ],
   },
 ];
 
