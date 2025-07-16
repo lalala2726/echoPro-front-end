@@ -146,7 +146,7 @@ async function onEdit(row: SystemDictApi.SystemDictType) {
  */
 function onViewDict(row: SystemDictApi.SystemDictType) {
   router.push({
-    path: `/system/dict/${row.id}`,
+    path: `/system/dict/data/${row.id}`,
   });
 }
 
