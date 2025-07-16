@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict/dictType';
+import {getDictTypeById, type SystemDictApi} from '#/api/system/dict/dictType';
 
 import { useRouter } from 'vue-router';
 
@@ -24,6 +24,7 @@ import { useGridFormSchema } from '#/views/system/dict/type/data';
 
 import { useColumns } from './data';
 import Form from './modules/form.vue';
+import {getDictDataById} from "#/api/system/dict/dictData";
 
 const router = useRouter();
 
@@ -135,8 +136,9 @@ async function onStatusChange(
 /**
  * 编辑字典
  */
-function onEdit(row: SystemDictApi.SystemDictType) {
-  formModalApi.setData(row).open();
+async function onEdit(row: SystemDictApi.SystemDictType) {
+  const res = await getDictTypeById(row.id);
+  formModalApi.setData(res).open();
 }
 
 /**

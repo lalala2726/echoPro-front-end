@@ -30,13 +30,13 @@ const formSchema = [
   },
   {
     component: 'Input',
-    fieldName: 'dict_type',
+    fieldName: 'dictType',
     label: '字典类型',
     componentProps: { disabled: true },
   },
   {
     component: 'Input',
-    fieldName: 'dict_label',
+    fieldName: 'dictLabel',
     label: '字典标签',
     rules: 'required',
     componentProps: {
@@ -45,7 +45,7 @@ const formSchema = [
   },
   {
     component: 'Input',
-    fieldName: 'dict_value',
+    fieldName: 'dictValue',
     label: '字典值',
     rules: 'required',
     componentProps: {
@@ -54,7 +54,7 @@ const formSchema = [
   },
   {
     component: 'Switch',
-    fieldName: 'is_default',
+    fieldName: 'isDefault',
     label: '是否默认',
     componentProps: {
       checkedChildren: '是',

@@ -7,13 +7,13 @@ export namespace SystemDictApi {
     /** ID */
     id: number;
     /** 字典类型 */
-    dict_type: string;
+    dictType: string;
     /** 字典标签 */
-    dict_label: string;
+    dictLabel: string;
     /** 是否默认(1是0否) */
-    is_default: number;
+    isDefault: number;
     /** 字典值 */
-    dict_value: string;
+    dictValue: string;
     /** 状态：1禁用，0启用 */
     status?: 0 | 1;
     /** 排序 */

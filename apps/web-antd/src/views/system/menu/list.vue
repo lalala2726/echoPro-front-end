@@ -138,7 +138,7 @@ function onDelete(row: any) {
           <div class="items-center justify-end"></div>
         </div>
         <MenuBadge
-          v-if="row?.badgeType"
+          v-if="row?.badgeType || row"
           class="menu-badge"
           :badge="row.badge"
           :badge-type="row.badgeType"
@@ -148,3 +148,16 @@ function onDelete(row: any) {
     </Grid>
   </Page>
 </template>
+
+<style lang="scss" scoped>
+.menu-badge {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+
+  & > :deep(div) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+</style>

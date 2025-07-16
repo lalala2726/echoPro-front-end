@@ -12,13 +12,14 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
-import { ArrowLeft, Plus } from '@vben/icons';
+import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteDictData,
+  getDictDataById,
   getDictDataList,
   updateDictData,
 } from '#/api/system/dict/dictData';
@@ -41,7 +42,9 @@ const isLoading = ref(false);
 
 // 页面标题计算
 const pageTitle = computed(() =>
-  dictTypeInfo.value ? `${dictTypeInfo.value.dictName} - 字典值管理` : '字典值管理',
+  dictTypeInfo.value
+    ? `${dictTypeInfo.value.dictName} - 字典值管理`
+    : '字典值管理',
 );
 
 // 获取字典类型信息
@@ -154,7 +157,7 @@ async function onStatusChange(
   };
   try {
     await confirm(
-      `你要将${row.dict_label}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
+      `你要将${row.dictLabel}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
     await updateDictData({ ...row, status: newStatus as 0 | 1 });
@@ -167,8 +170,9 @@ async function onStatusChange(
 /**
  * 编辑字典值
  */
-function onEdit(row: DictDataApi.SystemDictData) {
-  formModalApi.setData(row).open();
+async function onEdit(row: DictDataApi.SystemDictData) {
+  const res = await getDictDataById(row.id);
+  formModalApi.setData(res).open();
 }
 
 /**
@@ -176,21 +180,21 @@ function onEdit(row: DictDataApi.SystemDictData) {
  */
 function onDelete(row: DictDataApi.SystemDictData) {
   const hideLoading = message.loading({
-    content: `正在删除 ${row.dict_label} ...`,
+    content: `正在删除 ${row.dictLabel} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
   deleteDictData([row.id])
     .then(() => {
       message.success({
-        content: `删除 ${row.dict_label} 成功`,
+        content: `删除 ${row.dictLabel} 成功`,
         key: 'action_process_msg',
       });
       onRefresh();
     })
     .catch(() => {
       message.error({
-        content: `删除 ${row.dict_label} 失败`,
+        content: `删除 ${row.dictLabel} 失败`,
         key: 'action_process_msg',
       });
     })
@@ -214,8 +218,8 @@ function onCreate() {
 
   formModalApi
     .setData({
-      dict_type: dictTypeInfo.value.dictType,
-      is_default: 0,
+      dictType: dictTypeInfo.value.dictType,
+      isDefault: 0,
       status: 0,
       sort: 0,
     })

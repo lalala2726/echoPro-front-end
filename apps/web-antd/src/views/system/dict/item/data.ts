@@ -2,39 +2,6 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemDictApi } from '#/api/system/dict/dictData';
 
-export function useFormSchema(): VbenFormSchema[] {
-  return [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入字典标签',
-      },
-      fieldName: 'dictLabel',
-      label: '字典标签',
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入字典值',
-      },
-      fieldName: 'dictValue',
-      label: '字典值',
-    },
-    {
-      component: 'Select',
-      componentProps: {
-        options: [
-          { label: '启用', value: 0 },
-          { label: '禁用', value: 1 },
-        ],
-        placeholder: '请选择状态',
-      },
-      fieldName: 'status',
-      label: '状态',
-    },
-  ];
-}
-
 export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
