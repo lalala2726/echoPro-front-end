@@ -166,33 +166,35 @@ function getDeptIconColor(parentId: string) {
 </script>
 
 <template>
-  <Page auto-content-height>
-    <FormModal @success="onRefresh" />
-    <Grid table-title="部门列表">
-      <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增部门
-        </Button>
-        <span class="mx-2"></span>
-        <Button type="default" @click="expandAll"> 展开全部 </Button>
-        <span class="mx-1"></span>
-        <Button type="default" @click="collapseAll"> 折叠全部 </Button>
-      </template>
-      <template #deptName="{ row }">
-        <div class="flex w-full items-center gap-2 py-1">
-          <div class="size-4 flex-shrink-0">
-            <IconifyIcon
-              :icon="getDeptIcon(row.parentId)"
-              class="size-full"
-              :class="getDeptIconColor(row.parentId)"
-            />
+  <div class="dept-manage-container">
+    <Page auto-content-height>
+      <FormModal @success="onRefresh" />
+      <Grid table-title="部门列表">
+        <template #toolbar-tools>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            新增部门
+          </Button>
+          <span class="mx-2"></span>
+          <Button type="default" @click="expandAll"> 展开全部 </Button>
+          <span class="mx-1"></span>
+          <Button type="default" @click="collapseAll"> 折叠全部 </Button>
+        </template>
+        <template #deptName="{ row }">
+          <div class="flex w-full items-center gap-2 py-1">
+            <div class="size-4 flex-shrink-0">
+              <IconifyIcon
+                :icon="getDeptIcon(row.parentId)"
+                class="size-full"
+                :class="getDeptIconColor(row.parentId)"
+              />
+            </div>
+            <div class="flex-auto">
+              <div class="font-medium text-gray-900">{{ row.deptName }}</div>
+            </div>
           </div>
-          <div class="flex-auto">
-            <div class="font-medium text-gray-900">{{ row.deptName }}</div>
-          </div>
-        </div>
-      </template>
-    </Grid>
-  </Page>
+        </template>
+      </Grid>
+    </Page>
+  </div>
 </template>

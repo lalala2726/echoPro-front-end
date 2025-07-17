@@ -36,7 +36,9 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.lock();
       const data = await formApi.getValues();
       try {
-        await (formData.value?.id ? updateRole({ id: formData.value.id, ...data } as any) : createRole(data as any));
+        await (formData.value?.id
+          ? updateRole({ id: formData.value.id, ...data } as any)
+          : createRole(data as any));
         await modalApi.close();
         emit('success');
       } finally {

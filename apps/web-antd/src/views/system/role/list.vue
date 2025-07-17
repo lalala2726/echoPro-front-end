@@ -7,7 +7,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemRoleApi } from '#/api/system/role';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -21,7 +21,13 @@ import {
 } from '#/api/system/role';
 
 import { useColumns, useGridFormSchema } from './data';
+import Assign from './modules/assign.vue';
 import Form from './modules/form.vue';
+
+const [FormDrawer, formDrawerApi] = useVbenDrawer({
+  connectedComponent: Assign,
+  destroyOnClose: true,
+});
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -58,7 +64,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: { code: 'query' },
       search: true,
       zoom: true,
     },
@@ -67,6 +74,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
   switch (e.code) {
+    case 'assign': {
+      onAssign(e.row);
+      break;
+    }
     case 'delete': {
       onDelete(e.row);
       break;
@@ -76,6 +87,10 @@ function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
       break;
     }
   }
+}
+
+function onAssign(row: SystemRoleApi.SystemRole) {
+  formDrawerApi.setData(row).open();
 }
 
 /**
@@ -171,17 +186,20 @@ async function onExport() {
 }
 </script>
 <template>
-  <Page auto-content-height>
-    <FormModal @success="onRefresh" />
-    <Grid table-title="角色列表">
-      <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增角色
-        </Button>
-        <span class="mx-2"></span>
-        <Button @click="onExport"> 导出</Button>
-      </template>
-    </Grid>
-  </Page>
+  <div class="role-manage-container">
+    <FormDrawer @success="onRefresh" />
+    <Page auto-content-height>
+      <FormModal @success="onRefresh" />
+      <Grid table-title="角色列表">
+        <template #toolbar-tools>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            新增角色
+          </Button>
+          <span class="mx-2"></span>
+          <Button @click="onExport"> 导出</Button>
+        </template>
+      </Grid>
+    </Page>
+  </div>
 </template>

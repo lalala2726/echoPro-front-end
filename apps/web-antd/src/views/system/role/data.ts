@@ -148,11 +148,20 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          'edit', // 默认的编辑按钮
+          {
+            code: 'assign',
+            text: '分配权限',
+            style: { color: '#52c41a' },
+          },
+          'delete', // 默认的删除按钮
+        ],
       },
       field: 'operation',
       fixed: 'right',
       title: '操作',
-      width: 130,
+      width: 280,
     },
   ];
 }

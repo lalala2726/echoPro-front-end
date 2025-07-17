@@ -101,7 +101,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: { code: 'query' },
       search: true,
       zoom: true,
     },
@@ -241,15 +242,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Page auto-content-height>
-    <FormModal @success="handleFormSuccess" />
-    <Grid :table-title="pageTitle">
-      <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增字典值
-        </Button>
-      </template>
-    </Grid>
-  </Page>
+  <div class="dict-item-manage-container">
+    <Page auto-content-height>
+      <FormModal @success="handleFormSuccess" />
+      <Grid :table-title="pageTitle">
+        <template #toolbar-tools>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            新增字典值
+          </Button>
+        </template>
+      </Grid>
+    </Page>
+  </div>
 </template>

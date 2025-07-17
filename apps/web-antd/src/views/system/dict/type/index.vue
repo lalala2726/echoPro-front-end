@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import {getDictTypeById, type SystemDictApi} from '#/api/system/dict/dictType';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
 
 import { useRouter } from 'vue-router';
 
@@ -17,6 +17,7 @@ import { Button, message, Modal } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteDictType,
+  getDictTypeById,
   getDictTypeList,
   updateDictType,
 } from '#/api/system/dict/dictType';
@@ -24,7 +25,6 @@ import { useGridFormSchema } from '#/views/system/dict/type/data';
 
 import { useColumns } from './data';
 import Form from './modules/form.vue';
-import {getDictDataById} from "#/api/system/dict/dictData";
 
 const router = useRouter();
 
@@ -63,7 +63,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: { code: 'query' },
       search: true,
       zoom: true,
     },
@@ -184,15 +185,17 @@ function onCreate() {
 }
 </script>
 <template>
-  <Page auto-content-height>
-    <FormModal @success="onRefresh" />
-    <Grid table-title="字典列表">
-      <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增字典
-        </Button>
-      </template>
-    </Grid>
-  </Page>
+  <div class="dict-type-manage-container">
+    <Page auto-content-height>
+      <FormModal @success="onRefresh" />
+      <Grid table-title="字典列表">
+        <template #toolbar-tools>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            新增字典
+          </Button>
+        </template>
+      </Grid>
+    </Page>
+  </div>
 </template>

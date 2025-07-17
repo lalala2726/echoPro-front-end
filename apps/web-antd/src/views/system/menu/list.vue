@@ -43,7 +43,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     toolbarConfig: {
       custom: true,
       export: false,
-      refresh: { code: 'query' },
+      refresh: true,
+      refreshOptions: { code: 'query' },
       zoom: true,
     },
     treeConfig: {
@@ -111,42 +112,44 @@ function onDelete(row: any) {
 }
 </script>
 <template>
-  <Page auto-content-height>
-    <FormDrawer @success="onRefresh" />
-    <Grid>
-      <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
-          <Plus class="size-5" />
-          新增菜单
-        </Button>
-      </template>
-      <template #title="{ row }">
-        <div class="flex w-full items-center gap-1">
-          <div class="size-5 flex-shrink-0">
-            <IconifyIcon
-              v-if="row.type === 'button'"
-              icon="carbon:security"
-              class="size-full"
-            />
-            <IconifyIcon
-              v-else-if="row?.icon"
-              :icon="row?.icon || 'carbon:circle-dash'"
-              class="size-full"
-            />
+  <div class="menu-manage-container">
+    <Page auto-content-height>
+      <FormDrawer @success="onRefresh" />
+      <Grid>
+        <template #toolbar-tools>
+          <Button type="primary" @click="onCreate">
+            <Plus class="size-5" />
+            新增菜单
+          </Button>
+        </template>
+        <template #title="{ row }">
+          <div class="flex w-full items-center gap-1">
+            <div class="size-5 flex-shrink-0">
+              <IconifyIcon
+                v-if="row.type === 'button'"
+                icon="carbon:security"
+                class="size-full"
+              />
+              <IconifyIcon
+                v-else-if="row?.icon"
+                :icon="row?.icon || 'carbon:circle-dash'"
+                class="size-full"
+              />
+            </div>
+            <span class="flex-auto">{{ row.title }}</span>
+            <div class="items-center justify-end"></div>
           </div>
-          <span class="flex-auto">{{ row.title }}</span>
-          <div class="items-center justify-end"></div>
-        </div>
-        <MenuBadge
-          v-if="row?.badgeType || row"
-          class="menu-badge"
-          :badge="row.badge"
-          :badge-type="row.badgeType"
-          :badge-variants="row.badgeVariants"
-        />
-      </template>
-    </Grid>
-  </Page>
+          <MenuBadge
+            v-if="row?.badgeType || row"
+            class="menu-badge"
+            :badge="row.badge"
+            :badge-type="row.badgeType"
+            :badge-variants="row.badgeVariants"
+          />
+        </template>
+      </Grid>
+    </Page>
+  </div>
 </template>
 
 <style lang="scss" scoped>
