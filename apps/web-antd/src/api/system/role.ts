@@ -63,6 +63,9 @@ export namespace SystemRoleApi {
   }
 }
 
+/**
+ * 获取角色列表
+ */
 async function getRoleList() {
   return requestClient.get<SystemRoleApi.SystemRole[]>('/system/role/list');
 }

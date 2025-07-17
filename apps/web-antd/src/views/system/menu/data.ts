@@ -76,8 +76,8 @@ export function useColumns(
       cellRender: {
         name: 'CellTag',
         options: [
-          { label: '正常', value: '0', color: 'success' },
-          { label: '已禁用', value: '1', color: 'error' },
+          { label: '正常', value: 0, color: 'success' },
+          { label: '已禁用', value: 1, color: 'error' },
         ],
       },
       field: 'status',

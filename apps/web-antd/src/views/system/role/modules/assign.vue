@@ -295,9 +295,6 @@ function handleClose() {
 </template>
 
 <style scoped>
-/* Ant Design 深度样式覆盖 */
-
-/* VbenDrawer footer 样式覆盖 */
 
 /* 自定义滚动条样式 */
 :deep(.overflow-y-auto::-webkit-scrollbar) {
