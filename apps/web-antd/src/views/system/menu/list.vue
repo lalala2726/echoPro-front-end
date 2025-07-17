@@ -112,7 +112,7 @@ function onDelete(row: any) {
 }
 </script>
 <template>
-  <div class="menu-manage-container">
+  <div>
     <Page auto-content-height>
       <FormDrawer @success="onRefresh" />
       <Grid>

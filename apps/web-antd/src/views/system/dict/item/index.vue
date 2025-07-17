@@ -219,8 +219,8 @@ function onCreate() {
 
   formModalApi
     .setData({
-      dictType: dictTypeInfo.value.dictType,
-      isDefault: 0,
+      dict_type: dictTypeInfo.value.dictType,
+      is_default: 0,
       status: 0,
       sort: 0,
     })
@@ -242,17 +242,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="dict-item-manage-container">
-    <Page auto-content-height>
-      <FormModal @success="handleFormSuccess" />
-      <Grid :table-title="pageTitle">
-        <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
-            <Plus class="size-5" />
-            新增字典值
-          </Button>
-        </template>
-      </Grid>
-    </Page>
-  </div>
+  <Page auto-content-height>
+    <FormModal @success="handleFormSuccess" />
+    <Grid :table-title="pageTitle">
+      <template #toolbar-tools>
+        <Button type="primary" @click="onCreate">
+          <Plus class="size-5" />
+          新增字典值
+        </Button>
+      </template>
+    </Grid>
+  </Page>
 </template>

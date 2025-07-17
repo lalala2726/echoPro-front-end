@@ -186,7 +186,7 @@ async function onExport() {
 }
 </script>
 <template>
-  <div class="role-manage-container">
+  <div>
     <FormDrawer @success="onRefresh" />
     <Page auto-content-height>
       <FormModal @success="onRefresh" />

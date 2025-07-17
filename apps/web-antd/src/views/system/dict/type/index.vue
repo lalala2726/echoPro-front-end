@@ -185,17 +185,15 @@ function onCreate() {
 }
 </script>
 <template>
-  <div class="dict-type-manage-container">
-    <Page auto-content-height>
-      <FormModal @success="onRefresh" />
-      <Grid table-title="字典列表">
-        <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
-            <Plus class="size-5" />
-            新增字典
-          </Button>
-        </template>
-      </Grid>
-    </Page>
-  </div>
+  <Page auto-content-height>
+    <FormModal @success="onRefresh" />
+    <Grid table-title="字典列表">
+      <template #toolbar-tools>
+        <Button type="primary" @click="onCreate">
+          <Plus class="size-5" />
+          新增字典
+        </Button>
+      </template>
+    </Grid>
+  </Page>
 </template>
