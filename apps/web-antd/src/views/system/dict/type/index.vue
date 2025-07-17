@@ -5,33 +5,32 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
 
-import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
+import { useRouter } from 'vue-router';
+
+import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteRole,
-  exportRoleList,
-  getRoleList,
-  updateRole,
-} from '#/api/system/role';
+  deleteDictType,
+  getDictTypeById,
+  getDictTypeList,
+  updateDictType,
+} from '#/api/system/dict/dictType';
+import { useGridFormSchema } from '#/views/system/dict/type/data';
 
-import { useColumns, useGridFormSchema } from './data';
-import Assign from './modules/assign.vue';
+import { useColumns } from './data';
 import Form from './modules/form.vue';
 
-const [FormDrawer, formDrawerApi] = useVbenDrawer({
-  connectedComponent: Assign,
-  destroyOnClose: true,
-});
+const router = useRouter();
 
 const [FormModal, formModalApi] = useVbenModal({
-  connectedComponent: Form,
   destroyOnClose: true,
+  connectedComponent: Form,
 });
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -50,7 +49,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getRoleList({
+          return await getDictTypeList({
             pageNum: page?.currentPage,
             pageSize: page?.pageSize,
             ...formValues,
@@ -69,15 +68,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemRoleApi.SystemRole>,
+  } as VxeTableGridOptions<SystemDictApi.SystemDictType>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
+function onActionClick(e: OnActionClickParams<SystemDictApi.SystemDictType>) {
   switch (e.code) {
-    case 'assign': {
-      onAssign(e.row);
-      break;
-    }
     case 'delete': {
       onDelete(e.row);
       break;
@@ -86,11 +81,11 @@ function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
       onEdit(e.row);
       break;
     }
+    case 'view': {
+      onViewDict(e.row);
+      break;
+    }
   }
-}
-
-function onAssign(row: SystemRoleApi.SystemRole) {
-  formDrawerApi.setData(row).open();
 }
 
 /**
@@ -99,14 +94,14 @@ function onAssign(row: SystemRoleApi.SystemRole) {
  * @param title 提示标题
  */
 function confirm(content: string, title: string) {
-  return new Promise((reslove, reject) => {
+  return new Promise((resolve, reject) => {
     Modal.confirm({
       content,
       onCancel() {
         reject(new Error('已取消'));
       },
       onOk() {
-        reslove(true);
+        resolve(true);
       },
       title,
     });
@@ -121,7 +116,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: number,
-  row: SystemRoleApi.SystemRole,
+  row: SystemDictApi.SystemDictType,
 ) {
   const status: Recordable<string> = {
     1: '禁用',
@@ -129,10 +124,10 @@ async function onStatusChange(
   };
   try {
     await confirm(
-      `你要将${row.roleName}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
+      `你要将${row.dictName}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateRole({ id: row.id, status: newStatus as 0 | 1 });
+    await updateDictType({ ...row, status: newStatus as 0 | 1 });
     return true;
   } catch {
     return false;
@@ -140,25 +135,35 @@ async function onStatusChange(
 }
 
 /**
- * 编辑角色
+ * 编辑字典
  */
-function onEdit(row: SystemRoleApi.SystemRole) {
-  formModalApi.setData(row).open();
+async function onEdit(row: SystemDictApi.SystemDictType) {
+  const res = await getDictTypeById(row.id);
+  formModalApi.setData(res).open();
 }
 
 /**
- * 删除角色
+ * 查看字典值
  */
-function onDelete(row: SystemRoleApi.SystemRole) {
+function onViewDict(row: SystemDictApi.SystemDictType) {
+  router.push({
+    path: `/system/dict/data/${row.id}`,
+  });
+}
+
+/**
+ * 删除字典
+ */
+function onDelete(row: SystemDictApi.SystemDictType) {
   const hideLoading = message.loading({
-    content: `正在删除 ${row.roleName} ...`,
+    content: `正在删除 ${row.dictName} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteRole(row.id)
+  deleteDictType(row.id)
     .then(() => {
       message.success({
-        content: `${row.roleName} 删除成功`,
+        content: `${row.dictName} 删除成功`,
         key: 'action_process_msg',
       });
       onRefresh();
@@ -173,33 +178,22 @@ function onRefresh() {
 }
 
 /**
- * 创建新角色
+ * 创建新字典
  */
 function onCreate() {
   formModalApi.setData({}).open();
 }
-
-async function onExport() {
-  // 获取当前搜索表单的参数
-  const formValues = await gridApi.formApi.getValues();
-  await exportRoleList('角色列表', formValues);
-}
 </script>
 <template>
-  <div>
-    <FormDrawer @success="onRefresh" />
-    <Page auto-content-height>
-      <FormModal @success="onRefresh" />
-      <Grid table-title="角色列表">
-        <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
-            <Plus class="size-5" />
-            新增角色
-          </Button>
-          <span class="mx-2"></span>
-          <Button @click="onExport"> 导出</Button>
-        </template>
-      </Grid>
-    </Page>
-  </div>
+  <Page auto-content-height>
+    <FormModal @success="onRefresh" />
+    <Grid table-title="字典列表">
+      <template #toolbar-tools>
+        <Button type="primary" @click="onCreate">
+          <Plus class="size-5" />
+          新增字典
+        </Button>
+      </template>
+    </Grid>
+  </Page>
 </template>

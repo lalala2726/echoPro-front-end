@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDictApi } from '#/api/system/dict/dictType';
 
 import { computed, ref } from 'vue';
 
@@ -8,19 +8,19 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addDept, updateDept } from '#/api/system/dept';
+import { addDictType, updateDictType } from '#/api/system/dict/dictType';
 
-import { useSchema } from '../data';
+import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDeptApi.SystemDept>();
+const formData = ref<SystemDictApi.SystemDictType>();
 const getTitle = computed(() => {
-  return formData.value?.deptId ? '修改部门' : '新增部门';
+  return formData.value?.id ? '修改字典' : '新增字典';
 });
 
 const [Form, formApi] = useVbenForm({
   layout: 'vertical',
-  schema: useSchema(),
+  schema: useFormSchema(),
   showDefaultActions: false,
 });
 
@@ -36,7 +36,12 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.lock();
       const data = await formApi.getValues();
       try {
-        await (formData.value?.deptId ? updateDept(data) : addDept(data));
+        await (formData.value?.id
+          ? updateDictType({
+              id: formData.value.id,
+              ...data,
+            } as SystemDictApi.SystemDictType)
+          : addDictType(data as any));
         await modalApi.close();
         emit('success');
       } finally {
@@ -46,15 +51,10 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDeptApi.SystemDept>();
+      const data = modalApi.getData<SystemDictApi.SystemDictType>();
       if (data) {
-        // 处理根节点的parentId
-        const processedData = { ...data };
-        if (processedData.parentId === '0') {
-          processedData.parentId = '';
-        }
-        formData.value = processedData;
-        formApi.setValues(processedData);
+        formData.value = data;
+        formApi.setValues(data);
       }
     }
   },

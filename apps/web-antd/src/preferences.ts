@@ -14,4 +14,11 @@ export const overridesPreferences = defineOverridesPreferences({
   theme: {
     mode: 'light',
   },
+  logo: {
+    source: '/logo/logo.png', // 使用本地图片，放在 public/ 目录下
+    fit: 'contain', // 图片适应方式
+  },
+  widget: {
+    languageToggle: false, // 禁用语言切换按钮
+  },
 });

@@ -17,7 +17,7 @@ export async function downloadFileFromUrl({
   source,
   target = '_blank',
 }: DownloadOptions): Promise<void> {
-  if (!source || typeof source !== 'string') {
+  if (!source) {
     throw new Error('Invalid URL.');
   }
 
@@ -44,7 +44,7 @@ export async function downloadFileFromUrl({
  * 通过 Base64 下载文件
  */
 export function downloadFileFromBase64({ fileName, source }: DownloadOptions) {
-  if (!source || typeof source !== 'string') {
+  if (!source) {
     throw new Error('Invalid Base64 data.');
   }
 
@@ -99,6 +99,7 @@ export function downloadFileFromBlobPart({
 /**
  * img url to base64
  * @param url
+ * @param mineType
  */
 export function urlToBase64(url: string, mineType?: string): Promise<string> {
   return new Promise((resolve, reject) => {

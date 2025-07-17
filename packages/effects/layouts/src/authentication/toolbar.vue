@@ -8,7 +8,7 @@ import { preferences } from '@vben/preferences';
 import {
   AuthenticationColorToggle,
   AuthenticationLayoutToggle,
-  LanguageToggle,
+  // LanguageToggle,
   ThemeToggle,
 } from '../widgets';
 
@@ -31,19 +31,16 @@ const showTheme = computed(() => props.toolbarList.includes('theme'));
 </script>
 
 <template>
-  <div
-    :class="{
-      'bg-accent rounded-3xl px-3 py-1': toolbarList.length > 1,
-    }"
-    class="flex-center absolute right-2 top-4 z-10"
-  >
+  <div :class="{
+    'bg-accent rounded-3xl px-3 py-1': toolbarList.length > 1,
+  }" class="flex-center absolute right-2 top-4 z-10">
     <!-- Only show on medium and larger screens -->
     <div class="hidden md:flex">
       <AuthenticationColorToggle v-if="showColor" />
       <AuthenticationLayoutToggle v-if="showLayout" />
     </div>
     <!-- Always show Language and Theme toggles -->
-    <LanguageToggle v-if="showLanguage && preferences.widget.languageToggle" />
+    <!-- <LanguageToggle v-if="showLanguage && preferences.widget.languageToggle" /> -->
     <ThemeToggle v-if="showTheme && preferences.widget.themeToggle" />
   </div>
 </template>

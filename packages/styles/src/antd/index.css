@@ -13,21 +13,34 @@
   }
 
   /* * 修复按钮添加图标时的位置问题 */
-  > svg {
+  >svg {
     display: inline-block;
   }
 
-  > svg + span {
+  >svg+span {
     margin-inline-start: 6px;
+  }
+
+  /* 修复按钮焦点状态的边框问题 */
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 移除按钮的默认outline */
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
   }
 }
 
 .ant-tag {
-  > svg {
+  >svg {
     display: inline-block;
   }
 
-  > svg + span {
+  >svg+span {
     margin-inline-start: 4px;
   }
 }
