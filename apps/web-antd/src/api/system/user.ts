@@ -40,10 +40,10 @@ export namespace SystemUserApi {
     roleNames?: string;
     /** 角色对象数组 */
     sysRoles?: Array<{
-      roleId?: string;
       id?: string;
-      roleName: string;
+      roleId?: string;
       roleKey?: string;
+      roleName: string;
     }>;
   }
 }
@@ -62,7 +62,7 @@ async function getUserList(params?: any) {
  * 重置用户密码
  * @param data 用户数据
  */
-async function resetUserPassword(data: { userId: number; password: string }) {
+async function resetUserPassword(data: { password: string; userId: number }) {
   return requestClient.put('/system/user/resetPassword', data);
 }
 

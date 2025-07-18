@@ -308,7 +308,9 @@ function onResetPasswordSuccess(username: string) {
       :left-max-width="35"
     >
       <template #left>
-        <div class="h-full rounded-lg border border-gray-200 bg-white p-3">
+        <div
+          class="h-full rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-600 dark:bg-[#1c1e22]"
+        >
           <Dept
             :selected-dept-id="selectedDeptId"
             @dept-select="onDeptSelect"
@@ -323,7 +325,7 @@ function onResetPasswordSuccess(username: string) {
             新增用户
           </Button>
           <span class="mx-2"></span>
-          <Button danger @click="onBatchDelete"> 批量删除 </Button>
+          <Button danger @click="onBatchDelete"> 批量删除</Button>
           <span class="mx-2"></span>
           <Button
             :loading="isExporting"

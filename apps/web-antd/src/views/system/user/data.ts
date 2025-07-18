@@ -2,8 +2,6 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemUserApi } from '#/api/system/user';
 
-import { z } from '@vben/common-ui';
-
 // todo 角色分配,岗位分配
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -30,9 +28,10 @@ export function useFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      component: 'VbenInputPassword',
+      component: 'Input',
       fieldName: 'password',
       label: '密码',
+      componentProps: { type: 'password' },
       dependencies: {
         triggerFields: ['userId'],
         show: (values) => !values.userId, // 只在新增时显示密码字段
@@ -58,22 +57,6 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      component: 'Select',
-      fieldName: 'roleIds',
-      label: '用户角色',
-      componentProps: {
-        placeholder: '请选择角色',
-        mode: 'multiple',
-        allowClear: true,
-        showSearch: true,
-        filterOption: (input: string, option: any) => {
-          return option?.label?.toLowerCase().includes(input.toLowerCase());
-        },
-        class: 'w-full',
-        options: [], // 初始为空，会在表单加载时动态设置
-      },
-    },
-    {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
@@ -91,31 +74,13 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'Input',
       fieldName: 'phone',
       label: '手机号',
-      rules: z
-        .string()
-        .optional()
-        .refine(
-          (value) => {
-            if (!value) return true; // 允许为空
-            return /^1[3-9]\d{9}$/.test(value);
-          },
-          { message: '请输入正确的手机号格式' },
-        ),
+      rules: 'phone',
     },
     {
       component: 'Input',
       fieldName: 'email',
       label: '邮箱',
-      rules: z
-        .string()
-        .optional()
-        .refine(
-          (value) => {
-            if (!value) return true; // 允许为空
-            return /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(value);
-          },
-          { message: '请输入正确的邮箱格式' },
-        ),
+      rules: 'email',
     },
     {
       component: 'RadioGroup',
@@ -202,18 +167,6 @@ export function useColumns<T = SystemUserApi.SysUser>(
       },
     },
     {
-      field: 'roleNames',
-      title: '角色',
-      width: 150,
-      formatter: ({ row }) => {
-        // 显示用户的角色信息
-        if (row.sysRoles && Array.isArray(row.sysRoles)) {
-          return row.sysRoles.map((role: any) => role.roleName).join(', ');
-        }
-        return row.roleNames || '--';
-      },
-    },
-    {
       cellRender: {
         name: 'CellTag',
         options: [
@@ -271,24 +224,14 @@ export function useColumns<T = SystemUserApi.SysUser>(
         },
         name: 'CellOperation',
         options: [
-          {
-            code: 'edit',
-            text: '编辑',
-          },
-          {
-            code: 'resetPassword',
-            text: '重置密码',
-          },
-          {
-            code: 'delete',
-            text: '删除',
-          },
+          'edit', // 默认的编辑按钮
+          'delete', // 默认的删除按钮
         ],
       },
       field: 'operation',
       fixed: 'right',
       title: '操作',
-      width: 240,
+      width: 160,
     },
   ];
 }
