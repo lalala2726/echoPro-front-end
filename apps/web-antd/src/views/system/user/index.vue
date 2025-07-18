@@ -25,13 +25,21 @@ import {
 import { useColumns, useGridFormSchema } from './data';
 import Dept from './modules/dept.vue';
 import Form from './modules/form.vue';
+import ResetPassword from './modules/reset-password.vue';
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
   destroyOnClose: true,
 });
 
+const [ResetPasswordModal, resetPasswordModalApi] = useVbenModal({
+  connectedComponent: ResetPassword,
+  destroyOnClose: true,
+});
+
 const selectedDeptId = ref<string>('');
+// 导出状态管理
+const isExporting = ref<boolean>(false);
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -84,6 +92,10 @@ function onActionClick(e: OnActionClickParams<SystemUserApi.SysUser>) {
     }
     case 'edit': {
       onEdit(e.row);
+      break;
+    }
+    case 'resetPassword': {
+      onResetPassword(e.row);
       break;
     }
   }
@@ -174,13 +186,52 @@ function onCreate() {
   formModalApi.open();
 }
 
+/**
+ * 导出用户列表
+ * 使用状态管理防止重复点击，立即响应用户操作
+ */
 async function onExport() {
-  // 获取当前搜索表单的参数
-  const formValues = await gridApi.formApi.getValues();
-  await exportUserList('用户列表', {
-    deptId: selectedDeptId.value,
-    ...formValues,
-  });
+  // 防止重复导出
+  if (isExporting.value) {
+    message.warning('正在导出中，请耐心等待...');
+    return;
+  }
+
+  try {
+    isExporting.value = true;
+
+    // 显示导出提示
+    message.loading({
+      content: '正在请求后端生成文件，请耐心等待...',
+      duration: 0,
+      key: 'export_loading_msg',
+    });
+
+    // 获取当前搜索表单的参数
+    const formValues = await gridApi.formApi.getValues();
+
+    // 调用导出API
+    await exportUserList('用户列表', {
+      deptId: selectedDeptId.value,
+      ...formValues,
+    });
+
+    // 导出成功提示
+    message.success({
+      content: '用户列表导出成功！',
+      key: 'export_loading_msg',
+      duration: 3,
+    });
+  } catch (error) {
+    console.error('导出失败:', error);
+    message.error({
+      content: '导出失败，请重试',
+      key: 'export_loading_msg',
+      duration: 5,
+    });
+  } finally {
+    isExporting.value = false;
+  }
 }
 
 /**
@@ -225,11 +276,27 @@ async function onBatchDelete() {
     console.error('批量删除失败:', error);
   }
 }
+
+/**
+ * 重置用户密码
+ */
+function onResetPassword(row: SystemUserApi.SysUser) {
+  resetPasswordModalApi.setData(row);
+  resetPasswordModalApi.open();
+}
+
+/**
+ * 重置密码成功回调
+ */
+function onResetPasswordSuccess(username: string) {
+  message.success(`用户 ${username} 密码重置成功`);
+}
 </script>
 
 <template>
   <div>
     <FormModal @success="onRefresh" />
+    <ResetPasswordModal @success="onResetPasswordSuccess" />
     <ColPage
       auto-content-height
       :resizable="true"
@@ -239,8 +306,6 @@ async function onBatchDelete() {
       :left-width="10"
       :left-min-width="15"
       :left-max-width="35"
-      title="用户管理"
-      description="管理系统用户信息，包括用户的基本信息、权限设置等"
     >
       <template #left>
         <div class="h-full rounded-lg border border-gray-200 bg-white p-3">
@@ -260,7 +325,13 @@ async function onBatchDelete() {
           <span class="mx-2"></span>
           <Button danger @click="onBatchDelete"> 批量删除 </Button>
           <span class="mx-2"></span>
-          <Button @click="onExport"> 导出</Button>
+          <Button
+            :loading="isExporting"
+            :disabled="isExporting"
+            @click="onExport"
+          >
+            {{ isExporting ? '导出中...' : '导出' }}
+          </Button>
         </template>
       </Grid>
     </ColPage>

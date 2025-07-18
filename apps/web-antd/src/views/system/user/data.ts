@@ -4,6 +4,7 @@ import type { SystemUserApi } from '#/api/system/user';
 
 import { z } from '@vben/common-ui';
 
+// todo 角色分配,岗位分配
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
@@ -29,10 +30,9 @@ export function useFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'VbenInputPassword',
       fieldName: 'password',
       label: '密码',
-      componentProps: { type: 'password' },
       dependencies: {
         triggerFields: ['userId'],
         show: (values) => !values.userId, // 只在新增时显示密码字段
@@ -55,6 +55,22 @@ export function useFormSchema(): VbenFormSchema[] {
           value: 'value',
           children: 'children',
         },
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'roleIds',
+      label: '用户角色',
+      componentProps: {
+        placeholder: '请选择角色',
+        mode: 'multiple',
+        allowClear: true,
+        showSearch: true,
+        filterOption: (input: string, option: any) => {
+          return option?.label?.toLowerCase().includes(input.toLowerCase());
+        },
+        class: 'w-full',
+        options: [], // 初始为空，会在表单加载时动态设置
       },
     },
     {
@@ -186,6 +202,18 @@ export function useColumns<T = SystemUserApi.SysUser>(
       },
     },
     {
+      field: 'roleNames',
+      title: '角色',
+      width: 150,
+      formatter: ({ row }) => {
+        // 显示用户的角色信息
+        if (row.sysRoles && Array.isArray(row.sysRoles)) {
+          return row.sysRoles.map((role: any) => role.roleName).join(', ');
+        }
+        return row.roleNames || '--';
+      },
+    },
+    {
       cellRender: {
         name: 'CellTag',
         options: [
@@ -243,14 +271,24 @@ export function useColumns<T = SystemUserApi.SysUser>(
         },
         name: 'CellOperation',
         options: [
-          'edit', // 默认的编辑按钮
-          'delete', // 默认的删除按钮
+          {
+            code: 'edit',
+            text: '编辑',
+          },
+          {
+            code: 'resetPassword',
+            text: '重置密码',
+          },
+          {
+            code: 'delete',
+            text: '删除',
+          },
         ],
       },
       field: 'operation',
       fixed: 'right',
       title: '操作',
-      width: 160,
+      width: 240,
     },
   ];
 }

@@ -1,8 +1,9 @@
 import type { BaseType, PageResult, Recordable } from '@vben/types';
 
 import type { SystemDeptApi } from '#/api/system/dept';
-import { requestClient } from '#/api/request';
+
 import { exportFile } from '#/api/download';
+import { requestClient } from '#/api/request';
 
 export namespace SystemUserApi {
   /**
@@ -33,6 +34,17 @@ export namespace SystemUserApi {
     deptName?: string;
     /** 部门对象 */
     sysDept?: SystemDeptApi.SystemDept;
+    /** 角色ID数组 */
+    roleIds?: string[];
+    /** 角色名称字符串 */
+    roleNames?: string;
+    /** 角色对象数组 */
+    sysRoles?: Array<{
+      roleId?: string;
+      id?: string;
+      roleName: string;
+      roleKey?: string;
+    }>;
   }
 }
 
@@ -44,6 +56,14 @@ async function getUserList(params?: any) {
     '/system/user/list',
     { params },
   );
+}
+
+/**
+ * 重置用户密码
+ * @param data 用户数据
+ */
+async function resetUserPassword(data: { userId: number; password: string }) {
+  return requestClient.put('/system/user/resetPassword', data);
 }
 
 /**
@@ -96,5 +116,6 @@ export {
   exportUserList,
   getUserById,
   getUserList,
+  resetUserPassword,
   updateUser,
 };

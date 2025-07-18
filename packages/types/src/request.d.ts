@@ -12,6 +12,18 @@ export interface PageResult<T = any> {
   rows: T[];
 }
 
+/**
+ * 选项
+ */
+export interface Option<T = any> {
+  /** 标签 */
+  label: string;
+  /** 值 */
+  value: T;
+  /** 子选项 */
+  children?: Option<T>[];
+}
+
 export interface BaseType {
   /** 创建时间 */
   createTime?: string;
