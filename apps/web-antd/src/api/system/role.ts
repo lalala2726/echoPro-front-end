@@ -80,6 +80,14 @@ async function getRoleOption() {
 }
 
 /**
+ * 获取角色详情
+ * @param roleId 角色ID
+ */
+async function getRoleById(roleId: string) {
+  return requestClient.get<SystemRoleApi.SystemRole>(`/system/role/${roleId}`);
+}
+
+/**
  * 创建角色
  * @param data 角色数据
  */
@@ -144,6 +152,7 @@ export {
   deleteRole,
   exportRoleList,
   getPermissionByRoleId,
+  getRoleById,
   getRoleList,
   getRoleOption,
   updateRole,

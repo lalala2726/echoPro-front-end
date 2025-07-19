@@ -7,6 +7,8 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemRoleApi } from '#/api/system/role';
 
+import { ref } from 'vue';
+
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -34,6 +36,9 @@ const [FormModal, formModalApi] = useVbenModal({
   destroyOnClose: true,
 });
 
+// 导出状态管理
+const isExporting = ref<boolean>(false);
+
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
@@ -49,12 +54,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
-          return await getRoleList({
-            pageNum: page?.currentPage,
-            pageSize: page?.pageSize,
-            ...formValues,
-          });
+        query: async () => {
+          return await getRoleList();
         },
       },
     },
@@ -180,9 +181,30 @@ function onCreate() {
 }
 
 async function onExport() {
-  // 获取当前搜索表单的参数
-  const formValues = await gridApi.formApi.getValues();
-  await exportRoleList('角色列表', formValues);
+  try {
+    isExporting.value = true;
+    message.loading({
+      content: '正在导出角色列表...',
+      duration: 0,
+      key: 'export_loading_msg',
+    });
+
+    // 获取当前搜索表单的参数
+    const formValues = await gridApi.formApi.getValues();
+    await exportRoleList('角色列表', formValues);
+
+    message.success({
+      content: '角色列表导出成功',
+      key: 'export_loading_msg',
+    });
+  } catch {
+    message.error({
+      content: '角色列表导出失败',
+      key: 'export_loading_msg',
+    });
+  } finally {
+    isExporting.value = false;
+  }
 }
 </script>
 <template>
@@ -197,7 +219,13 @@ async function onExport() {
             新增角色
           </Button>
           <span class="mx-2"></span>
-          <Button @click="onExport"> 导出</Button>
+          <Button
+            :loading="isExporting"
+            :disabled="isExporting"
+            @click="onExport"
+          >
+            {{ isExporting ? '导出中...' : '导出' }}
+          </Button>
         </template>
       </Grid>
     </Page>

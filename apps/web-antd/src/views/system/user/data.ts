@@ -176,15 +176,14 @@ export function useColumns<T = SystemUserApi.SysUser>(
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
   return [
-    { title: '序号', type: 'seq', width: 50 },
     {
       align: 'left',
       title: '用户名',
       type: 'checkbox',
       width: 120,
       fixed: 'left',
+      field: 'nickname',
     },
-
     {
       field: 'nickname',
       title: '昵称',
