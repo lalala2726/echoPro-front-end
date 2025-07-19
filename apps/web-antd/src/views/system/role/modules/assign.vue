@@ -229,13 +229,15 @@ function handleClose() {
             </span>
             <span
               class="text-sm font-medium text-gray-900 dark:text-gray-100"
-              >{{ roleInfo.roleName }}</span>
+              >{{ roleInfo.roleName }}</span
+            >
           </div>
           <div class="flex items-center">
             <span class="mr-2 text-sm text-gray-600 dark:text-gray-300">
               权限标识：
             </span>
-            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ roleInfo.roleKey }}
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100"
+              >{{ roleInfo.roleKey }}
             </span>
           </div>
         </div>
@@ -270,7 +272,8 @@ function handleClose() {
                 />
                 <span
                   class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
-                  >{{ title }}</span>
+                  >{{ title }}</span
+                >
                 <Tag :color="getMenuTypeColor(type)" size="small">
                   {{ getMenuTypeName(type) }}
                 </Tag>
@@ -295,10 +298,6 @@ function handleClose() {
 </template>
 
 <style scoped>
-/* Ant Design 深度样式覆盖 */
-
-/* VbenDrawer footer 样式覆盖 */
-
 /* 自定义滚动条样式 */
 :deep(.overflow-y-auto::-webkit-scrollbar) {
   width: 6px;

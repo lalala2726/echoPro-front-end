@@ -1,4 +1,4 @@
-import type { BaseType, Recordable } from '@vben/types';
+import type { BaseType, Option, PageResult, Recordable } from '@vben/types';
 
 import { exportFile } from '#/api/download';
 import { requestClient } from '#/api/request';
@@ -63,8 +63,29 @@ export namespace SystemRoleApi {
   }
 }
 
-async function getRoleList() {
-  return requestClient.get<SystemRoleApi.SystemRole[]>('/system/role/list');
+/**
+ * 获取角色列表
+ */
+async function getRoleList(params?: any) {
+  return requestClient.get<PageResult<SystemRoleApi.SystemRole[]>>(
+    '/system/role/list',
+    { params },
+  );
+}
+
+/**
+ * 获取角色选项
+ */
+async function getRoleOption() {
+  return requestClient.get<Option[]>('/system/role/options');
+}
+
+/**
+ * 获取角色详情
+ * @param roleId 角色ID
+ */
+async function getRoleById(roleId: string) {
+  return requestClient.get<SystemRoleApi.SystemRole>(`/system/role/${roleId}`);
 }
 
 /**
@@ -132,7 +153,9 @@ export {
   deleteRole,
   exportRoleList,
   getPermissionByRoleId,
+  getRoleById,
   getRoleList,
+  getRoleOption,
   updateRole,
   updateRolePermission,
 };

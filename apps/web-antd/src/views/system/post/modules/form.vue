@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemPostApi } from '#/api/system/post';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,14 +8,14 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createRole, getRoleById, updateRole } from '#/api/system/role';
+import { addPost, getPostById, updatePost } from '#/api/system/post';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemRoleApi.SystemRole>>();
+const formData = ref<Partial<SystemPostApi.SysPost>>();
 const getTitle = computed(() => {
-  return formData.value?.id ? '修改角色' : '新增角色';
+  return formData.value?.id ? '修改岗位' : '新增岗位';
 });
 
 const [Form, formApi] = useVbenForm({
@@ -30,15 +30,15 @@ function resetForm() {
 }
 
 /**
- * 加载角色详情数据
+ * 加载岗位详情数据
  */
-async function loadRoleData(roleId: string) {
+async function loadPostData(postId: number) {
   try {
-    const roleDetail = await getRoleById(roleId);
-    formData.value = roleDetail;
-    await formApi.setValues(roleDetail);
+    const postDetail = await getPostById(postId);
+    formData.value = postDetail;
+    await formApi.setValues(postDetail);
   } catch (error) {
-    console.error('获取角色详情失败:', error);
+    console.error('获取岗位详情失败:', error);
   }
 }
 
@@ -50,8 +50,11 @@ const [Modal, modalApi] = useVbenModal({
       const data = await formApi.getValues();
       try {
         await (formData.value?.id
-          ? updateRole({ ...data, id: formData.value.id } as any)
-          : createRole(data as any));
+          ? updatePost({
+              ...data,
+              id: formData.value.id,
+            } as SystemPostApi.SysPost)
+          : addPost(data as SystemPostApi.SysPost));
         await modalApi.close();
         emit('success');
       } finally {
@@ -67,11 +70,20 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemRoleApi.SystemRole>();
+          const data = modalApi.getData<SystemPostApi.SysPost>();
+          console.log('Modal data:', data); // 调试信息
+
           if (data && data.id) {
-            // 编辑模式：加载完整的角色详情
+            // 编辑模式：加载完整的岗位详情
             formData.value = data;
-            await loadRoleData(data.id);
+            const postId =
+              typeof data.id === 'string' ? Number.parseInt(data.id) : data.id;
+            if (isNaN(postId)) {
+              // 如果ID无效，直接使用传入的数据
+              await formApi.setValues(data);
+            } else {
+              await loadPostData(postId);
+            }
           } else {
             // 新增模式：重置表单
             formData.value = {};
