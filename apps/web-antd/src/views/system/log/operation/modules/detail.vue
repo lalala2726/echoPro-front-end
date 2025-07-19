@@ -3,9 +3,9 @@ import type { SystemOperationLogApi } from '#/api/system/log/operation';
 
 import { computed, nextTick, ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { JsonViewer, useVbenModal } from '@vben/common-ui';
 
-import { Card, Col, Row, Tag } from 'ant-design-vue';
+import { Card, Col, message, Row, Tag } from 'ant-design-vue';
 
 import { getOperationById } from '#/api/system/log/operation';
 
@@ -84,6 +84,39 @@ function getStatusTag(status?: number) {
     // No default
   }
   return { color: 'default', text: '未知' };
+}
+
+/**
+ * 解析JSON字符串
+ */
+function parseJsonString(jsonStr?: string) {
+  if (!jsonStr) return null;
+  try {
+    return JSON.parse(jsonStr);
+  } catch {
+    // 如果不是有效的JSON，返回原字符串
+    return jsonStr;
+  }
+}
+
+/**
+ * 检查是否为有效的JSON字符串
+ */
+function isValidJson(str?: string): boolean {
+  if (!str) return false;
+  try {
+    JSON.parse(str);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * JSON复制成功回调
+ */
+function handleJsonCopied() {
+  message.success('JSON已复制到剪贴板');
 }
 </script>
 
@@ -241,12 +274,21 @@ function getStatusTag(status?: number) {
 
       <!-- 请求参数 -->
       <Card
-        v-if="detailData.requestParams"
+        v-if="detailData.requestParams === ''"
         title="请求参数"
         size="small"
         class="mb-4"
       >
-        <div class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
+        <div v-if="isValidJson(detailData.requestParams)">
+          <JsonViewer
+            :value="parseJsonString(detailData.requestParams)"
+            :expand-depth="2"
+            copyable
+            boxed
+            @copied="handleJsonCopied"
+          />
+        </div>
+        <div v-else class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
           <pre
             class="max-h-40 overflow-y-auto whitespace-pre-wrap break-all text-sm"
             >{{ detailData.requestParams }}</pre
@@ -261,7 +303,16 @@ function getStatusTag(status?: number) {
         size="small"
         class="mb-4"
       >
-        <div class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
+        <div v-if="isValidJson(detailData.responseResult)">
+          <JsonViewer
+            :value="parseJsonString(detailData.responseResult)"
+            :expand-depth="2"
+            copyable
+            boxed
+            @copied="handleJsonCopied"
+          />
+        </div>
+        <div v-else class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
           <pre
             class="max-h-40 overflow-y-auto whitespace-pre-wrap break-all text-sm"
             >{{ detailData.responseResult }}</pre
