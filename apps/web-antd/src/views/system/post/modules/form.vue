@@ -71,19 +71,14 @@ const [Modal, modalApi] = useVbenModal({
       nextTick(async () => {
         try {
           const data = modalApi.getData<SystemPostApi.SysPost>();
-          console.log('Modal data:', data); // 调试信息
 
           if (data && data.id) {
             // 编辑模式：加载完整的岗位详情
             formData.value = data;
-            const postId =
-              typeof data.id === 'string' ? Number.parseInt(data.id) : data.id;
-            if (isNaN(postId)) {
-              // 如果ID无效，直接使用传入的数据
-              await formApi.setValues(data);
-            } else {
-              await loadPostData(postId);
-            }
+            const postId = data.id;
+            await (postId === null
+              ? formApi.setValues(data)
+              : loadPostData(postId));
           } else {
             // 新增模式：重置表单
             formData.value = {};
