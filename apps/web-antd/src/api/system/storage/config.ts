@@ -323,7 +323,7 @@ async function isStorageKeyExists(storageKey: string, id?: number) {
 }
 
 /**
- * 导出角色列表
+ * 导出存储配置列表
  * @param fileName 文件名（可选，不需要扩展名）
  * @param params 查询参数（可选）
  */

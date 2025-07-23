@@ -285,7 +285,7 @@ function onCreate() {
 
 <template>
   <div>
-    <Page auto-content-height title="存储配置">
+    <Page auto-content-height>
       <!-- 存储配置表单 -->
       <StorageForm ref="storageFormRef" @success="onFormSuccess" />
 
