@@ -1,3 +1,5 @@
+import type { PageResult } from '@vben/types';
+
 import { requestClient } from '#/api/request';
 
 export namespace SystemDeptApi {
@@ -24,7 +26,7 @@ export namespace SystemDeptApi {
  * 获取部门列表数据
  */
 async function getDeptList(params?: any) {
-  return requestClient.get<Array<SystemDeptApi.SystemDept>>(
+  return requestClient.get<PageResult<SystemDeptApi.SystemDept>>(
     '/system/dept/list',
     { params },
   );
