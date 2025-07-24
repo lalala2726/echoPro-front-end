@@ -23,7 +23,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请选择文件类型',
         allowClear: true,
-        // todo 添加字典
         options: [
           { label: '图片', value: 'image' },
           { label: 'PDF', value: 'application/pdf' },
@@ -40,7 +39,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请选择存储类型',
         allowClear: true,
-        // todo 加入字典
         options: [
           { label: '本地存储', value: 'LOCAL' },
           { label: 'MinIO', value: 'MINIO' },
@@ -48,6 +46,16 @@ export function useGridFormSchema(): VbenFormSchema[] {
           { label: '腾讯云COS', value: 'TENCENT_COS' },
           { label: 'Amazon S3', value: 'AMAZON_S3' },
         ],
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'storageKey',
+      label: '存储键名',
+      componentProps: {
+        placeholder: '请选择存储键名',
+        allowClear: true,
+        options: [],
       },
     },
     {
@@ -163,37 +171,37 @@ export function useColumns(
         name: 'CellOperation',
         options: isTrashMode
           ? [
-              // 回收站模式的操作按钮
-              {
-                code: 'detail',
-                text: '详情',
-              },
-              {
-                code: 'download',
-                text: '下载',
-              },
-              {
-                code: 'delete',
-                text: '彻底删除',
-                danger: true,
-              },
-            ]
+            // 回收站模式的操作按钮
+            {
+              code: 'detail',
+              text: '详情',
+            },
+            {
+              code: 'download',
+              text: '下载',
+            },
+            {
+              code: 'delete',
+              text: '彻底删除',
+              danger: true,
+            },
+          ]
           : [
-              // 正常模式的操作按钮
-              {
-                code: 'detail',
-                text: '详情',
-              },
-              {
-                code: 'download',
-                text: '下载',
-              },
-              {
-                code: 'delete',
-                text: '删除',
-                danger: true,
-              },
-            ],
+            // 正常模式的操作按钮
+            {
+              code: 'detail',
+              text: '详情',
+            },
+            {
+              code: 'download',
+              text: '下载',
+            },
+            {
+              code: 'delete',
+              text: '删除',
+              danger: true,
+            },
+          ],
         attrs: {
           onClick: onActionClick,
         },

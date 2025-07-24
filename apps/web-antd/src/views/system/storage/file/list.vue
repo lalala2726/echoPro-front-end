@@ -5,7 +5,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemStorageFileAPi } from '#/api/system/storage/file';
 
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 import { downloadFileFromImageUrl, downloadFileFromUrl } from '@vben/utils';
@@ -14,6 +14,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { getConfigKeyOptions } from '#/api/system/storage/config';
 import {
   deleteStorageFile,
   deleteTrashFile,
@@ -303,6 +304,27 @@ const [Grid, gridApi] = useVbenVxeGrid({
       }
     },
   },
+});
+
+// 初始化存储键名选项
+onMounted(async () => {
+  try {
+    const storageKeyOptions = await getConfigKeyOptions();
+    // 更新表单配置中的存储键名选项
+    const formApi = gridApi.formApi;
+    if (formApi && formApi.updateSchema) {
+      formApi.updateSchema([
+        {
+          fieldName: 'storageKey',
+          componentProps: {
+            options: storageKeyOptions,
+          },
+        },
+      ]);
+    }
+  } catch (error) {
+    console.error('获取存储键名选项失败:', error);
+  }
 });
 
 // 暴露方法给父组件

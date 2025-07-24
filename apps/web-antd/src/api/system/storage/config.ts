@@ -1,4 +1,4 @@
-import type { BaseType, PageResult, Recordable } from '@vben/types';
+import type { BaseType, Option, PageResult, Recordable } from '@vben/types';
 
 import { exportFile } from '#/api';
 import { requestClient } from '#/api/request';
@@ -307,6 +307,9 @@ async function updatePrimaryConfig(id: number) {
   return await requestClient.put(`/system/storage/config/primary/${id}`);
 }
 
+/**
+ *  刷新缓存
+ */
 async function refreshCache() {
   return await requestClient.put(`/system/storage/config/refreshCache`);
 }
@@ -320,6 +323,15 @@ async function isStorageKeyExists(storageKey: string, id?: number) {
   return await requestClient.get<boolean>('/system/storage/config/key-exists', {
     params: { storageKey, id },
   });
+}
+
+/**
+ * 获取存储配置键名选项
+ */
+async function getConfigKeyOptions() {
+  return await requestClient.get<Option<{ label: string; value: string }>>(
+    '/system/storage/config/key-option',
+  );
 }
 
 /**
@@ -344,6 +356,7 @@ export {
   addTencentCosStorageConfig,
   deleteStorageConfig,
   exportStorageConfigList,
+  getConfigKeyOptions,
   getStorageConfigById,
   getStorageConfigList,
   isStorageKeyExists,

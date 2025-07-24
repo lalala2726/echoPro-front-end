@@ -54,19 +54,6 @@ export function useSearchFormSchema(): VbenFormSchema[] {
       fieldName: 'storageType',
       label: '存储类型',
     },
-    {
-      component: 'Select',
-      componentProps: {
-        allowClear: true,
-        options: [
-          { label: '正常', value: 0 },
-          { label: '停用', value: 1 },
-        ],
-        placeholder: '请选择状态',
-      },
-      fieldName: 'status',
-      label: '状态',
-    },
   ];
 }
 
