@@ -24,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
    * 异步处理登录操作
    * Asynchronously handle the login process
    * @param params 登录表单数据
+   * @param onSuccess
    */
   async function authLogin(
     params: Recordable<any>,
@@ -33,11 +34,12 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      const { accessToken, refreshToken } = await loginApi(params);
 
       // 如果成功获取到 accessToken
       if (accessToken) {
         accessStore.setAccessToken(accessToken);
+        accessStore.setRefreshToken(refreshToken);
 
         // 获取用户信息并存储到 accessStore 中
         const [fetchUserInfoResult, accessCodes] = await Promise.all([
