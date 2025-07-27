@@ -1,7 +1,6 @@
 import type { RequestClient } from './request-client';
 import type { MakeErrorMessageFn, ResponseInterceptorConfig } from './types';
 
-import { $t } from '@vben/locales';
 import { isFunction } from '@vben/utils';
 
 import axios from 'axios';
@@ -9,7 +8,7 @@ import axios from 'axios';
 export const defaultResponseInterceptor = ({
   codeField = 'code',
   dataField = 'data',
-  successCode = 0,
+  successCode = 200,
 }: {
   /** 响应数据中代表访问结果的字段名 */
   codeField: string;
@@ -60,51 +59,94 @@ export const authenticateResponseInterceptor = ({
   return {
     rejected: async (error) => {
       const { config, response } = error;
-      // 如果不是 401 错误，直接抛出异常
-      if (response?.status !== 401) {
-        throw error;
-      }
-      // 判断是否启用了 refreshToken 功能
-      // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
-      if (!enableRefreshToken || config.__isRetryRequest) {
-        await doReAuthenticate();
-        throw error;
-      }
-      // 如果正在刷新 token，则将请求加入队列，等待刷新完成
-      if (client.isRefreshing) {
-        return new Promise((resolve) => {
-          client.refreshTokenQueue.push((newToken: string) => {
-            config.headers.Authorization = formatToken(newToken);
-            resolve(client.request(config.url, { ...config }));
+      const responseData = response?.data;
+
+      if (responseData && typeof responseData.code === 'number') {
+        // 登录错误
+        if (responseData.code === 4013) {
+          await doReAuthenticate();
+          throw error;
+        }
+        // 4011: token过期，需要刷新token
+        if (responseData.code === 4011) {
+          // 检查是否是刷新token的URL
+          const isRefreshTokenUrl = config.url?.includes('/auth/refresh');
+
+          // 如果是刷新token的URL出现4011错误，需要重新登录
+          if (isRefreshTokenUrl) {
+            const errorMessage =
+              responseData?.message || '刷新令牌失败，请重新登录';
+
+            // 创建包含具体错误信息的错误对象
+            const refreshTokenError = Object.assign({}, error, {
+              isRefreshTokenError: true,
+              specificMessage: errorMessage,
+            });
+
+            // 执行重新认证
+            await doReAuthenticate();
+            throw refreshTokenError;
+          }
+
+          // 判断是否启用了 refreshToken 功能
+          if (!enableRefreshToken || config.__isRetryRequest) {
+            await doReAuthenticate();
+            throw error;
+          }
+
+          // 如果正在刷新 token，则将请求加入队列，等待刷新完成
+          if (client.isRefreshing) {
+            return new Promise((resolve) => {
+              client.refreshTokenQueue.push((newToken: string) => {
+                config.headers.Authorization = formatToken(newToken);
+                resolve(client.request(config.url, { ...config }));
+              });
+            });
+          }
+
+          // 标记开始刷新 token
+          client.isRefreshing = true;
+          // 标记当前请求为重试请求，避免无限循环
+          config.__isRetryRequest = true;
+
+          try {
+            const newToken = await doRefreshToken();
+
+            // 处理队列中的请求
+            client.refreshTokenQueue.forEach((callback) => callback(newToken));
+            // 清空队列
+            client.refreshTokenQueue = [];
+
+            return client.request(error.config.url, { ...error.config });
+          } catch (refreshError) {
+            // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
+            client.refreshTokenQueue.forEach((callback) => callback(''));
+            client.refreshTokenQueue = [];
+            console.error('Refresh token failed, please login again.');
+            await doReAuthenticate();
+
+            throw refreshError;
+          } finally {
+            client.isRefreshing = false;
+          }
+        }
+        // 4012: 需要重新登录
+        else if (responseData.code === 4012) {
+          const errorMessage = responseData.message || '需要重新登录';
+
+          // 创建包含具体错误信息的错误对象
+          const reAuthError = Object.assign({}, error, {
+            isReAuthError: true,
+            specificMessage: errorMessage,
           });
-        });
+
+          // 执行重新认证
+          await doReAuthenticate();
+          throw reAuthError;
+        }
       }
-
-      // 标记开始刷新 token
-      client.isRefreshing = true;
-      // 标记当前请求为重试请求，避免无限循环
-      config.__isRetryRequest = true;
-
-      try {
-        const newToken = await doRefreshToken();
-
-        // 处理队列中的请求
-        client.refreshTokenQueue.forEach((callback) => callback(newToken));
-        // 清空队列
-        client.refreshTokenQueue = [];
-
-        return client.request(error.config.url, { ...error.config });
-      } catch (refreshError) {
-        // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
-        client.refreshTokenQueue.forEach((callback) => callback(''));
-        client.refreshTokenQueue = [];
-        console.error('Refresh token failed, please login again.');
-        await doReAuthenticate();
-
-        throw refreshError;
-      } finally {
-        client.isRefreshing = false;
-      }
+      // 其他所有错误（包括HTTP状态码错误）直接抛出，交给errorMessageResponseInterceptor处理
+      throw error;
     },
   };
 };
@@ -121,43 +163,24 @@ export const errorMessageResponseInterceptor = (
       const err: string = error?.toString?.() ?? '';
       let errMsg = '';
       if (err?.includes('Network Error')) {
-        errMsg = $t('ui.fallback.http.networkError');
+        errMsg = '网络异常，请检查您的网络连接后重试。';
       } else if (error?.message?.includes?.('timeout')) {
-        errMsg = $t('ui.fallback.http.requestTimeout');
+        errMsg = '请求超时，请稍后再试。';
       }
       if (errMsg) {
         makeErrorMessage?.(errMsg, error);
         return Promise.reject(error);
       }
 
-      let errorMessage = '';
-      const status = error?.response?.status;
+      const responseData = error?.response?.data;
+      const errorMessage = responseData.message;
 
-      switch (status) {
-        case 400: {
-          errorMessage = '请求错误。请检查您的输入并重试。';
-          break;
-        }
-        case 401: {
-          errorMessage = '登录认证过期，请重新登录后继续。';
-          break;
-        }
-        case 403: {
-          errorMessage = '禁止访问, 您没有权限访问此资源。';
-          break;
-        }
-        case 404: {
-          errorMessage = '未找到, 请求的资源不存在。';
-          break;
-        }
-        case 408: {
-          errorMessage = '请求超时，请稍后再试。';
-          break;
-        }
-        default: {
-          errorMessage = '内部服务器错误，请稍后再试。';
-        }
+      // 检查是否是特殊错误（刷新token失败或需要重新登录）
+      if (error.isRefreshTokenError || error.isReAuthError) {
+        makeErrorMessage?.(error.specificMessage, error);
+        return Promise.reject(error);
       }
+
       makeErrorMessage?.(errorMessage, error);
       return Promise.reject(error);
     },
