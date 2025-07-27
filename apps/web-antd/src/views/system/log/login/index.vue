@@ -221,9 +221,11 @@ async function onExport() {
       content: '登录日志列表导出成功',
       key: 'export_loading_msg',
     });
-  } catch {
+  } catch (error: any) {
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '登录日志列表导出失败';
     message.error({
-      content: '登录日志列表导出失败',
+      content: errorMessage,
       key: 'export_loading_msg',
     });
   } finally {
