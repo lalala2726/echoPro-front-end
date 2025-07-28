@@ -222,10 +222,12 @@ async function onExport() {
       key: 'export_loading_msg',
       duration: 3,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('导出失败:', error);
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '导出失败，请重试';
     message.error({
-      content: '导出失败，请重试',
+      content: errorMessage,
       key: 'export_loading_msg',
       duration: 5,
     });

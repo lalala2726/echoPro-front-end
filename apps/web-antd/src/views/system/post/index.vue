@@ -172,7 +172,8 @@ function onCreate() {
  * 批量删除岗位
  */
 function onBatchDelete() {
-  const selectedRows = gridApi.getCheckboxRecords();
+  const selectedRows =
+    gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的岗位');
     return;
@@ -183,17 +184,18 @@ function onBatchDelete() {
     content: `确定要删除选中的 ${selectedRows.length} 个岗位吗？`,
     okText: '确定',
     cancelText: '取消',
+    okType: 'danger',
     onOk: () => {
       const ids = selectedRows
-        .map((row) => {
-          const id =
-            typeof row.id === 'string' ? Number.parseInt(row.id) : row.id;
-          return id;
+        .map((row: SystemPostApi.SysPost) => {
+          return row.id;
         })
-        .filter((id) => !isNaN(id));
+        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
 
-      console.log('Selected rows:', selectedRows); // 调试信息
-      console.log('Extracted ids:', ids); // 调试信息
+      if (ids.length === 0) {
+        message.error('选中的岗位中没有有效的ID');
+        return;
+      }
 
       const hideLoading = message.loading({
         content: `正在删除 ${selectedRows.length} 个岗位...`,
@@ -236,9 +238,11 @@ async function onExport() {
       content: '岗位列表导出成功',
       key: 'export_loading_msg',
     });
-  } catch {
+  } catch (error: any) {
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '岗位列表导出失败';
     message.error({
-      content: '岗位列表导出失败',
+      content: errorMessage,
       key: 'export_loading_msg',
     });
   } finally {

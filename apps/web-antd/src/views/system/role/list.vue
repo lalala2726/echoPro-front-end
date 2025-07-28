@@ -191,15 +191,17 @@ async function onExport() {
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-    await exportRoleList('角色列表', formValues);
+    await exportRoleList(formValues);
 
     message.success({
       content: '角色列表导出成功',
       key: 'export_loading_msg',
     });
-  } catch {
+  } catch (error: any) {
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '角色列表导出失败';
     message.error({
-      content: '角色列表导出失败',
+      content: errorMessage,
       key: 'export_loading_msg',
     });
   } finally {
