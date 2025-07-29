@@ -24,6 +24,16 @@ export interface Option<T = any> {
   children?: Option<T>[];
 }
 
+/**
+ * 基本分页请求对象
+ */
+export interface BaseRequest {
+  /** 当前页码 */
+  pageNum?: number;
+  /** 每页数量 */
+  pageSize?: number;
+}
+
 export interface BaseType {
   /** 创建时间 */
   createTime?: string;

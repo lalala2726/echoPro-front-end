@@ -215,7 +215,7 @@ async function onExport() {
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-    await exportLoginList('登录日志列表', formValues);
+    await exportLoginList(formValues);
 
     message.success({
       content: '登录日志列表导出成功',

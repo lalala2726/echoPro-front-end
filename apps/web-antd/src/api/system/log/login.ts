@@ -106,12 +106,10 @@ async function cleanLoginLog() {
 
 /**
  * 导出登录日志
- * @param fileName 文件名
  * @param params 查询参数
  */
-async function exportLoginList(fileName?: string, params?: Recordable<any>) {
+async function exportLoginList(params?: Recordable<any>) {
   return exportFile('/system/log/login/export', {
-    fileName: fileName || '登录日志列表',
     params,
   });
 }
