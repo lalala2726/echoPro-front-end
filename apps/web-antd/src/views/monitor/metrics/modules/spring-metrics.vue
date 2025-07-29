@@ -167,9 +167,9 @@ const updateCharts = () => {
                 color:
                   (item.usage || 0) > 80
                     ? '#ff4d4f'
-                    : (item.usage || 0) > 60
+                    : ((item.usage || 0) > 60
                       ? '#faad14'
-                      : '#52c41a',
+                      : '#52c41a'),
               },
             }))
           : [

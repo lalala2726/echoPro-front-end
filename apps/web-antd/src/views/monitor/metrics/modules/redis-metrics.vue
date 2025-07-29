@@ -7,13 +7,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import { EchartsUI, useEcharts } from '@vben/plugins/echarts';
 
-import {
-  Card,
-  Descriptions,
-  Statistic,
-  Table,
-  Tag,
-} from 'ant-design-vue';
+import { Card, Descriptions, Statistic, Table, Tag } from 'ant-design-vue';
 
 import { getRedisMetrics } from '#/api/monitor/metrics';
 
@@ -134,8 +128,7 @@ const fetchRedisData = async (showLoading = true) => {
     if (showLoading) {
       loading.value = true;
     }
-    const response = await getRedisMetrics();
-    redisData.value = response;
+    redisData.value = await getRedisMetrics();
 
     // 更新图表
     updateCharts();
@@ -490,34 +483,6 @@ onUnmounted(() => {
 
 .chart-container {
   @apply h-80;
-}
-
-.redis-metrics :deep(.ant-card) {
-  @apply rounded-lg;
-}
-
-.redis-metrics :deep(.ant-card-head) {
-  @apply border-b border-gray-100 bg-white/80;
-}
-
-.redis-metrics :deep(.ant-card-body) {
-  @apply bg-white p-6;
-}
-
-.redis-metrics :deep(.ant-statistic-title) {
-  @apply mb-2 text-sm font-medium text-gray-600;
-}
-
-.redis-metrics :deep(.ant-statistic-content) {
-  @apply text-xl font-semibold;
-}
-
-.redis-metrics :deep(.ant-descriptions-item-label) {
-  @apply font-medium text-gray-700;
-}
-
-.redis-metrics :deep(.ant-table) {
-  @apply text-sm;
 }
 
 .redis-metrics :deep(.ant-table-thead > tr > th) {

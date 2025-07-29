@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type {MonitorTypes} from '#/api/monitor/types/metrics';
+import type { MonitorTypes } from '#/api/monitor/types/metrics';
 
-import {computed, onMounted, onUnmounted, ref} from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import {Card, Col, Row, Statistic} from 'ant-design-vue';
+import { Card, Col, Row, Statistic } from 'ant-design-vue';
 
-import {getMonitorOverview} from '#/api/monitor/metrics';
+import { getMonitorOverview } from '#/api/monitor/metrics';
 
 interface OverviewCardData {
   title: string;
@@ -229,5 +229,4 @@ onUnmounted(() => {
 .overview-dashboard {
   @apply p-4;
 }
-
 </style>
