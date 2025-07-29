@@ -1,4 +1,5 @@
 export * from './dept';
+export * from './device';
 export * from './log/login';
 export * from './log/operation';
 export * from './menu';
