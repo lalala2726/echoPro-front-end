@@ -129,7 +129,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >日志ID:</span>
+                >日志ID:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.id || '--'
               }}</span>
@@ -139,7 +140,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户ID:</span>
+                >用户ID:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.userId || '--'
               }}</span>
@@ -149,7 +151,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户名:</span>
+                >用户名:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.userName || '--'
               }}</span>
@@ -159,7 +162,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作状态:</span>
+                >操作状态:
+              </span>
               <span class="flex-1">
                 <Tag :color="getStatusTag(detailData.operationStatus).color">
                   {{ getStatusTag(detailData.operationStatus).text }}
@@ -171,7 +175,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >请求方式:</span>
+                >请求方式:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.requestMethod || '--'
               }}</span>
@@ -181,7 +186,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作时间:</span>
+                >操作时间:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.createTime || '--'
               }}</span>
@@ -196,7 +202,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作IP:</span>
+                >操作IP:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.operationIp || '--'
               }}</span>
@@ -206,7 +213,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作地区:</span>
+                >操作地区:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.operationRegion || '--'
               }}</span>
@@ -221,7 +229,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作模块:</span>
+                >操作模块:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.module || '--'
               }}</span>
@@ -231,7 +240,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作类型:</span>
+                >操作类型:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.operationType || '--'
               }}</span>
@@ -241,7 +251,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >耗时:</span>
+                >耗时:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.costTime !== undefined
                   ? `${detailData.costTime}ms`
@@ -253,7 +264,8 @@ function handleJsonCopied() {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >方法名称:</span>
+                >方法名称:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.methodName || '--'
               }}</span>
@@ -263,7 +275,8 @@ function handleJsonCopied() {
             <div class="flex items-start">
               <span
                 class="mr-3 mt-1 w-20 text-right text-gray-600 dark:text-gray-300"
-                >请求地址:</span>
+                >请求地址:
+              </span>
               <span class="flex-1 break-all font-medium">{{
                 detailData.requestUrl || '--'
               }}</span>
@@ -291,8 +304,8 @@ function handleJsonCopied() {
         <div v-else class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
           <pre
             class="max-h-40 overflow-y-auto whitespace-pre-wrap break-all text-sm"
-            >{{ detailData.requestParams }}</pre
-          >
+            >{{ detailData.requestParams }}
+          </pre>
         </div>
       </Card>
 
@@ -315,8 +328,8 @@ function handleJsonCopied() {
         <div v-else class="rounded border bg-gray-50 p-3 dark:bg-gray-800">
           <pre
             class="max-h-40 overflow-y-auto whitespace-pre-wrap break-all text-sm"
-            >{{ detailData.responseResult }}</pre
-          >
+            >{{ detailData.responseResult }}
+          </pre>
         </div>
       </Card>
 
@@ -327,8 +340,8 @@ function handleJsonCopied() {
         >
           <pre
             class="max-h-40 overflow-y-auto whitespace-pre-wrap break-all text-sm text-red-600 dark:text-red-400"
-            >{{ detailData.errorMsg }}</pre
-          >
+            >{{ detailData.errorMsg }}
+          </pre>
         </div>
       </Card>
     </div>

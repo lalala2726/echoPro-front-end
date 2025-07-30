@@ -153,9 +153,9 @@ const updateCharts = () => {
             color:
               item.value > 80
                 ? '#ff4d4f'
-                : item.value > 60
+                : (item.value > 60
                   ? '#faad14'
-                  : '#52c41a',
+                  : '#52c41a'),
           },
         })),
         barWidth: '60%',

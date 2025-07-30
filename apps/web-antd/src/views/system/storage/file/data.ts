@@ -171,37 +171,37 @@ export function useColumns(
         name: 'CellOperation',
         options: isTrashMode
           ? [
-            // 回收站模式的操作按钮
-            {
-              code: 'detail',
-              text: '详情',
-            },
-            {
-              code: 'download',
-              text: '下载',
-            },
-            {
-              code: 'delete',
-              text: '彻底删除',
-              danger: true,
-            },
-          ]
+              // 回收站模式的操作按钮
+              {
+                code: 'detail',
+                text: '详情',
+              },
+              {
+                code: 'download',
+                text: '下载',
+              },
+              {
+                code: 'delete',
+                text: '彻底删除',
+                danger: true,
+              },
+            ]
           : [
-            // 正常模式的操作按钮
-            {
-              code: 'detail',
-              text: '详情',
-            },
-            {
-              code: 'download',
-              text: '下载',
-            },
-            {
-              code: 'delete',
-              text: '删除',
-              danger: true,
-            },
-          ],
+              // 正常模式的操作按钮
+              {
+                code: 'detail',
+                text: '详情',
+              },
+              {
+                code: 'download',
+                text: '下载',
+              },
+              {
+                code: 'delete',
+                text: '删除',
+                danger: true,
+              },
+            ],
         attrs: {
           onClick: onActionClick,
         },

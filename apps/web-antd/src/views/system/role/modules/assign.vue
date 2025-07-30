@@ -229,8 +229,8 @@ function handleClose() {
             </span>
             <span
               class="text-sm font-medium text-gray-900 dark:text-gray-100"
-              >{{ roleInfo.roleName }}</span
-            >
+              >{{ roleInfo.roleName }}
+            </span>
           </div>
           <div class="flex items-center">
             <span class="mr-2 text-sm text-gray-600 dark:text-gray-300">
@@ -272,8 +272,8 @@ function handleClose() {
                 />
                 <span
                   class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
-                  >{{ title }}</span
-                >
+                  >{{ title }}
+                </span>
                 <Tag :color="getMenuTypeColor(type)" size="small">
                   {{ getMenuTypeName(type) }}
                 </Tag>

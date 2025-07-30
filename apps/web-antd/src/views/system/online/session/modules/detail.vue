@@ -99,8 +99,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户ID:</span
-              >
+                >用户ID:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.userId || '--'
               }}</span>
@@ -110,8 +110,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户名:</span
-              >
+                >用户名:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.username || '--'
               }}</span>
@@ -121,8 +121,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >会话状态:</span
-              >
+                >会话状态:
+              </span>
               <span class="flex-1">
                 <Tag :color="getOnlineStatusTag().color">
                   {{ getOnlineStatusTag().text }}
@@ -134,8 +134,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >部门ID:</span
-              >
+                >部门ID:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.deptId || '--'
               }}</span>
@@ -150,8 +150,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >会话ID:</span
-              >
+                >会话ID:
+              </span>
               <span class="flex-1 break-all font-medium">{{
                 detailData.accessTokenId || '--'
               }}</span>
@@ -161,8 +161,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >最近访问:</span
-              >
+                >最近访问:
+              </span>
               <span class="flex-1 font-medium">{{
                 formatTime(detailData.accessTime)
               }}</span>
@@ -177,8 +177,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >IP地址:</span
-              >
+                >IP地址:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.ip || '--'
               }}</span>
@@ -188,8 +188,8 @@ defineExpose({
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录地区:</span
-              >
+                >登录地区:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.location || '--'
               }}</span>
@@ -204,8 +204,8 @@ defineExpose({
             <div class="flex items-start">
               <span
                 class="mr-3 w-20 flex-shrink-0 text-right text-gray-600 dark:text-gray-300"
-                >User Agent:</span
-              >
+                >User Agent:
+              </span>
               <span class="flex-1 break-all font-medium">{{
                 detailData.userAgent || '--'
               }}</span>

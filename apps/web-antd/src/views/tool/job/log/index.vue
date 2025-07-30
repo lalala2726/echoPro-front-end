@@ -167,7 +167,7 @@ async function onBatchDelete() {
         const logIds = selectedRows.map((row) => row.jobId!);
         await deleteJobLog(logIds);
         message.success('批量删除成功');
-        gridApi.reload();
+        await gridApi.reload();
       } catch {
         message.error('批量删除失败');
       }
