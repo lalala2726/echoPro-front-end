@@ -173,12 +173,17 @@ export const errorMessageResponseInterceptor = (
       }
 
       const responseData = error?.response?.data;
-      const errorMessage = responseData.message;
+      let errorMessage = responseData?.message;
 
       // 检查是否是特殊错误（刷新token失败或需要重新登录）
       if (error.isRefreshTokenError || error.isReAuthError) {
         makeErrorMessage?.(error.specificMessage, error);
         return Promise.reject(error);
+      }
+
+      // 处理500内部服务器错误，如果响应数据中没有message字段，则显示默认错误信息
+      if (error?.response?.status === 500 && !responseData?.message) {
+        errorMessage = '内部服务器错误！请稍后再试！';
       }
 
       makeErrorMessage?.(errorMessage, error);
