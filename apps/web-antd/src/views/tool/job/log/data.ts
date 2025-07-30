@@ -12,7 +12,9 @@ export function useColumns(
 ): VxeGridPropTypes.Columns<JobLogType.SysJobLogListVo> {
   return [
     {
+      title: '任务ID',
       type: 'checkbox',
+      align: 'left',
     },
     {
       field: 'jobId',
@@ -127,4 +129,3 @@ export function useGridFormSchema() {
     },
   ];
 }
-

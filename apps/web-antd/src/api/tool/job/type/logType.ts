@@ -2,6 +2,8 @@ import type { BaseRequest, BaseType } from '@vben/types';
 
 export namespace JobLogType {
   export interface SysJobLogListVo {
+    /** 任务日志ID */
+    jobLogId: number;
     /** 任务ID */
     jobId?: number;
     /** 任务名称 */

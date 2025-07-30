@@ -13,7 +13,6 @@ import { Button, message, Modal } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   cleanAllJobLog,
-  cleanJobLog,
   deleteJobLog,
   exportJobLogList,
   getJobLogInfo,
@@ -21,13 +20,13 @@ import {
 } from '#/api/tool/job/log';
 
 import { useColumns, useGridFormSchema } from './data';
-import Form from './modules/form.vue';
+import Detail from './modules/detail.vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const [DetailModal, detailModalApi] = useVbenModal({
-  connectedComponent: Form,
+  connectedComponent: Detail,
   destroyOnClose: true,
 });
 
@@ -58,7 +57,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions: {
     checkboxConfig: {
       highlight: true,
-      labelField: 'jobName',
+      labelField: 'jobLogId',
     },
     columns: useColumns(onActionClick),
     height: 'auto',
@@ -177,28 +176,6 @@ async function onBatchDelete() {
 }
 
 /**
- * 清理指定日期之前的日志
- */
-function onCleanByDate() {
-  Modal.confirm({
-    title: '清理日志',
-    content: '请选择要清理的日期，将删除该日期之前的所有日志记录',
-    onOk: async () => {
-      try {
-        // 这里应该弹出日期选择器，为了简化直接使用7天前
-        const beforeDate = new Date();
-        beforeDate.setDate(beforeDate.getDate() - 7);
-        await cleanJobLog(beforeDate);
-        message.success('日志清理成功');
-        gridApi.reload();
-      } catch {
-        message.error('日志清理失败');
-      }
-    },
-  });
-}
-
-/**
  * 清理全部日志
  */
 function onCleanAll() {
@@ -269,8 +246,6 @@ async function onExport() {
           </Button>
           <span class="mx-2"></span>
           <Button danger @click="onBatchDelete"> 批量删除 </Button>
-          <span class="mx-2"></span>
-          <Button @click="onCleanByDate"> 清理日志 </Button>
           <span class="mx-2"></span>
           <Button danger @click="onCleanAll"> 清空全部 </Button>
           <span class="mx-2"></span>
