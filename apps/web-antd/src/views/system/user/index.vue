@@ -274,8 +274,13 @@ async function onBatchDelete() {
       key: 'batch_delete_msg',
     });
     onRefresh();
-  } catch (error) {
-    console.error('批量删除失败:', error);
+  } catch (error: any) {
+    if (error.message !== '已取消') {
+      message.error({
+        content: `批量删除失败: ${error.message || '未知错误'}`,
+        key: 'batch_delete_msg',
+      });
+    }
   }
 }
 

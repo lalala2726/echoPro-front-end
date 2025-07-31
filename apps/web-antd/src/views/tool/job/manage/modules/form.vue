@@ -29,7 +29,7 @@ const [Form, formApi] = useVbenForm({
   },
   layout: 'horizontal',
   schema: [
-    // 基本信息
+    // 基本信息（必填）
     {
       component: 'Input',
       componentProps: {
@@ -38,15 +38,7 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'jobName',
       label: '任务名称',
       rules: 'required',
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入任务组名',
-      },
-      fieldName: 'jobGroup',
-      label: '任务组名',
-      rules: 'required',
+      formItemClass: 'col-span-2 md:col-span-2',
     },
     {
       component: 'Input',
@@ -58,8 +50,6 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
       formItemClass: 'col-span-2 md:col-span-2',
     },
-
-    // 调度配置
     {
       component: 'Select',
       componentProps: {
@@ -75,16 +65,8 @@ const [Form, formApi] = useVbenForm({
       label: '调度策略',
       rules: 'required',
     },
-    {
-      component: 'InputNumber',
-      componentProps: {
-        placeholder: '请输入任务优先级',
-        min: 1,
-        max: 10,
-      },
-      fieldName: 'priority',
-      label: '任务优先级',
-    },
+
+    // 调度策略相关字段
     {
       component: 'Input',
       componentProps: {
@@ -95,9 +77,9 @@ const [Form, formApi] = useVbenForm({
       dependencies: {
         triggerFields: ['scheduleType'],
         show: (values) => values.scheduleType === 0,
+        required: (values) => values.scheduleType === 0,
       },
       rules: 'required',
-      formItemClass: 'col-span-2 md:col-span-2',
     },
     {
       component: 'InputNumber',
@@ -106,11 +88,13 @@ const [Form, formApi] = useVbenForm({
         min: 1000,
       },
       fieldName: 'fixedRate',
-      label: '固定频率间隔',
+      label: '固定频率间隔（毫秒）',
       dependencies: {
         triggerFields: ['scheduleType'],
         show: (values) => values.scheduleType === 1,
+        required: (values) => values.scheduleType === 1,
       },
+      rules: 'required',
     },
     {
       component: 'InputNumber',
@@ -119,43 +103,93 @@ const [Form, formApi] = useVbenForm({
         min: 1000,
       },
       fieldName: 'fixedDelay',
-      label: '固定延迟间隔',
+      label: '固定延迟间隔（毫秒）',
       dependencies: {
         triggerFields: ['scheduleType'],
         show: (values) => values.scheduleType === 2,
+        required: (values) => values.scheduleType === 2,
       },
+      rules: 'required',
     },
     {
       component: 'InputNumber',
       componentProps: {
-        placeholder: '请输入初始延迟时间',
+        placeholder: '请输入初始延迟时间（毫秒）',
         min: 0,
       },
       fieldName: 'initialDelay',
-      label: '初始延迟时间',
+      label: '初始延迟时间（毫秒）',
+      dependencies: {
+        triggerFields: ['scheduleType'],
+        show: (values) =>
+          values.scheduleType === 1 ||
+          values.scheduleType === 2 ||
+          values.scheduleType === 3,
+      },
     },
 
-    // 执行配置
+    // 时间配置（根据调度策略显示）
+    {
+      component: 'DatePicker',
+      componentProps: {
+        placeholder: '请选择开始时间',
+        showTime: true,
+        format: 'YYYY-MM-DD HH:mm:ss',
+      },
+      fieldName: 'startTime',
+      label: '开始时间',
+      dependencies: {
+        triggerFields: ['scheduleType'],
+        show: (values) =>
+          values.scheduleType === 0 ||
+          values.scheduleType === 1 ||
+          values.scheduleType === 2 ||
+          values.scheduleType === 3,
+      },
+    },
+    {
+      component: 'DatePicker',
+      componentProps: {
+        placeholder: '请选择结束时间',
+        showTime: true,
+        format: 'YYYY-MM-DD HH:mm:ss',
+      },
+      fieldName: 'endTime',
+      label: '结束时间',
+      dependencies: {
+        triggerFields: ['scheduleType'],
+        show: (values) =>
+          values.scheduleType === 0 ||
+          values.scheduleType === 1 ||
+          values.scheduleType === 2,
+      },
+    },
+
+    // 执行配置（选填，有默认值）
     {
       component: 'Select',
       componentProps: {
         options: [
-          { label: '默认', value: 0 },
+          { label: '默认策略', value: 0 },
           { label: '立即执行', value: 1 },
           { label: '执行一次', value: 2 },
           { label: '放弃执行', value: 3 },
         ],
-        placeholder: '请选择计划执行错误策略',
+        placeholder: '请选择失火策略',
       },
       fieldName: 'misfirePolicy',
-      label: '执行策略',
+      label: '失火策略',
+      dependencies: {
+        triggerFields: ['scheduleType'],
+        show: (values) => values.scheduleType !== 3,
+      },
     },
     {
       component: 'Select',
       componentProps: {
         options: [
-          { label: '允许', value: 0 },
-          { label: '禁止', value: 1 },
+          { label: '允许并发', value: 0 },
+          { label: '禁止并发', value: 1 },
         ],
         placeholder: '请选择是否并发执行',
       },
@@ -172,10 +206,20 @@ const [Form, formApi] = useVbenForm({
         placeholder: '请选择任务状态',
       },
       fieldName: 'status',
-      label: '状态',
+      label: '任务状态',
+    },
+    {
+      component: 'InputNumber',
+      componentProps: {
+        placeholder: '请输入任务优先级（1-10）',
+        min: 1,
+        max: 10,
+      },
+      fieldName: 'priority',
+      label: '任务优先级',
     },
 
-    // 重试和超时配置
+    // 重试和超时配置（选填）
     {
       component: 'InputNumber',
       componentProps: {
@@ -205,29 +249,7 @@ const [Form, formApi] = useVbenForm({
       label: '超时时间（毫秒）',
     },
 
-    // 时间配置
-    {
-      component: 'DatePicker',
-      componentProps: {
-        placeholder: '请选择开始时间',
-        showTime: true,
-        format: 'YYYY-MM-DD HH:mm:ss',
-      },
-      fieldName: 'startTime',
-      label: '开始时间',
-    },
-    {
-      component: 'DatePicker',
-      componentProps: {
-        placeholder: '请选择结束时间',
-        showTime: true,
-        format: 'YYYY-MM-DD HH:mm:ss',
-      },
-      fieldName: 'endTime',
-      label: '结束时间',
-    },
-
-    // 其他配置
+    // 其他配置（选填）
     {
       component: 'Input',
       componentProps: {
@@ -306,8 +328,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
             formData.value = jobInfo;
             await formApi.setValues(jobInfo);
           } else {
+            // 新增模式：设置默认值
             formData.value = {};
             await formApi.resetForm();
+            await formApi.setValues({
+              misfirePolicy: 0, // 默认策略
+              concurrent: 1, // 禁止并发
+              status: 1, // 暂停状态
+              priority: 5, // 中等优先级
+            });
           }
         } catch (error) {
           console.error('加载数据失败:', error);

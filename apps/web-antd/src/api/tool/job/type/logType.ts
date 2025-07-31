@@ -12,16 +12,8 @@ export namespace JobLogType {
     jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget?: string;
-    /** 调度类型（0=Cron表达式 1=固定频率 2=固定延迟 3=一次性执行） */
-    scheduleType?: number;
-    /** 调度类型描述 */
-    scheduleTypeDesc?: string;
     /** 任务状态（0=正常 1=暂停） */
     status?: number;
-    /** 任务状态描述 */
-    statusDesc?: string;
-    /** 任务描述 */
-    description?: string;
     /** 上次执行时间 */
     previousFireTime?: string;
     /** 下次执行时间 */
@@ -50,8 +42,6 @@ export namespace JobLogType {
     jobId?: number;
     /** 任务名称 */
     jobName?: string;
-    /** 任务组名 */
-    jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget?: string;
     /** 任务参数 */

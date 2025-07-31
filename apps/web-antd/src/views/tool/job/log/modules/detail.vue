@@ -126,18 +126,6 @@ function formatExecuteTime(executeTime?: number) {
               </span>
             </div>
           </Col>
-          <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-24 text-right text-gray-600 dark:text-gray-300"
-              >
-                任务组名:
-              </span>
-              <span class="flex-1 font-medium">
-                {{ detailData.jobGroup || '--' }}
-              </span>
-            </div>
-          </Col>
           <Col :span="24">
             <div class="flex items-center">
               <span

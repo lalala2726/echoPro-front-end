@@ -6,8 +6,6 @@ export namespace JobManageType {
     jobId?: number;
     /** 任务名称 */
     jobName?: string;
-    /** 任务组ID */
-    jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget?: string;
     /** 调度策略 */
@@ -27,8 +25,6 @@ export namespace JobManageType {
   export interface SysJobQueryRequest extends BaseRequest {
     /** 任务名称 */
     jobName?: string;
-    /** 任务组名 */
-    jobGroup?: string;
     /** 任务状态 */
     status?: number;
     /** 调用目标字符串 */
@@ -47,10 +43,6 @@ export namespace JobManageType {
     jobId?: number;
     /** 任务名称 */
     jobName?: string;
-    /** 任务组ID */
-    jobGroupId?: number;
-    /** 任务组名 */
-    jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget?: string;
     /** 调度策略（0=Cron表达式 1=固定频率 2=固定延迟 3=一次性执行） */
@@ -102,10 +94,6 @@ export namespace JobManageType {
   export interface SysJobAddRequest {
     /** 任务名称 */
     jobName: string;
-    /** 任务组ID */
-    jobGroupId?: number;
-    /** 任务组名 */
-    jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget: string;
     /** 调度策略（0=Cron表达式 1=固定频率 2=固定延迟 3=一次性执行） */
@@ -156,10 +144,6 @@ export namespace JobManageType {
     jobId: number;
     /** 任务名称 */
     jobName: string;
-    /** 任务组ID */
-    jobGroupId?: number;
-    /** 任务组名 */
-    jobGroup?: string;
     /** 调用目标字符串 */
     invokeTarget: string;
     /** 调度策略（0=Cron表达式 1=固定频率 2=固定延迟 3=一次性执行） */

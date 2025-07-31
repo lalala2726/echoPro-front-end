@@ -195,7 +195,7 @@ const options = computed(() => {
     const { ajax } = mergedOptions.proxyConfig;
     mergedOptions.proxyConfig.enabled = !!ajax;
     // 不自动加载数据, 由组件控制
-    mergedOptions.proxyConfig.autoLoad = false;
+    mergedOptions.proxyConfig.autoLoad = true;
   }
 
   if (mergedOptions.pagerConfig) {

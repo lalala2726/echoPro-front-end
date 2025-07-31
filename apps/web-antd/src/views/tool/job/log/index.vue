@@ -118,7 +118,7 @@ async function onActionClick({
         content: '确定要删除该日志记录吗？',
         onOk: async () => {
           try {
-            await deleteJobLog([row.jobId!]);
+            await deleteJobLog([row.jobLogId!]);
             message.success('删除成功');
             gridApi.reload();
           } catch {
@@ -131,8 +131,8 @@ async function onActionClick({
     case 'detail': {
       try {
         // 获取日志详情
-        const data = await getJobLogInfo(row.jobId!);
-        detailModalApi.setData(data);
+        const detailData = await getJobLogInfo(row.jobLogId!);
+        detailModalApi.setData(detailData);
         detailModalApi.open();
       } catch {
         message.error('获取日志详情失败');
@@ -153,8 +153,11 @@ function goBack() {
  * 批量删除日志
  */
 async function onBatchDelete() {
-  const selectedRows = gridApi.getCheckboxRecords();
-  if (selectedRows.length === 0) {
+  const selectedRows = (
+    gridApi as any
+  ).getCheckboxRecords() as JobLogType.SysJobLogListVo[];
+
+  if (!selectedRows || selectedRows.length === 0) {
     message.warning('请选择要删除的日志记录');
     return;
   }
@@ -164,7 +167,13 @@ async function onBatchDelete() {
     content: `确定要删除选中的 ${selectedRows.length} 条日志记录吗？`,
     onOk: async () => {
       try {
-        const logIds = selectedRows.map((row) => row.jobId!);
+        const logIds = selectedRows
+          .map((row: JobLogType.SysJobLogListVo) => row.jobLogId!)
+          .filter((id) => id !== undefined);
+        if (logIds.length === 0) {
+          message.error('选中的记录中没有有效的日志ID');
+          return;
+        }
         await deleteJobLog(logIds);
         message.success('批量删除成功');
         await gridApi.reload();

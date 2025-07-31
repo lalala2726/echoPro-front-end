@@ -13,8 +13,6 @@ import { useRouter } from 'vue-router';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { ChevronDown } from '@vben-core/icons';
-
 import {
   Button,
   Dropdown,
@@ -178,7 +176,6 @@ async function onStatusChange(
     await updateJob({
       jobId: row.jobId!,
       jobName: row.jobName!,
-      jobGroup: row.jobGroup,
       invokeTarget: row.invokeTarget!,
       scheduleType: row.scheduleType || 0,
       status: newStatus as 0 | 1,
@@ -200,26 +197,28 @@ function onEdit(row: JobManageType.SysJobListVo) {
 /**
  * 删除任务
  */
-function onDelete(row: JobManageType.SysJobListVo) {
-  message.loading({
-    content: `正在删除 ${row.jobName} ...`,
-    duration: 0,
-    key: 'action_process_msg',
-  });
-  deleteJob([row.jobId!])
-    .then(() => {
-      message.success({
-        content: `${row.jobName} 删除成功`,
-        key: 'action_process_msg',
-      });
-      onRefresh();
-    })
-    .catch(() => {
+async function onDelete(row: JobManageType.SysJobListVo) {
+  try {
+    await confirm(`确定要删除任务 ${row.jobName} 吗？`, '删除任务确认');
+    message.loading({
+      content: `正在删除 ${row.jobName} ...`,
+      duration: 0,
+      key: 'action_process_msg',
+    });
+    await deleteJob([row.jobId!]);
+    message.success({
+      content: `${row.jobName} 删除成功`,
+      key: 'action_process_msg',
+    });
+    onRefresh();
+  } catch (error: any) {
+    if (error.message !== '已取消') {
       message.error({
         content: `删除 ${row.jobName} 失败`,
         key: 'action_process_msg',
       });
-    });
+    }
+  }
 }
 
 /**

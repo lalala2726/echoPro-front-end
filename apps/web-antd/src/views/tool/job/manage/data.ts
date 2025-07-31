@@ -25,10 +25,6 @@ export function useColumns(
       title: '任务名称',
     },
     {
-      field: 'jobGroup',
-      title: '任务组名',
-    },
-    {
       field: 'invokeTarget',
       title: '调用目标',
       showOverflow: 'tooltip',
@@ -86,14 +82,6 @@ export function useGridFormSchema() {
       },
       fieldName: 'jobName',
       label: '任务名称',
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入任务组名',
-      },
-      fieldName: 'jobGroup',
-      label: '任务组名',
     },
     {
       component: 'Select',
