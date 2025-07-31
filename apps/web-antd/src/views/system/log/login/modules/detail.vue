@@ -20,8 +20,7 @@ const getTitle = computed(() => {
  */
 async function loadLoginLogData(logId: number) {
   try {
-    const logDetail = await getLoginLogById(logId);
-    detailData.value = logDetail;
+    detailData.value = await getLoginLogById(logId);
   } catch (error) {
     console.error('获取登录日志详情失败:', error);
   }
@@ -87,8 +86,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >日志ID:</span
-              >
+                >日志ID:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.id || '--'
               }}</span>
@@ -98,8 +97,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户名:</span
-              >
+                >用户名:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.username || '--'
               }}</span>
@@ -109,8 +108,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录状态:</span
-              >
+                >登录状态:
+              </span>
               <span class="flex-1">
                 <Tag :color="getStatusTag(detailData.status).color">
                   {{ getStatusTag(detailData.status).text }}
@@ -122,8 +121,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录时间:</span
-              >
+                >登录时间:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.loginTime || '--'
               }}</span>
@@ -138,8 +137,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >IP地址:</span
-              >
+                >IP地址:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.ip || '--'
               }}</span>
@@ -149,8 +148,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录地区:</span
-              >
+                >登录地区:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.region || '--'
               }}</span>
@@ -165,8 +164,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >浏览器:</span
-              >
+                >浏览器:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.browser || '--'
               }}</span>
@@ -176,8 +175,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作系统:</span
-              >
+                >操作系统:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.os || '--'
               }}</span>
@@ -192,8 +191,8 @@ function getStatusTag(status?: number) {
             <div class="flex items-center">
               <span
                 class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >创建者:</span
-              >
+                >创建者:
+              </span>
               <span class="flex-1 font-medium">{{
                 detailData.createBy || '--'
               }}</span>

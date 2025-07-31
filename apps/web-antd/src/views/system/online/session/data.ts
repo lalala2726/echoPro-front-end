@@ -1,0 +1,105 @@
+import type { VbenFormSchema } from '#/adapter/form';
+import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { SystemSessionTypes } from '#/api/system/online/session';
+
+/**
+ * 搜索表单配置
+ */
+export function useGridFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入用户名',
+      },
+      fieldName: 'username',
+      label: '用户名',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入会话ID',
+      },
+      fieldName: 'accessTokenId',
+      label: '会话ID',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入登录IP',
+      },
+      fieldName: 'ip',
+      label: '登录IP',
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入登录地点',
+      },
+      fieldName: 'region',
+      label: '登录地点',
+    },
+    {
+      component: 'RangePicker',
+      componentProps: {
+        format: 'YYYY-MM-DD HH:mm:ss',
+        placeholder: ['开始时间', '结束时间'],
+        showTime: { format: 'HH:mm:ss' },
+        valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      },
+      fieldName: 'accessTime',
+      label: '访问时间',
+    },
+  ];
+}
+
+/**
+ * 表格列配置
+ */
+export function useColumns<T = SystemSessionTypes.SessionListVo>(
+  _onActionClick: OnActionClickFn<T>,
+): VxeTableGridOptions['columns'] {
+  return [
+    {
+      field: 'userId',
+      title: '用户ID',
+    },
+    {
+      field: 'username',
+      title: '用户名',
+    },
+    {
+      field: 'accessTokenId',
+      title: '会话ID',
+      showOverflow: 'tooltip',
+    },
+    {
+      field: 'deptId',
+      title: '部门ID',
+    },
+    {
+      field: 'ip',
+      title: '登录IP',
+    },
+    {
+      field: 'location',
+      title: '登录地点',
+    },
+    {
+      field: 'accessTime',
+      title: '最近访问时间',
+      formatter: ({ cellValue }) => {
+        if (cellValue) {
+          return new Date(cellValue).toLocaleString();
+        }
+        return '-';
+      },
+    },
+    {
+      fixed: 'right',
+      slots: { default: 'action' },
+      title: '操作',
+      width: 120,
+    },
+  ];
+}

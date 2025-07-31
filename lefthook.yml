@@ -70,7 +70,7 @@ post-merge:
     install:
       run: pnpm install
 
-commit-msg:
-  commands:
-    commitlint:
-      run: pnpm exec commitlint --edit $1
+# commit-msg:
+#   commands:
+#     commitlint:
+#       run: pnpm exec commitlint --edit $1

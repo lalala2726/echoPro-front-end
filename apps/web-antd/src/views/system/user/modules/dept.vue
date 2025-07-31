@@ -133,7 +133,6 @@ function onSelect(selectedKeys: Key[]) {
 /**
  * 处理树节点展开/收起事件
  * @param expandedKeysValue 展开的节点key数组
- * @param info 展开信息对象
  */
 function onExpand(expandedKeysValue: Key[]) {
   expandedKeys.value = expandedKeysValue;
@@ -259,16 +258,17 @@ defineExpose({
 </template>
 
 <style scoped>
-/* 树形组件样式 */
-.dept-tree {
-  background: transparent;
-  font-size: 14px;
-}
-
 /* 响应式优化 */
 @media (max-width: 768px) {
   .dept-tree {
     font-size: 13px;
   }
 }
+
+.dept-tree {
+  font-size: 14px;
+  background: transparent;
+}
+
+/* 树形组件样式 */
 </style>

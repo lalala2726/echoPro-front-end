@@ -59,12 +59,10 @@ async function deletePost(ids: Array<number>) {
 
 /**
  * 导出岗位列表
- * @param fileName 文件名（可选，不需要扩展名）
  * @param params 查询参数（可选）
  */
-async function exportPostList(fileName?: string, params?: Recordable<any>) {
+async function exportPostList(params?: Recordable<any>) {
   return exportFile('/system/post/export', {
-    fileName: fileName || '岗位列表',
     params,
   });
 }

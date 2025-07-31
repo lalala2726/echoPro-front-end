@@ -168,7 +168,7 @@ export {
   deleteStorageFile,
   deleteTrashFile,
   exportStorageFileList,
-  getStorageFileList,
   getStorageFileById,
+  getStorageFileList,
   listFileTrash,
 };

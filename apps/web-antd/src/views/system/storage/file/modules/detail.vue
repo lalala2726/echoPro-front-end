@@ -1,23 +1,14 @@
 <script lang="ts" setup>
-import type { SystemStorageFileAPi } from '#/api/system/storage/file';
+import type {SystemStorageFileAPi} from '#/api/system/storage/file';
 
-import { computed, nextTick, ref } from 'vue';
+import {computed, nextTick, ref} from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
-import { downloadFileFromUrl } from '@vben/utils';
+import {useVbenModal} from '@vben/common-ui';
+import {downloadFileFromUrl} from '@vben/utils';
 
-import {
-  Button,
-  Card,
-  Col,
-  Image,
-  message,
-  Row,
-  Tag,
-  Typography,
-} from 'ant-design-vue';
+import {Button, Card, Col, Image, message, Row, Tag, Typography,} from 'ant-design-vue';
 
-import { formatFileSize, isPreviewableImage } from '../data';
+import {formatFileSize, isPreviewableImage} from '../data';
 
 const { Text } = Typography;
 
@@ -136,23 +127,6 @@ async function handleCopyLink() {
 }
 
 /**
- * 下载文件
- */
-function handleDownload() {
-  const url = originalImageUrl.value || previewImageUrl.value;
-  if (url) {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = detailData.value?.originalName || 'download';
-    document.body.append(link);
-    link.click();
-    link.remove();
-  } else {
-    message.warning('下载链接不存在');
-  }
-}
-
-/**
  * 跳转到URL - 确保在新窗口中打开，避免代理问题
  */
 function handleOpenUrl(url?: string) {
@@ -162,6 +136,7 @@ function handleOpenUrl(url?: string) {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
+
 const [Modal, modalApi] = useVbenModal({
   showCancelButton: false,
   showConfirmButton: false, // 禁用默认的确定按钮，我们将使用自定义footer
