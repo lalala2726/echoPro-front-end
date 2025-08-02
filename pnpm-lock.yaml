@@ -592,9 +592,6 @@ importers:
 
   apps/web-antd:
     dependencies:
-      '@vben-core/icons':
-        specifier: workspace:*
-        version: link:../../packages/@core/base/icons
       '@vben-core/menu-ui':
         specifier: workspace:*
         version: link:../../packages/@core/ui-kit/menu-ui

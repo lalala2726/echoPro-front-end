@@ -2,11 +2,12 @@
 import type { NotificationItem } from '@vben/layouts';
 
 import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
 import { useWatermark } from '@vben/hooks';
-import { BookOpenText, CircleHelp, MdiGithub } from '@vben/icons';
+import { BookOpenText, CircleHelp, Mail, MdiGithub, User } from '@vben/icons';
 import {
   BasicLayout,
   LockScreen,
@@ -18,8 +19,11 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
 import { $t } from '#/locales';
+import { getUnreadMessageCount } from '#/mock/message';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
+
+const router = useRouter();
 
 const notifications = ref<NotificationItem[]>([
   {
@@ -60,7 +64,25 @@ const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
 );
 
+// 获取未读消息数量
+const unreadMessageCount = ref(getUnreadMessageCount());
+
 const menus = computed(() => [
+  {
+    handler: () => {
+      router.push('/profile');
+    },
+    icon: User,
+    text: $t('ui.widgets.profile'),
+  },
+  {
+    handler: () => {
+      router.push('/messages');
+    },
+    icon: Mail,
+    text: '站内消息',
+    badge: unreadMessageCount.value > 0 ? unreadMessageCount.value : undefined,
+  },
   {
     handler: () => {
       openWindow(VBEN_DOC_URL, {
@@ -129,7 +151,7 @@ watch(
         :avatar
         :menus
         :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
+        description="chuang@zhangchuangla.cn"
         tag-text="Pro"
         @logout="handleLogout"
       />
