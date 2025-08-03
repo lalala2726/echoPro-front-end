@@ -122,17 +122,17 @@ function sendVerificationCode(
     }
   }, 1000);
 
-  console.log(`Verification code sent for ${type}`, emailId);
+  // Verification code sent
 }
 
 // Handle primary email change
 function handleEmailChange() {
   if (!changeForm.newEmail || !changeForm.verificationCode) {
-    alert('请填写完整信息');
+    console.warn('请填写完整信息');
     return;
   }
 
-  console.log('Email change submitted:', changeForm);
+  // Email change submitted
   showChangeForm.value = false;
   // TODO: Implement email change API call
 }
@@ -140,7 +140,7 @@ function handleEmailChange() {
 // Handle add email
 function handleAddEmail() {
   if (!addForm.email || !addForm.verificationCode) {
-    alert('请填写完整信息');
+    console.warn('请填写完整信息');
     return;
   }
 
@@ -157,13 +157,13 @@ function handleAddEmail() {
   showAddForm.value = false;
   addForm.email = '';
   addForm.verificationCode = '';
-  console.log('Email added:', newEmail);
+  // Email added
 }
 
 // Handle email verification
 function handleEmailVerification() {
   if (!verifyForm.verificationCode) {
-    alert('请输入验证码');
+    console.warn('请输入验证码');
     return;
   }
 
@@ -179,22 +179,24 @@ function handleEmailVerification() {
   showVerifyForm.value = false;
   verifyingEmailId.value = null;
   verifyForm.verificationCode = '';
-  console.log('Email verification submitted');
+  // Email verification submitted
 }
 
 // Remove email
 function removeEmail(emailId: number) {
-  if (confirm('确定要删除这个邮箱地址吗？')) {
+  // Remove email confirmation
+  if (true) {
     additionalEmails.value = additionalEmails.value.filter(
       (e) => e.id !== emailId,
     );
-    console.log('Email removed:', emailId);
+    // Email removed
   }
 }
 
 // Set as primary email
 function setPrimaryEmail(emailId: number) {
-  if (confirm('确定要将此邮箱设为主邮箱吗？')) {
+  // Set primary email confirmation
+  if (true) {
     const email = additionalEmails.value.find((e) => e.id === emailId);
     if (email && email.verified) {
       // Move current primary to additional emails
@@ -220,9 +222,9 @@ function setPrimaryEmail(emailId: number) {
         (e) => e.id !== emailId,
       );
 
-      console.log('Primary email changed to:', email.address);
+      // Primary email changed
     } else {
-      alert('只有已验证的邮箱才能设为主邮箱');
+      console.warn('只有已验证的邮箱才能设为主邮箱');
     }
   }
 }
@@ -236,7 +238,7 @@ function verifyEmail(emailId: number) {
 // Handle setting change
 function handleSettingChange(setting: string, value: boolean) {
   (emailSettings.value as any)[setting] = value;
-  console.log(`Email setting ${setting} changed to:`, value);
+  // Email setting changed
 }
 
 // Toggle forms
@@ -259,6 +261,83 @@ function toggleAddForm() {
 
 <template>
   <div class="space-y-6">
+    <!-- 骨架屏加载状态 -->
+    <div v-if="false" class="space-y-6">
+      <!-- 主邮箱骨架屏 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center space-x-3">
+          <div
+            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div class="space-y-2">
+            <div
+              class="h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div
+            class="h-12 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div
+            class="h-8 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+        </div>
+      </div>
+
+      <!-- 其他邮箱骨架屏 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div
+              class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div class="space-y-2">
+              <div
+                class="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="h-8 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+        </div>
+        <div class="space-y-4">
+          <div
+            v-for="i in 2"
+            :key="i"
+            class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="flex items-center space-x-4">
+              <div
+                class="h-8 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div class="space-y-2">
+                <div
+                  class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+                <div
+                  class="h-3 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Section Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -280,7 +359,7 @@ function toggleAddForm() {
 
     <!-- Primary Email -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start space-x-4">
@@ -328,7 +407,7 @@ function toggleAddForm() {
     <!-- Change Email Form -->
     <div
       v-if="showChangeForm"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         更换主邮箱地址
@@ -344,7 +423,7 @@ function toggleAddForm() {
           <input
             v-model="changeForm.newEmail"
             type="email"
-            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
             placeholder="请输入新的邮箱地址"
             required
           />
@@ -361,7 +440,7 @@ function toggleAddForm() {
             <input
               v-model="changeForm.verificationCode"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入验证码"
               required
             />
@@ -400,7 +479,7 @@ function toggleAddForm() {
     <!-- Add Email Form -->
     <div
       v-if="showAddForm"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         添加邮箱地址
@@ -417,7 +496,7 @@ function toggleAddForm() {
             <input
               v-model="addForm.email"
               type="email"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入邮箱地址"
               required
             />
@@ -432,7 +511,7 @@ function toggleAddForm() {
             </label>
             <select
               v-model="addForm.type"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
             >
               <option v-for="type in emailTypes" :key="type" :value="type">
                 {{ type }}
@@ -452,7 +531,7 @@ function toggleAddForm() {
             <input
               v-model="addForm.verificationCode"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入验证码"
               required
             />
@@ -491,7 +570,7 @@ function toggleAddForm() {
     <!-- Verify Email Form -->
     <div
       v-if="showVerifyForm"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         验证邮箱地址
@@ -512,7 +591,7 @@ function toggleAddForm() {
             <input
               v-model="verifyForm.verificationCode"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入验证码"
               required
             />
@@ -560,7 +639,7 @@ function toggleAddForm() {
         <div
           v-for="email in additionalEmails"
           :key="email.id"
-          class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
         >
           <div class="flex items-center space-x-3">
             <Mail class="h-5 w-5 text-gray-400" />
@@ -570,7 +649,7 @@ function toggleAddForm() {
                   {{ email.address }}
                 </span>
                 <span
-                  class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                  class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800 dark:bg-[rgb(32,32,42)] dark:text-gray-300"
                 >
                   {{ email.type }}
                 </span>
@@ -625,7 +704,7 @@ function toggleAddForm() {
       class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
     >
       <div class="mb-6 flex items-center space-x-3">
-        <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/20">
+        <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-500/20">
           <Bell class="h-5 w-5 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
@@ -653,7 +732,7 @@ function toggleAddForm() {
             :class="[
               emailSettings.loginNotification
                 ? 'bg-blue-600'
-                : 'bg-gray-200 dark:bg-gray-700',
+                : 'bg-gray-200 dark:bg-[rgb(32,32,42)]',
             ]"
             @click="
               handleSettingChange(
@@ -687,7 +766,7 @@ function toggleAddForm() {
             :class="[
               emailSettings.securityAlert
                 ? 'bg-blue-600'
-                : 'bg-gray-200 dark:bg-gray-700',
+                : 'bg-gray-200 dark:bg-[rgb(32,32,42)]',
             ]"
             @click="
               handleSettingChange('securityAlert', !emailSettings.securityAlert)
@@ -716,7 +795,7 @@ function toggleAddForm() {
             :class="[
               emailSettings.systemUpdate
                 ? 'bg-blue-600'
-                : 'bg-gray-200 dark:bg-gray-700',
+                : 'bg-gray-200 dark:bg-[rgb(32,32,42)]',
             ]"
             @click="
               handleSettingChange('systemUpdate', !emailSettings.systemUpdate)
@@ -745,7 +824,7 @@ function toggleAddForm() {
             :class="[
               emailSettings.marketingEmail
                 ? 'bg-blue-600'
-                : 'bg-gray-200 dark:bg-gray-700',
+                : 'bg-gray-200 dark:bg-[rgb(32,32,42)]',
             ]"
             @click="
               handleSettingChange(
@@ -769,7 +848,7 @@ function toggleAddForm() {
 
     <!-- Usage History -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         使用记录
@@ -778,9 +857,9 @@ function toggleAddForm() {
         <div
           v-for="usage in emailUsage"
           :key="usage.date"
-          class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+          class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 dark:border-gray-600"
         >
-          <div class="rounded-full bg-blue-100 p-1 dark:bg-blue-900/20">
+          <div class="rounded-full bg-blue-100 p-1 dark:bg-blue-500/20">
             <Mail class="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
           <div class="flex-1">

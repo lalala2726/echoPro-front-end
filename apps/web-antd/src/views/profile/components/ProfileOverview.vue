@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import type { profileType } from '#/api/core/profile';
 
-import { Briefcase, Calendar, Camera, Edit, MapPin } from '@vben/icons';
+import { onMounted, ref } from 'vue';
+
+import { Briefcase, Camera, Edit, MapPin } from '@vben/icons';
+
+import { overviewInfo, updateProfile } from '#/api/core/profile';
 
 interface Emits {
-  (e: 'edit-profile'): void;
+  (e: 'editProfile'): void;
 }
 
 defineOptions({
@@ -13,68 +17,97 @@ defineOptions({
 
 const emit = defineEmits<Emits>();
 
+// Loading state
+const loading = ref(false);
+
 // Edit mode state
 const isEditing = ref(false);
 
-// Mock user data
-const userInfo = ref({
-  avatar:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  realName: '张创',
-  username: 'zhangchuang',
-  email: 'chuang@zhangchuangla.cn',
-  phone: '+86 138****1234',
-  department: '技术部',
-  position: '前端开发工程师',
-  location: '北京市朝阳区',
-  joinDate: '2023-01-15',
-  lastLogin: '2024-08-01 14:30:25',
-  bio: '专注于前端技术开发，热爱学习新技术，致力于提升用户体验。',
-  skills: ['Vue.js', 'TypeScript', 'Node.js', 'React', 'Python'],
-  projects: 12,
-  contributions: 156,
+// User data from API
+const userInfo = ref<profileType.ProfileOverviewInfoVo>({
+  username: '',
+  nickname: '',
+  avatar: '',
+  gender: '',
+  email: '',
+  phone: '',
+  region: '',
+  signature: '',
+  deptName: '',
+  post: '',
+  roles: [],
 });
 
-// Edit form data
-const editForm = ref({
-  realName: userInfo.value.realName,
-  bio: userInfo.value.bio,
-  position: userInfo.value.position,
-  location: userInfo.value.location,
-  skills: [...userInfo.value.skills],
+// Edit form data (only editable fields)
+const editForm = ref<profileType.ProfileUpdateRequest>({
+  nickName: '',
+  avatar: '',
+  gender: '',
+  region: '',
+  signature: '',
 });
+
+// Load user profile data
+async function loadUserProfile() {
+  try {
+    loading.value = true;
+    const response = await overviewInfo();
+    userInfo.value = response as profileType.ProfileOverviewInfoVo;
+  } catch (error) {
+    console.error('Failed to load user profile:', error);
+  } finally {
+    loading.value = false;
+  }
+}
 
 // Handle avatar upload
 function handleAvatarUpload() {
-  // TODO: Implement avatar upload functionality
-  console.log('Avatar upload clicked');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+        const result = event.target?.result as string;
+        if (isEditing.value) {
+          editForm.value.avatar = result;
+        } else {
+          userInfo.value.avatar = result;
+        }
+      });
+      reader.readAsDataURL(file);
+    }
+  });
+  input.click();
 }
 
 // Handle edit profile
 function handleEditProfile() {
   isEditing.value = true;
-  // Reset form data to current values
   editForm.value = {
-    realName: userInfo.value.realName,
-    bio: userInfo.value.bio,
-    position: userInfo.value.position,
-    location: userInfo.value.location,
-    skills: [...userInfo.value.skills],
+    nickName: userInfo.value.nickname || '',
+    avatar: userInfo.value.avatar || '',
+    gender: userInfo.value.gender || '',
+    region: userInfo.value.region || '',
+    signature: userInfo.value.signature || '',
   };
-  emit('edit-profile');
+  emit('editProfile');
 }
 
 // Handle save profile
-function handleSaveProfile() {
-  // Update user info with form data
-  userInfo.value.realName = editForm.value.realName;
-  userInfo.value.bio = editForm.value.bio;
-  userInfo.value.position = editForm.value.position;
-  userInfo.value.location = editForm.value.location;
-  userInfo.value.skills = [...editForm.value.skills];
-
-  isEditing.value = false;
-  console.log('Profile saved:', editForm.value);
+async function handleSaveProfile() {
+  try {
+    loading.value = true;
+    await updateProfile(editForm.value);
+    await loadUserProfile();
+    isEditing.value = false;
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+  } finally {
+    loading.value = false;
+  }
 }
 
 // Handle cancel edit
@@ -82,22 +115,65 @@ function handleCancelEdit() {
   isEditing.value = false;
 }
 
-// Handle add skill
-function handleAddSkill() {
-  const skill = prompt('请输入新技能：');
-  if (skill && skill.trim()) {
-    editForm.value.skills.push(skill.trim());
-  }
-}
-
-// Handle remove skill
-function handleRemoveSkill(index: number) {
-  editForm.value.skills.splice(index, 1);
-}
+// Initialize component
+onMounted(() => {
+  loadUserProfile();
+});
 </script>
 
 <template>
-  <div class="space-y-6">
+  <!-- Loading State -->
+  <div v-if="loading" class="space-y-6">
+    <!-- 用户头像和基本信息骨架屏 -->
+    <div
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+    >
+      <div class="flex items-center space-x-6">
+        <div
+          class="h-24 w-24 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"
+        ></div>
+        <div class="flex-1 space-y-3">
+          <div
+            class="h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div
+            class="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div
+            class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+        </div>
+        <div
+          class="h-10 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+        ></div>
+      </div>
+    </div>
+
+    <!-- 详细信息骨架屏 -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div
+        v-for="i in 6"
+        :key="i"
+        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="flex items-center space-x-3">
+          <div
+            class="h-8 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div class="flex-1 space-y-2">
+            <div
+              class="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-else class="space-y-6">
     <!-- Section Header -->
     <div class="flex items-center justify-between">
       <div>
@@ -134,61 +210,65 @@ function handleRemoveSkill(index: number) {
 
     <!-- Profile Card -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <!-- Avatar and Basic Info -->
       <div class="flex items-start space-x-6">
-        <!-- Avatar -->
-        <div class="relative">
-          <img
-            :src="userInfo.avatar"
-            :alt="userInfo.realName"
-            class="h-24 w-24 rounded-full object-cover"
-          />
-          <button
-            class="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            @click="handleAvatarUpload"
-          >
-            <Camera class="h-4 w-4" />
-          </button>
+        <!-- Avatar with signature below -->
+        <div class="flex flex-col items-center">
+          <div class="relative">
+            <img
+              :src="userInfo.avatar || '/default-avatar.png'"
+              :alt="userInfo.nickname || userInfo.username"
+              class="h-24 w-24 rounded-full object-cover"
+            />
+            <button
+              class="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              @click="handleAvatarUpload"
+            >
+              <Camera class="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <!-- Basic Info -->
         <div class="flex-1">
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            {{ userInfo.realName }}
-          </h3>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+              {{ userInfo.nickname || userInfo.username }}
+            </h3>
+          </div>
           <p class="text-gray-600 dark:text-gray-400">
-            @{{ userInfo.username }}
-          </p>
-          <p class="mt-2 text-gray-700 dark:text-gray-300">
-            {{ userInfo.bio }}
+            {{ userInfo.username }}
           </p>
 
-          <!-- Quick Stats -->
-          <div class="mt-4 flex space-x-6">
-            <div class="text-center">
-              <div class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ userInfo.projects }}
-              </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400">项目</div>
+          <!-- Role Info -->
+          <div class="mt-4">
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="role in userInfo.roles"
+                :key="role"
+                class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-500/20 dark:text-blue-300"
+              >
+                {{ role }}
+              </span>
             </div>
-            <div class="text-center">
-              <div class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ userInfo.contributions }}
-              </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400">贡献</div>
-            </div>
+          </div>
+
+          <div
+            class="mt-2 max-w-[380px] break-words text-sm text-gray-500 dark:text-gray-400"
+          >
+            {{ userInfo.signature || '-' }}
           </div>
         </div>
       </div>
     </div>
 
     <!-- Detailed Information -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div v-if="!isEditing" class="grid grid-cols-1 gap-6 md:grid-cols-2">
       <!-- Personal Information -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
       >
         <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           个人信息
@@ -202,7 +282,7 @@ function handleRemoveSkill(index: number) {
               职位
             </dt>
             <dd class="ml-auto text-sm text-gray-900 dark:text-white">
-              {{ userInfo.position }}
+              {{ userInfo.post || '-' }}
             </dd>
           </div>
           <div class="flex items-center">
@@ -210,21 +290,31 @@ function handleRemoveSkill(index: number) {
               class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
             >
               <MapPin class="mr-2 h-4 w-4" />
-              位置
+              地区
             </dt>
             <dd class="ml-auto text-sm text-gray-900 dark:text-white">
-              {{ userInfo.location }}
+              {{ userInfo.region || '-' }}
             </dd>
           </div>
           <div class="flex items-center">
             <dt
               class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
             >
-              <Calendar class="mr-2 h-4 w-4" />
-              入职时间
+              <Briefcase class="mr-2 h-4 w-4" />
+              部门
             </dt>
             <dd class="ml-auto text-sm text-gray-900 dark:text-white">
-              {{ userInfo.joinDate }}
+              {{ userInfo.deptName || '-' }}
+            </dd>
+          </div>
+          <div class="flex items-center">
+            <dt
+              class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
+            >
+              性别
+            </dt>
+            <dd class="ml-auto text-sm text-gray-900 dark:text-white">
+              {{ userInfo.gender || '-' }}
             </dd>
           </div>
         </dl>
@@ -232,7 +322,7 @@ function handleRemoveSkill(index: number) {
 
       <!-- Contact Information -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
       >
         <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           联系方式
@@ -243,7 +333,7 @@ function handleRemoveSkill(index: number) {
               邮箱
             </dt>
             <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-              {{ userInfo.email }}
+              {{ userInfo.email || '-' }}
             </dd>
           </div>
           <div>
@@ -251,37 +341,10 @@ function handleRemoveSkill(index: number) {
               手机号码
             </dt>
             <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-              {{ userInfo.phone }}
-            </dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              最后登录
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-              {{ userInfo.lastLogin }}
+              {{ userInfo.phone || '-' }}
             </dd>
           </div>
         </dl>
-      </div>
-    </div>
-
-    <!-- Skills -->
-    <div
-      v-if="!isEditing"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-    >
-      <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-        技能标签
-      </h4>
-      <div class="flex flex-wrap gap-2">
-        <span
-          v-for="skill in userInfo.skills"
-          :key="skill"
-          class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-        >
-          {{ skill }}
-        </span>
       </div>
     </div>
 
@@ -289,104 +352,74 @@ function handleRemoveSkill(index: number) {
     <div v-if="isEditing" class="space-y-6">
       <!-- Basic Information Edit Form -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
       >
         <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           编辑基本信息
         </h4>
         <form class="space-y-4">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <!-- Real Name -->
+            <!-- Nickname -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                姓名
+                昵称
               </label>
               <input
-                v-model="editForm.realName"
+                v-model="editForm.nickName"
                 type="text"
-                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                placeholder="请输入姓名"
+                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+                placeholder="请输入昵称"
               />
             </div>
 
-            <!-- Position -->
+            <!-- Gender -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                职位
+                性别
               </label>
-              <input
-                v-model="editForm.position"
-                type="text"
-                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                placeholder="请输入职位"
-              />
+              <select
+                v-model="editForm.gender"
+                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+              >
+                <option value="">请选择性别</option>
+                <option value="男">男</option>
+                <option value="女">女</option>
+              </select>
             </div>
           </div>
 
-          <!-- Location -->
+          <!-- Region -->
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              位置
+              地区
             </label>
             <input
-              v-model="editForm.location"
+              v-model="editForm.region"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="请输入位置"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+              placeholder="请输入地区"
             />
           </div>
 
-          <!-- Bio -->
+          <!-- Signature -->
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              个人简介
+              个性签名
             </label>
             <textarea
-              v-model="editForm.bio"
+              v-model="editForm.signature"
               rows="3"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              placeholder="请输入个人简介"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+              placeholder="请输入个性签名"
             ></textarea>
-          </div>
-
-          <!-- Skills -->
-          <div>
-            <label
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              技能标签
-            </label>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span
-                v-for="(skill, index) in editForm.skills"
-                :key="index"
-                class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-              >
-                {{ skill }}
-                <button
-                  type="button"
-                  class="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full text-blue-600 hover:bg-blue-200 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-800"
-                  @click="handleRemoveSkill(index)"
-                >
-                  ×
-                </button>
-              </span>
-              <button
-                type="button"
-                class="inline-flex items-center rounded-full border border-dashed border-gray-300 px-3 py-1 text-sm font-medium text-gray-600 hover:border-blue-500 hover:text-blue-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-blue-400 dark:hover:text-blue-400"
-                @click="handleAddSkill"
-              >
-                + 添加技能
-              </button>
-            </div>
           </div>
         </form>
       </div>
@@ -395,7 +428,6 @@ function handleRemoveSkill(index: number) {
 </template>
 
 <style scoped>
-/* Fix cursor styles for interactive elements */
 button {
   cursor: pointer;
 }
@@ -404,18 +436,15 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Ensure text elements don't show text cursor when clickable */
 button * {
   cursor: inherit;
 }
 
-/* Input and textarea should have text cursor */
 input,
 textarea {
   cursor: text;
 }
 
-/* Prevent text cursor on all other elements */
 div,
 span,
 p,
@@ -429,10 +458,5 @@ label,
 dt,
 dd {
   cursor: default;
-}
-
-/* Clickable text elements should have pointer cursor */
-.cursor-pointer {
-  cursor: pointer;
 }
 </style>

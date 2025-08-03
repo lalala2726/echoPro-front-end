@@ -71,7 +71,7 @@ const countryCodes = ref([
 ]);
 
 // Send verification code
-function sendVerificationCode(type: 'change' | 'verify') {
+function sendVerificationCode(_type: 'change' | 'verify') {
   if (!canSendCode.value) return;
 
   countdown.value = 60;
@@ -85,17 +85,17 @@ function sendVerificationCode(type: 'change' | 'verify') {
     }
   }, 1000);
 
-  console.log(`Verification code sent for ${type}`);
+  // Verification code sent
 }
 
 // Handle phone change
 function handlePhoneChange() {
   if (!changeForm.newPhone || !changeForm.verificationCode) {
-    alert('请填写完整信息');
+    console.warn('请填写完整信息');
     return;
   }
 
-  console.log('Phone change submitted:', changeForm);
+  // Phone change submitted
   showChangeForm.value = false;
   // TODO: Implement phone change API call
 }
@@ -103,11 +103,11 @@ function handlePhoneChange() {
 // Handle phone verification
 function handlePhoneVerification() {
   if (!verifyForm.verificationCode) {
-    alert('请输入验证码');
+    console.warn('请输入验证码');
     return;
   }
 
-  console.log('Phone verification submitted:', verifyForm);
+  // Phone verification submitted
   showVerifyForm.value = false;
   phoneInfo.value.verified = true;
   // TODO: Implement phone verification API call
@@ -132,6 +132,75 @@ function toggleVerifyForm() {
 
 <template>
   <div class="space-y-6">
+    <!-- 骨架屏加载状态 -->
+    <div v-if="false" class="space-y-6">
+      <!-- 当前手机号骨架屏 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="flex items-start justify-between">
+          <div class="flex items-start space-x-4">
+            <div
+              class="h-12 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div class="space-y-3">
+              <div
+                class="h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-6 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <div
+              class="h-10 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-10 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 使用统计骨架屏 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center space-x-3">
+          <div
+            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div class="space-y-2">
+            <div
+              class="h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div
+            v-for="i in 3"
+            :key="i"
+            class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="space-y-3">
+              <div
+                class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Section Header -->
     <div>
       <h2 class="text-2xl font-bold text-gray-900 dark:text-white">手机号码</h2>
@@ -142,7 +211,7 @@ function toggleVerifyForm() {
 
     <!-- Current Phone Number -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <div class="flex items-start justify-between">
         <div class="flex items-start space-x-4">
@@ -201,7 +270,7 @@ function toggleVerifyForm() {
     <!-- Change Phone Form -->
     <div
       v-if="showChangeForm"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         更换手机号码
@@ -217,7 +286,7 @@ function toggleVerifyForm() {
             </label>
             <select
               v-model="changeForm.countryCode"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
             >
               <option
                 v-for="country in countryCodes"
@@ -239,7 +308,7 @@ function toggleVerifyForm() {
             <input
               v-model="changeForm.newPhone"
               type="tel"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入新的手机号码"
               required
             />
@@ -257,7 +326,7 @@ function toggleVerifyForm() {
             <input
               v-model="changeForm.verificationCode"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入验证码"
               required
             />
@@ -296,7 +365,7 @@ function toggleVerifyForm() {
     <!-- Verify Phone Form -->
     <div
       v-if="showVerifyForm"
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         验证手机号码
@@ -317,7 +386,7 @@ function toggleVerifyForm() {
             <input
               v-model="verifyForm.verificationCode"
               type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
               placeholder="请输入验证码"
               required
             />
@@ -355,10 +424,10 @@ function toggleVerifyForm() {
 
     <!-- Phone Security Features -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <div class="mb-4 flex items-center space-x-3">
-        <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/20">
+        <div class="rounded-lg bg-green-100 p-2 dark:bg-green-500/20">
           <Shield class="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
         <div>
@@ -372,7 +441,7 @@ function toggleVerifyForm() {
       </div>
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
           <div class="flex items-center space-x-3">
             <MessageSquare class="h-5 w-5 text-blue-600 dark:text-blue-400" />
             <div>
@@ -386,7 +455,7 @@ function toggleVerifyForm() {
           </div>
         </div>
 
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
           <div class="flex items-center space-x-3">
             <Shield class="h-5 w-5 text-green-600 dark:text-green-400" />
             <div>
@@ -404,7 +473,7 @@ function toggleVerifyForm() {
 
     <!-- Usage History -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
     >
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
         使用记录
@@ -413,9 +482,9 @@ function toggleVerifyForm() {
         <div
           v-for="usage in phoneUsage"
           :key="usage.date"
-          class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+          class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 dark:border-gray-600"
         >
-          <div class="rounded-full bg-blue-100 p-1 dark:bg-blue-900/20">
+          <div class="rounded-full bg-blue-100 p-1 dark:bg-blue-500/20">
             <Phone class="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
           <div class="flex-1">

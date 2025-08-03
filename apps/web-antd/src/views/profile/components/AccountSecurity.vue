@@ -1,452 +1,424 @@
-<script lang="ts" setup>
-import { reactive, ref } from 'vue';
+<script setup lang="ts">
+import type { profileType } from '#/api/core/profile';
+
+import { computed, onMounted, ref } from 'vue';
+
+import { confirm } from '@vben/common-ui';
+import { Eye, EyeOff, Key, Shield, Smartphone } from '@vben/icons';
+
+import { message } from 'ant-design-vue';
 
 import {
-  AlertTriangle,
-  CheckCircle,
-  Eye,
-  EyeOff,
-  Key,
-  Lock,
-  Shield,
-  Smartphone,
-} from '@vben/icons';
+  deleteDevice,
+  getDeviceList,
+  getSecurityLogList,
+  updatePassword,
+} from '#/api/core/profile';
 
-interface Emits {
-  (e: 'change-password'): void;
+interface PasswordForm {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
-defineOptions({
-  name: 'AccountSecurity',
-});
+interface PasswordRequirement {
+  text: string;
+  met: boolean;
+}
 
-const emit = defineEmits<Emits>();
+// 使用现有的类型定义
+type SessionDevice = profileType.SessionDevice;
+type SecurityLog = profileType.UserSecurityLog;
 
-// Password form states
-const showChangePasswordForm = ref(false);
-const showCurrentPassword = ref(false);
-const showNewPassword = ref(false);
-const showConfirmPassword = ref(false);
-
-// Password form data
-const passwordForm = reactive({
-  currentPassword: '',
+// Reactive state
+const passwordForm = ref<PasswordForm>({
+  oldPassword: '',
   newPassword: '',
   confirmPassword: '',
 });
 
-// Password requirements
-const passwordRequirements = ref([
-  { text: '至少8个字符', met: false },
-  { text: '包含大写字母', met: false },
-  { text: '包含小写字母', met: false },
-  { text: '包含数字', met: false },
-  { text: '包含特殊字符', met: false },
+const currentPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+const showOldPassword = ref(false);
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
+const isPasswordLoading = ref(false);
+const isDevicesLoading = ref(false);
+const isSecurityLogsLoading = ref(false);
+const showAllLogs = ref(false);
+const displayedLogsCount = ref(10);
+const showPasswordForm = ref(false);
+const loading = ref(true);
+
+const devices = ref<SessionDevice[]>([]);
+const securityLogs = ref<SecurityLog[]>([]);
+
+// Password requirements validation
+const passwordRequirements = computed<PasswordRequirement[]>(() => [
+  {
+    text: '至少8个字符',
+    met: passwordForm.value.newPassword.length >= 8,
+  },
+  {
+    text: '包含大写字母',
+    met: /[A-Z]/.test(passwordForm.value.newPassword),
+  },
+  {
+    text: '包含小写字母',
+    met: /[a-z]/.test(passwordForm.value.newPassword),
+  },
+  {
+    text: '包含数字',
+    met: /\d/.test(passwordForm.value.newPassword),
+  },
+  {
+    text: '包含特殊字符',
+    met: /[!@#$%^&*(),.?":{}|<>]/.test(passwordForm.value.newPassword),
+  },
 ]);
 
-// Login settings
-const loginSettings = ref({
-  sessionTimeout: 30,
-  autoLogout: true,
-  rememberLogin: false,
-  loginNotification: true,
+const passwordsMatch = computed(() => {
+  if (!confirmPassword.value) return true;
+  return newPassword.value === confirmPassword.value;
 });
 
-// Password history
-const passwordHistory = ref([
-  { date: '2024-06-15', action: '密码修改' },
-  { date: '2024-03-20', action: '密码重置' },
-  { date: '2023-12-10', action: '密码修改' },
-]);
-
-// Mock security data
-const securityInfo = ref({
-  twoFactorEnabled: true,
-  lastPasswordChange: '2024-06-15',
-  loginDevices: [
-    {
-      id: 1,
-      device: 'Chrome on Windows',
-      location: '北京市',
-      lastActive: '2024-08-01 14:30',
-      current: true,
-    },
-    {
-      id: 2,
-      device: 'Safari on iPhone',
-      location: '北京市',
-      lastActive: '2024-07-30 09:15',
-      current: false,
-    },
-  ],
-  securityScore: 85,
-  recentActivities: [
-    {
-      id: 1,
-      action: '登录成功',
-      time: '2024-08-01 14:30',
-      location: '北京市',
-      device: 'Chrome on Windows',
-    },
-    {
-      id: 2,
-      action: '密码修改',
-      time: '2024-06-15 10:20',
-      location: '北京市',
-      device: 'Chrome on Windows',
-    },
-  ],
+const passwordStrength = computed(() => {
+  const password = newPassword.value;
+  let strength = 0;
+  if (password.length >= 8) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[a-z]/.test(password)) strength++;
+  if (/\d/.test(password)) strength++;
+  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+  return Math.min(strength, 4);
 });
 
-// Handle two-factor authentication toggle
-function handleTwoFactorToggle() {
-  securityInfo.value.twoFactorEnabled = !securityInfo.value.twoFactorEnabled;
-  console.log(
-    'Two-factor authentication toggled:',
-    securityInfo.value.twoFactorEnabled,
+const canSubmitPassword = computed(() => {
+  return (
+    currentPassword.value &&
+    newPassword.value &&
+    confirmPassword.value &&
+    passwordsMatch.value &&
+    passwordStrength.value >= 2
   );
-}
+});
 
-// Handle device logout
-function handleDeviceLogout(deviceId: number) {
-  console.log('Logout device:', deviceId);
-}
+// Load data functions
+const loadDevices = async () => {
+  isDevicesLoading.value = true;
+  try {
+    const response = await getDeviceList();
+    devices.value = response || [];
+  } catch {
+    console.warn('获取设备列表失败');
+  } finally {
+    isDevicesLoading.value = false;
+  }
+};
 
-// Handle security scan
-function handleSecurityScan() {
-  console.log('Security scan initiated');
-}
+const loadSecurityLogs = async () => {
+  isSecurityLogsLoading.value = true;
+  try {
+    const response = await getSecurityLogList();
+    securityLogs.value = response || [];
+  } catch {
+    console.warn('获取安全日志失败');
+  } finally {
+    isSecurityLogsLoading.value = false;
+  }
+};
 
-// Check password requirements
-function checkPasswordRequirements(password: string) {
-  passwordRequirements.value[0].met = password.length >= 8;
-  passwordRequirements.value[1].met = /[A-Z]/.test(password);
-  passwordRequirements.value[2].met = /[a-z]/.test(password);
-  passwordRequirements.value[3].met = /\d/.test(password);
-  passwordRequirements.value[4].met = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-}
-
-// Handle password change
-function handlePasswordChange() {
-  if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-    alert('新密码和确认密码不匹配');
+// Password management
+const handlePasswordUpdate = async () => {
+  if (!canSubmitPassword.value) {
+    console.warn('请填写完整的密码信息');
     return;
   }
 
-  const allRequirementsMet = passwordRequirements.value.every((req) => req.met);
-  if (!allRequirementsMet) {
-    alert('密码不符合安全要求');
-    return;
+  isPasswordLoading.value = true;
+  try {
+    await updatePassword({
+      oldPassword: currentPassword.value,
+      newPassword: newPassword.value,
+    });
+    console.warn('密码更新成功');
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    showPasswordForm.value = false;
+  } catch {
+    console.warn('密码更新失败');
+  } finally {
+    isPasswordLoading.value = false;
   }
+};
 
-  console.log('Password change submitted');
-  showChangePasswordForm.value = false;
-  // TODO: Implement password change API call
+// Device management
+const handleLogoutDevice = async (sessionId: string) => {
+  try {
+    await deleteDevice(sessionId);
+    console.warn('设备注销成功');
+    await loadDevices();
+  } catch {
+    console.warn('设备注销失败');
+  }
+};
+
+const handleLogoutAllDevices = () => {
+  openConfirm();
+};
+
+function openConfirm() {
+  confirm({
+    beforeClose({ isConfirm }) {
+      if (!isConfirm) return;
+      // 这里可以做一些异步操作
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 1000);
+      });
+    },
+    centered: false,
+    content: '确定要注销所有设备吗？',
+    icon: 'question',
+  })
+    .then(() => {
+      message.success('所有设备已注销');
+    })
+    .catch(() => {
+      message.error('操作已取消');
+    });
 }
 
-// Handle setting change
-function handleSettingChange(setting: string, value: any) {
-  (loginSettings.value as any)[setting] = value;
-  console.log(`Setting ${setting} changed to:`, value);
-}
+// Security logs management
+const displayedLogs = computed(() => {
+  return showAllLogs.value
+    ? securityLogs.value
+    : securityLogs.value.slice(0, displayedLogsCount.value);
+});
 
-// Watch new password for requirements
-function onNewPasswordInput() {
-  checkPasswordRequirements(passwordForm.newPassword);
-}
+const _formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleString('zh-CN');
+};
 
-// Toggle change password form
-function toggleChangePasswordForm() {
-  showChangePasswordForm.value = !showChangePasswordForm.value;
-  emit('change-password');
-}
+// Initialize data
+onMounted(async () => {
+  loading.value = true;
+  try {
+    await Promise.all([loadDevices(), loadSecurityLogs()]);
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Section Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-          账户安全
-        </h2>
-        <p class="mt-1 text-gray-600 dark:text-gray-400">
-          管理您的账户安全设置和隐私选项
-        </p>
-      </div>
-      <button
-        class="flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-        @click="handleSecurityScan"
+    <!-- 页面加载状态 -->
+    <div v-if="loading" class="space-y-6">
+      <!-- 密码管理骨架屏 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
       >
-        <Shield class="mr-2 h-4 w-4" />
-        安全扫描
-      </button>
-    </div>
-
-    <!-- Security Score -->
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-    >
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            安全评分
-          </h3>
-          <p class="mt-1 text-gray-600 dark:text-gray-400">您的账户安全等级</p>
-        </div>
-        <div class="text-right">
-          <div class="text-3xl font-bold text-green-600">
-            {{ securityInfo.securityScore }}
-          </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">/ 100</div>
-        </div>
-      </div>
-      <div class="mt-4">
-        <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+        <div class="mb-6 flex items-center space-x-3">
           <div
-            class="h-2 rounded-full bg-green-600"
-            :style="{ width: `${securityInfo.securityScore}%` }"
+            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div class="space-y-2">
+            <div
+              class="h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div
+            class="h-10 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div
+            class="h-8 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
           ></div>
         </div>
       </div>
-    </div>
 
-    <!-- Security Settings -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <!-- Two-Factor Authentication -->
+      <!-- 安全活动日志骨架屏 -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
       >
-        <div class="flex items-start justify-between">
-          <div class="flex items-start space-x-3">
-            <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/20">
-              <Smartphone class="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
-                双重认证
-              </h4>
-              <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                为您的账户添加额外的安全保护
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <button
-              class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              :class="[
-                securityInfo.twoFactorEnabled
-                  ? 'bg-blue-600'
-                  : 'bg-gray-200 dark:bg-gray-700',
-              ]"
-              @click="handleTwoFactorToggle"
-            >
-              <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                :class="[
-                  securityInfo.twoFactorEnabled
-                    ? 'translate-x-5'
-                    : 'translate-x-0',
-                ]"
-              ></span>
-            </button>
+        <div class="mb-6 flex items-center space-x-3">
+          <div
+            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+          ></div>
+          <div class="space-y-2">
+            <div
+              class="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div
+              class="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
           </div>
         </div>
-        <div class="mt-4">
+        <div class="space-y-4">
           <div
-            v-if="securityInfo.twoFactorEnabled"
-            class="flex items-center text-sm text-green-600 dark:text-green-400"
+            v-for="i in 3"
+            :key="i"
+            class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
           >
-            <CheckCircle class="mr-2 h-4 w-4" />
-            已启用
-          </div>
-          <div
-            v-else
-            class="flex items-center text-sm text-orange-600 dark:text-orange-400"
-          >
-            <AlertTriangle class="mr-2 h-4 w-4" />
-            未启用
+            <div class="space-y-3">
+              <div
+                class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-3 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Password Security -->
+      <!-- 登录设备管理骨架屏 -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
       >
-        <div class="flex items-start space-x-3">
-          <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/20">
-            <Key class="h-5 w-5 text-purple-600 dark:text-purple-400" />
-          </div>
-          <div class="flex-1">
-            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
-              密码安全
-            </h4>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              上次修改：{{ securityInfo.lastPasswordChange }}
-            </p>
-            <button
-              class="mt-3 text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-            >
-              修改密码
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Login Devices -->
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-    >
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        登录设备
-      </h3>
-      <p class="mt-1 text-gray-600 dark:text-gray-400">
-        管理已登录的设备和会话
-      </p>
-      <div class="mt-4 space-y-4">
-        <div
-          v-for="device in securityInfo.loginDevices"
-          :key="device.id"
-          class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
-        >
+        <div class="mb-6 flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
-              <Eye class="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            </div>
-            <div>
-              <div class="flex items-center space-x-2">
-                <span class="font-medium text-gray-900 dark:text-white">
-                  {{ device.device }}
-                </span>
-                <span
-                  v-if="device.current"
-                  class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                >
-                  当前设备
-                </span>
-              </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400">
-                {{ device.location }} • {{ device.lastActive }}
-              </div>
+            <div
+              class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+            ></div>
+            <div class="space-y-2">
+              <div
+                class="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
             </div>
           </div>
-          <button
-            v-if="!device.current"
-            class="text-sm font-medium text-red-600 hover:text-red-500 dark:text-red-400"
-            @click="handleDeviceLogout(device.id)"
+          <div
+            class="h-8 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          ></div>
+        </div>
+        <div class="space-y-4">
+          <div
+            v-for="i in 2"
+            :key="i"
+            class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
           >
-            注销
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Security Activities -->
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-    >
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        安全活动记录
-      </h3>
-      <p class="mt-1 text-gray-600 dark:text-gray-400">最近的安全相关活动</p>
-      <div class="mt-4 space-y-3">
-        <div
-          v-for="activity in securityInfo.recentActivities"
-          :key="activity.id"
-          class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700"
-        >
-          <div class="rounded-full bg-blue-100 p-1 dark:bg-blue-900/20">
-            <Shield class="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          </div>
-          <div class="flex-1">
-            <div class="font-medium text-gray-900 dark:text-white">
-              {{ activity.action }}
+            <div class="flex items-center space-x-4">
+              <div
+                class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div class="space-y-2">
+                <div
+                  class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+                <div
+                  class="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+              </div>
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-              {{ activity.time }} • {{ activity.location }} •
-              {{ activity.device }}
-            </div>
+            <div
+              class="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            ></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Password Management Section -->
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-    >
-      <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/20">
-            <Lock class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+    <!-- 主要内容 -->
+    <div v-else class="space-y-6">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+            账户安全
+          </h2>
+          <p class="mt-1 text-gray-600 dark:text-gray-400">
+            管理您的密码、查看安全日志和设备登录状态
+          </p>
+        </div>
+      </div>
+
+      <!-- 修改密码 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center space-x-3">
+          <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-500/20">
+            <Key class="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               密码管理
             </h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              上次修改：{{ securityInfo.lastPasswordChange }}
+              定期更新密码以保护账户安全
             </p>
           </div>
         </div>
-        <button
-          class="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          @click="toggleChangePasswordForm"
-        >
-          <Key class="mr-2 h-4 w-4" />
-          {{ showChangePasswordForm ? '取消修改' : '修改密码' }}
-        </button>
-      </div>
 
-      <!-- Change Password Form -->
-      <div
-        v-if="showChangePasswordForm"
-        class="space-y-4 border-t border-gray-200 pt-6 dark:border-gray-700"
-      >
-        <form @submit.prevent="handlePasswordChange" class="space-y-4">
-          <!-- Current Password -->
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            上次修改时间：2024年1月15日
+          </div>
+          <button
+            class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            @click="showPasswordForm = !showPasswordForm"
+          >
+            {{ showPasswordForm ? '取消修改' : '修改密码' }}
+          </button>
+        </div>
+
+        <!-- 密码修改表单 -->
+        <div v-if="showPasswordForm" class="mt-6 space-y-4">
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              for="current-password"
             >
               当前密码
             </label>
             <div class="relative mt-1">
               <input
-                v-model="passwordForm.currentPassword"
-                :type="showCurrentPassword ? 'text' : 'password'"
-                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                id="current-password"
+                v-model="currentPassword"
+                :type="showOldPassword ? 'text' : 'password'"
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                 placeholder="请输入当前密码"
-                required
               />
               <button
                 type="button"
                 class="absolute inset-y-0 right-0 flex items-center pr-3"
-                @click="showCurrentPassword = !showCurrentPassword"
+                @click="showOldPassword = !showOldPassword"
               >
-                <Eye v-if="showCurrentPassword" class="h-4 w-4 text-gray-400" />
+                <Eye v-if="showOldPassword" class="h-4 w-4 text-gray-400" />
                 <EyeOff v-else class="h-4 w-4 text-gray-400" />
               </button>
             </div>
           </div>
 
-          <!-- New Password -->
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              for="new-password"
             >
               新密码
             </label>
             <div class="relative mt-1">
               <input
-                v-model="passwordForm.newPassword"
+                id="new-password"
+                v-model="newPassword"
                 :type="showNewPassword ? 'text' : 'password'"
-                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                 placeholder="请输入新密码"
-                required
-                @input="onNewPasswordInput"
               />
               <button
                 type="button"
@@ -457,22 +429,69 @@ function toggleChangePasswordForm() {
                 <EyeOff v-else class="h-4 w-4 text-gray-400" />
               </button>
             </div>
+
+            <!-- 密码强度指示器 -->
+            <div class="mt-2">
+              <div class="flex space-x-1">
+                <div
+                  v-for="i in 4"
+                  :key="i"
+                  class="h-1 flex-1 rounded-full"
+                  :class="[
+                    i <= passwordStrength
+                      ? passwordStrength === 1
+                        ? 'bg-red-500'
+                        : passwordStrength === 2
+                          ? 'bg-yellow-500'
+                          : passwordStrength === 3
+                            ? 'bg-blue-500'
+                            : 'bg-green-500'
+                      : 'bg-gray-200 dark:bg-gray-700',
+                  ]"
+                ></div>
+              </div>
+              <div class="mt-2 space-y-1">
+                <div
+                  v-for="requirement in passwordRequirements"
+                  :key="requirement.text"
+                  class="flex items-center space-x-2 text-xs"
+                >
+                  <div
+                    class="h-1.5 w-1.5 rounded-full"
+                    :class="[
+                      requirement.met
+                        ? 'bg-green-500'
+                        : 'bg-gray-300 dark:bg-gray-600',
+                    ]"
+                  ></div>
+                  <span
+                    :class="[
+                      requirement.met
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-gray-500 dark:text-gray-400',
+                    ]"
+                  >
+                    {{ requirement.text }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Confirm Password -->
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              for="confirm-password"
             >
               确认新密码
             </label>
             <div class="relative mt-1">
               <input
-                v-model="passwordForm.confirmPassword"
+                id="confirm-password"
+                v-model="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
-                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                 placeholder="请再次输入新密码"
-                required
               />
               <button
                 type="button"
@@ -485,101 +504,195 @@ function toggleChangePasswordForm() {
             </div>
           </div>
 
-          <!-- Password Requirements -->
-          <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
-            <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              密码要求：
-            </h4>
-            <ul class="space-y-1">
-              <li
-                v-for="requirement in passwordRequirements"
-                :key="requirement.text"
-                class="flex items-center text-sm"
-              >
-                <div
-                  class="mr-2 flex h-4 w-4 items-center justify-center rounded-full"
-                  :class="[
-                    requirement.met
-                      ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                      : 'bg-gray-200 text-gray-400 dark:bg-gray-600 dark:text-gray-500',
-                  ]"
-                >
-                  <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fill-rule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span
-                  :class="[
-                    requirement.met
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-gray-600 dark:text-gray-400',
-                  ]"
-                >
-                  {{ requirement.text }}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="flex justify-end">
+          <div class="flex justify-end space-x-3 pt-4">
             <button
-              type="submit"
-              class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              type="button"
+              class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-gray-300 dark:hover:bg-[rgb(40,40,50)] dark:focus:ring-offset-gray-900"
+              @click="showPasswordForm = false"
             >
-              更新密码
+              取消
+            </button>
+            <button
+              :disabled="!canSubmitPassword || isPasswordLoading"
+              class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900"
+              @click="handlePasswordUpdate"
+            >
+              {{ isPasswordLoading ? '更新中...' : '更新密码' }}
             </button>
           </div>
-        </form>
+        </div>
+      </div>
+
+      <!-- 安全活动日志 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center space-x-3">
+          <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-500/20">
+            <Shield class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              安全活动日志
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              查看最近的账户安全活动记录
+            </p>
+          </div>
+        </div>
+
+        <div v-if="isSecurityLogsLoading" class="space-y-4">
+          <div
+            v-for="i in 4"
+            :key="i"
+            class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="space-y-3">
+              <div
+                class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-3 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div
+                class="h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="securityLogs.length === 0" class="py-8 text-center">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            暂无安全活动记录
+          </div>
+        </div>
+
+        <div v-else class="space-y-4">
+          <div
+            v-for="(log, index) in displayedLogs"
+            :key="index"
+            class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="font-medium text-gray-900 dark:text-white">
+                  {{ log.title }}
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ _formatDate(log.operationTime || '') }} •
+                  {{ log.operationRegion }} • IP: {{ log.operationIp }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-500">
+                  类型：{{ log.operationType }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="securityLogs.length > displayedLogsCount"
+            class="text-center"
+          >
+            <button
+              class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              @click="showAllLogs = !showAllLogs"
+            >
+              {{
+                showAllLogs
+                  ? '收起'
+                  : `查看更多 (${securityLogs.length - displayedLogsCount} 条)`
+              }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 登录设备管理 -->
+      <div
+        class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+      >
+        <div class="mb-6 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="rounded-lg bg-green-100 p-2 dark:bg-green-500/20">
+              <Smartphone class="h-5 w-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                登录设备管理
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                管理已登录的设备，保护账户安全
+              </p>
+            </div>
+          </div>
+          <button
+            class="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-red-600 dark:bg-[rgb(24,24,32)] dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:focus:ring-offset-gray-800"
+            @click="handleLogoutAllDevices"
+          >
+            全部注销
+          </button>
+        </div>
+
+        <div v-if="isDevicesLoading" class="space-y-4">
+          <div
+            v-for="i in 3"
+            :key="i"
+            class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="flex items-center space-x-4">
+              <div
+                class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+              ></div>
+              <div>
+                <div
+                  class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+                <div
+                  class="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                ></div>
+              </div>
+              <div
+                class="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="devices.length === 0" class="py-8 text-center">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            暂无登录设备
+          </div>
+        </div>
+
+        <div v-else class="space-y-4">
+          <div
+            v-for="device in devices"
+            :key="device.refreshTokenId"
+            class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+          >
+            <div class="flex items-center space-x-4">
+              <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
+                <Smartphone class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              </div>
+              <div>
+                <div class="font-medium text-gray-900 dark:text-white">
+                  {{ device.deviceName || device.deviceType }}
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ _formatDate(device.loginTime || '') }} •
+                  {{ device.location }} • IP: {{ device.ip }}
+                </div>
+              </div>
+            </div>
+            <button
+              class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-gray-400 dark:hover:bg-gray-500/10 dark:hover:text-gray-300 dark:focus:ring-offset-gray-800"
+              @click="handleLogoutDevice(device.refreshTokenId || '')"
+            >
+              注销
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Fix cursor styles for interactive elements */
-button {
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-/* Ensure text elements don't show text cursor when clickable */
-button * {
-  cursor: inherit;
-}
-
-/* Input should have text cursor */
-input {
-  cursor: text;
-}
-
-/* Prevent text cursor on all other elements */
-div,
-span,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-label,
-dt,
-dd,
-ul,
-li {
-  cursor: default;
-}
-
-/* Clickable text elements should have pointer cursor */
-.cursor-pointer {
-  cursor: pointer;
-}
-</style>

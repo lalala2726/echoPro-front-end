@@ -22,7 +22,6 @@ function handleSectionChange(section: string) {
 // Handle edit profile action
 function handleEditProfile() {
   // This will be handled within the ProfileOverview component
-  console.log('Edit profile triggered');
 }
 
 // Handle change password action from Account Security
@@ -33,21 +32,11 @@ function handleChangePassword() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <!-- Page Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          个人资料
-        </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
-          管理您的个人信息和账户设置
-        </p>
-      </div>
-
+  <div class="min-h-screen bg-gray-50 dark:bg-black">
+    <div class="mx-auto max-w-none px-6 py-8 sm:px-8 lg:px-12">
       <!-- Main Content Layout -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
-        <!-- Left Navigation Menu (1/4 width) -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <!-- Left Navigation Menu (1/5 width) -->
         <div class="lg:col-span-1">
           <ProfileNavigation
             :active-section="activeSection"
@@ -55,9 +44,11 @@ function handleChangePassword() {
           />
         </div>
 
-        <!-- Right Content Area (3/4 width) -->
-        <div class="lg:col-span-3">
-          <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <!-- Right Content Area (4/5 width) -->
+        <div class="lg:col-span-4">
+          <div
+            class="rounded-lg bg-white p-6 shadow-sm dark:bg-[rgb(24,24,32)]"
+          >
             <!-- Dynamic Content Based on Active Section -->
             <ProfileOverview
               v-if="activeSection === 'overview'"
