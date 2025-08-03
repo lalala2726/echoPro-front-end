@@ -5,6 +5,8 @@ import { onMounted, ref } from 'vue';
 
 import { Briefcase, Camera, Edit, MapPin } from '@vben/icons';
 
+import { Input, Select, Textarea } from 'ant-design-vue';
+
 import { overviewInfo, updateProfile } from '#/api/core/profile';
 
 interface Emits {
@@ -39,7 +41,7 @@ const userInfo = ref<profileType.ProfileOverviewInfoVo>({
 });
 
 // Edit form data (only editable fields)
-const editForm = ref<profileType.ProfileUpdateRequest>({
+const editForm = ref<profileType.ProfileUpdateRequest & { phone?: string }>({
   nickName: '',
   avatar: '',
   gender: '',
@@ -92,6 +94,7 @@ function handleEditProfile() {
     gender: userInfo.value.gender || '',
     region: userInfo.value.region || '',
     signature: userInfo.value.signature || '',
+    phone: userInfo.value.phone || '',
   };
   emit('editProfile');
 }
@@ -366,11 +369,10 @@ onMounted(() => {
               >
                 昵称
               </label>
-              <input
-                v-model="editForm.nickName"
-                type="text"
-                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+              <Input
+                v-model:value="editForm.nickName"
                 placeholder="请输入昵称"
+                class="mt-1"
               />
             </div>
 
@@ -381,30 +383,31 @@ onMounted(() => {
               >
                 性别
               </label>
-              <select
-                v-model="editForm.gender"
-                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+              <Select
+                v-model:value="editForm.gender"
+                placeholder="请选择性别"
+                class="mt-1 w-full"
               >
-                <option value="">请选择性别</option>
-                <option value="男">男</option>
-                <option value="女">女</option>
-              </select>
+                <Select.Option value="男">男</Select.Option>
+                <Select.Option value="女">女</Select.Option>
+              </Select>
             </div>
           </div>
 
-          <!-- Region -->
-          <div>
-            <label
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              地区
-            </label>
-            <input
-              v-model="editForm.region"
-              type="text"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
-              placeholder="请输入地区"
-            />
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <!-- Region -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                地区
+              </label>
+              <Input
+                v-model:value="editForm.region"
+                placeholder="请输入地区"
+                class="mt-1"
+              />
+            </div>
           </div>
 
           <!-- Signature -->
@@ -414,12 +417,12 @@ onMounted(() => {
             >
               个性签名
             </label>
-            <textarea
-              v-model="editForm.signature"
-              rows="3"
-              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-500 dark:bg-[rgb(32,32,42)] dark:text-white"
+            <Textarea
+              v-model:value="editForm.signature"
+              :rows="3"
               placeholder="请输入个性签名"
-            ></textarea>
+              class="mt-1"
+            />
           </div>
         </form>
       </div>

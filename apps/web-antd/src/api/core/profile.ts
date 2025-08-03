@@ -25,6 +25,7 @@ export namespace profileType {
     /** 角色信息 */
     roles?: string[];
   }
+
   export interface ProfileUpdateRequest {
     /** 昵称 */
     nickName?: string;
@@ -77,6 +78,20 @@ export namespace profileType {
     ip?: string;
     /** 登录地点 */
     location?: string;
+  }
+
+  export interface UpdateEmailRequest {
+    /** 新邮箱 */
+    email: string;
+    /** 验证码 */
+    code?: string;
+  }
+
+  export interface UpdatePhoneRequest {
+    /** 手机号 */
+    phone: string;
+    /** 验证码 */
+    code?: string;
   }
 }
 
@@ -142,12 +157,46 @@ async function updatePassword(params: profileType.UpdatePasswordRequest) {
   });
 }
 
+/**
+ * 获取当前用户的邮箱
+ */
+async function getEmail() {
+  return await requestClient.get('/system/user/email');
+}
+
+/**
+ * 获取当前用户的手机号
+ */
+async function getPhone() {
+  return await requestClient.get('/system/user/phone');
+}
+
+/**
+ * 修改手机号
+ * @param data
+ */
+async function updatePhone(data: profileType.UpdatePhoneRequest) {
+  return await requestClient.put('/system/user/phone', data);
+}
+
+/**
+ * 修改邮箱
+ * @param data
+ */
+async function updateEmail(data: profileType.UpdateEmailRequest) {
+  return await requestClient.put('/system/user/email', data);
+}
+
 export {
   deleteDevice,
   getDeviceList,
+  getEmail,
+  getPhone,
   getSecurityLogList,
   logoutAll,
   overviewInfo,
+  updateEmail,
   updatePassword,
+  updatePhone,
   updateProfile,
 };

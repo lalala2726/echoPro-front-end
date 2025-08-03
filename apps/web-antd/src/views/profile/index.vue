@@ -2,8 +2,7 @@
 import { ref } from 'vue';
 
 import AccountSecurity from './components/AccountSecurity.vue';
-import Email from './components/Email.vue';
-import PhoneNumber from './components/PhoneNumber.vue';
+import ContactInfo from './components/ContactInfo.vue';
 import ProfileNavigation from './components/ProfileNavigation.vue';
 import ProfileOverview from './components/ProfileOverview.vue';
 
@@ -58,8 +57,7 @@ function handleChangePassword() {
               v-else-if="activeSection === 'security'"
               @change-password="handleChangePassword"
             />
-            <PhoneNumber v-else-if="activeSection === 'phone'" />
-            <Email v-else-if="activeSection === 'email'" />
+            <ContactInfo v-else-if="activeSection === 'contact'" />
           </div>
         </div>
       </div>

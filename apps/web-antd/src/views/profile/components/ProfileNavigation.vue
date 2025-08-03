@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-import { Mail, Phone, Shield, User } from '@vben/icons';
+import { Mail, Shield, User } from '@vben/icons';
 
 interface Props {
   activeSection: string;
@@ -33,16 +33,10 @@ const menuItems = computed(() => [
     description: '安全设置、密码管理和登录选项',
   },
   {
-    key: 'phone',
-    label: '手机号码',
-    icon: Phone,
-    description: '手机号码管理',
-  },
-  {
-    key: 'email',
-    label: '邮箱地址',
+    key: 'contact',
+    label: '联系方式',
     icon: Mail,
-    description: '邮箱地址管理',
+    description: '手机号码和邮箱地址管理',
   },
 ]);
 
