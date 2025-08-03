@@ -8,6 +8,7 @@ import { Briefcase, Camera, Edit, MapPin } from '@vben/icons';
 import { Input, Select, Textarea } from 'ant-design-vue';
 
 import { overviewInfo, updateProfile } from '#/api/core/profile';
+import { ImageCropUpload } from '#/components/imageCropUpload';
 
 interface Emits {
   (e: 'editProfile'): void;
@@ -62,27 +63,28 @@ async function loadUserProfile() {
   }
 }
 
-// Handle avatar upload
-function handleAvatarUpload() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.addEventListener('change', (e) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.addEventListener('load', (event) => {
-        const result = event.target?.result as string;
-        if (isEditing.value) {
-          editForm.value.avatar = result;
-        } else {
-          userInfo.value.avatar = result;
-        }
-      });
-      reader.readAsDataURL(file);
-    }
-  });
-  input.click();
+// Handle avatar upload success
+async function handleAvatarUploadSuccess(avatarUrl: string) {
+  try {
+    loading.value = true;
+
+    // 更新头像
+    const updateData = {
+      nickName: userInfo.value.nickname || '',
+      avatar: avatarUrl,
+      gender: userInfo.value.gender || '',
+      region: userInfo.value.region || '',
+      signature: userInfo.value.signature || '',
+    };
+
+    await updateProfile(updateData);
+    await loadUserProfile();
+
+  } catch (error) {
+    console.error('Failed to update avatar:', error);
+  } finally {
+    loading.value = false;
+  }
 }
 
 // Handle edit profile
@@ -217,7 +219,7 @@ onMounted(() => {
     >
       <!-- Avatar and Basic Info -->
       <div class="flex items-start space-x-6">
-        <!-- Avatar with signature below -->
+        <!-- Avatar with crop upload -->
         <div class="flex flex-col items-center">
           <div class="relative">
             <img
@@ -225,12 +227,16 @@ onMounted(() => {
               :alt="userInfo.nickname || userInfo.username"
               class="h-24 w-24 rounded-full object-cover"
             />
-            <button
-              class="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              @click="handleAvatarUpload"
+            <ImageCropUpload
+              title="修改头像"
+              :on-success="handleAvatarUploadSuccess"
+              :max-size="5"
+              :accept="['image/jpeg', 'image/png', 'image/webp']"
             >
-              <Camera class="h-4 w-4" />
-            </button>
+              <div class="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer transition-colors">
+                <Camera class="h-4 w-4" />
+              </div>
+            </ImageCropUpload>
           </div>
         </div>
 

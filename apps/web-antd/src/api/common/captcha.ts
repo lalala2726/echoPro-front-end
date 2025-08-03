@@ -18,7 +18,7 @@ export namespace CaptchaType {
  * @param phone 手机号码
  */
 async function sendPhoneCaptcha(phone: string) {
-  return requestClient.post('/captcha/phone', {
+  return requestClient.post('/common/captcha/phone', {
     phone,
   });
 }
@@ -28,7 +28,7 @@ async function sendPhoneCaptcha(phone: string) {
  * @param email 邮箱地址
  */
 async function sendEmailCaptcha(email: string) {
-  return requestClient.post('/captcha/email', {
+  return requestClient.post('/common/captcha/email', {
     email,
   });
 }
@@ -38,7 +38,7 @@ async function sendEmailCaptcha(email: string) {
  * @param data 验证码数据
  */
 async function verifyEmailCaptcha(data: CaptchaType.CaptchaRequest) {
-  return requestClient.post<boolean>('/captcha/email/verify', {
+  return requestClient.post<boolean>('/common/captcha/email/verify', {
     data,
   });
 }
@@ -48,7 +48,7 @@ async function verifyEmailCaptcha(data: CaptchaType.CaptchaRequest) {
  * @param data 验证码数据
  */
 async function verifyPhoneCaptcha(data: CaptchaType.CaptchaRequest) {
-  return requestClient.post<boolean>('/captcha/phone/verify', {
+  return requestClient.post<boolean>('/common/captcha/phone/verify', {
     data,
   });
 }
