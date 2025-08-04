@@ -1,9 +1,15 @@
 <script lang="ts" setup>
+import type { UploadFile } from 'ant-design-vue';
+
 import type { profileType } from '#/api/core/profile';
+import type {
+  FileUploadResponse,
+  ImageUploadResponse,
+} from '#/components/upload/types/types';
 
 import { onMounted, ref } from 'vue';
 
-import { Briefcase, Camera, Edit, MapPin } from '@vben/icons';
+import { Briefcase, Edit, MapPin } from '@vben/icons';
 
 import { Input, Select, Textarea } from 'ant-design-vue';
 
@@ -64,14 +70,17 @@ async function loadUserProfile() {
 }
 
 // Handle avatar upload success
-async function handleAvatarUploadSuccess(avatarUrl: string) {
+async function handleAvatarUploadSuccess(
+  response: FileUploadResponse | ImageUploadResponse,
+  _file: UploadFile,
+) {
   try {
     loading.value = true;
 
     // 更新头像
     const updateData = {
       nickName: userInfo.value.nickname || '',
-      avatar: avatarUrl,
+      avatar: response.fileUrl,
       gender: userInfo.value.gender || '',
       region: userInfo.value.region || '',
       signature: userInfo.value.signature || '',
@@ -220,20 +229,11 @@ onMounted(() => {
       <div class="flex items-start space-x-6">
         <!-- Avatar with crop upload -->
         <div class="flex flex-col items-center">
-          <div class="relative">
-            <img
-              :src="userInfo.avatar || '/default-avatar.png'"
-              :alt="userInfo.nickname || userInfo.username"
-              class="h-24 w-24 rounded-full object-cover"
-            />
-            <UploadAvatar @success="handleAvatarUploadSuccess">
-              <div
-                class="absolute bottom-0 right-0 cursor-pointer rounded-full bg-blue-600 p-2 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <Camera class="h-4 w-4" />
-              </div>
-            </UploadAvatar>
-          </div>
+          <UploadAvatar
+            v-model:value="userInfo.avatar"
+            :size="96"
+            @success="handleAvatarUploadSuccess"
+          />
         </div>
 
         <!-- Basic Info -->

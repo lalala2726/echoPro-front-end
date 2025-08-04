@@ -72,7 +72,7 @@ const menus = computed(() => [
       router.push('/profile');
     },
     icon: User,
-    text: $t('ui.widgets.profile'),
+    text: '个人中心',
   },
   {
     handler: () => {
