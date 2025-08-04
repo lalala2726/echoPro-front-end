@@ -128,6 +128,11 @@ const updateCharts = () => {
   // 更新线程池使用图表 - 始终显示图表
   const hasThreadPoolData = threadPoolData.value.length > 0;
   renderThreadPoolChart({
+    // 禁用初始动画，图表直接显示
+    animation: false,
+    // 启用数据更新动画
+    animationDurationUpdate: 600,
+    animationEasingUpdate: 'cubicInOut',
     title: {
       text: '线程池使用率',
       left: 'center',
@@ -331,7 +336,7 @@ onUnmounted(() => {
 
 <style scoped>
 .spring-metrics {
-  @apply relative min-h-full bg-gray-50/30;
+  @apply dark:bg-background relative min-h-full bg-gray-50/30;
 }
 
 .refresh-control {
@@ -339,7 +344,7 @@ onUnmounted(() => {
 }
 
 .refresh-label {
-  @apply text-sm text-gray-600;
+  @apply dark:text-muted-foreground text-sm text-gray-600;
 }
 
 .metrics-section {
@@ -354,7 +359,7 @@ onUnmounted(() => {
 .metrics-card,
 .chart-card,
 .table-card {
-  @apply h-full border-0 shadow-sm;
+  @apply dark:bg-card dark:border-border h-full border-0 shadow-sm;
 }
 
 .metrics-grid {
@@ -366,38 +371,18 @@ onUnmounted(() => {
 }
 
 .chart-container {
-  @apply h-80;
+  @apply relative h-80 overflow-hidden;
 }
 
-.spring-metrics :deep(.ant-card) {
-  @apply rounded-lg;
+.chart-container :deep(canvas) {
+  @apply !transform-none;
 }
 
-.spring-metrics :deep(.ant-card-head) {
-  @apply border-b border-gray-100 bg-white/80;
-}
-
-.spring-metrics :deep(.ant-card-body) {
-  @apply bg-white p-6;
-}
-
-.spring-metrics :deep(.ant-statistic-title) {
-  @apply mb-2 text-sm font-medium text-gray-600;
-}
-
-.spring-metrics :deep(.ant-statistic-content) {
-  @apply text-xl font-semibold;
-}
-
-.spring-metrics :deep(.ant-descriptions-item-label) {
-  @apply font-medium text-gray-700;
-}
-
-.spring-metrics :deep(.ant-table) {
-  @apply text-sm;
+.chart-container :deep(div) {
+  @apply !transition-none;
 }
 
 .spring-metrics :deep(.ant-table-thead > tr > th) {
-  @apply bg-gray-50/80 font-semibold text-gray-700;
+  @apply dark:bg-muted dark:text-foreground bg-gray-50/80 font-semibold text-gray-700;
 }
 </style>

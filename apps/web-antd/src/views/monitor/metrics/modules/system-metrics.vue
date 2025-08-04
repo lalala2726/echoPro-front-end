@@ -153,9 +153,9 @@ const updateCharts = () => {
             color:
               item.value > 80
                 ? '#ff4d4f'
-                : (item.value > 60
+                : item.value > 60
                   ? '#faad14'
-                  : '#52c41a'),
+                  : '#52c41a',
           },
         })),
         barWidth: '60%',
@@ -176,6 +176,11 @@ const updateCharts = () => {
     const available = memoryData.available || 0;
 
     renderMemoryChart({
+      // 禁用初始动画，图表直接显示
+      animation: false,
+      // 启用数据更新动画
+      animationDurationUpdate: 600,
+      animationEasingUpdate: 'cubicInOut',
       title: {
         text: '内存使用分布',
         left: 'center',
@@ -197,6 +202,11 @@ const updateCharts = () => {
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['50%', '45%'],
+          // 禁用初始动画
+          animation: false,
+          // 启用数据更新动画
+          animationDurationUpdate: 600,
+          animationEasingUpdate: 'cubicInOut',
           data: [
             {
               value: used,
@@ -349,7 +359,7 @@ onUnmounted(() => {
 
 <style scoped>
 .system-metrics {
-  @apply min-h-full bg-gray-50/30;
+  @apply dark:bg-background min-h-full bg-gray-50/30;
 }
 
 .metrics-section {
@@ -363,7 +373,7 @@ onUnmounted(() => {
 .metrics-card,
 .chart-card,
 .table-card {
-  @apply h-full border-0 shadow-sm;
+  @apply dark:bg-card dark:border-border h-full border-0 shadow-sm;
 }
 
 .metrics-grid {
@@ -375,31 +385,15 @@ onUnmounted(() => {
 }
 
 .chart-container {
-  @apply h-80;
+  @apply relative h-80 overflow-hidden;
 }
 
-.system-metrics :deep(.ant-card) {
-  @apply rounded-lg;
+.chart-container :deep(canvas) {
+  @apply !transform-none;
 }
 
-.system-metrics :deep(.ant-card-head) {
-  @apply border-b border-gray-100 bg-white/80;
-}
-
-.system-metrics :deep(.ant-card-body) {
-  @apply bg-white p-6;
-}
-
-.system-metrics :deep(.ant-statistic-title) {
-  @apply mb-2 text-sm font-medium text-gray-600;
-}
-
-.system-metrics :deep(.ant-statistic-content) {
-  @apply text-xl font-semibold;
-}
-
-.system-metrics :deep(.ant-table) {
-  @apply text-sm;
+.chart-container :deep(div) {
+  @apply !transition-none;
 }
 
 .system-metrics :deep(.ant-table-thead > tr > th) {
