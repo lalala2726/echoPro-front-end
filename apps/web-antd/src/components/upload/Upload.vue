@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types';
+} from './types/types';
 
 import { ref } from 'vue';
 
@@ -207,9 +207,9 @@ function beforeUpload(file: File) {
 .upload-drag-area {
   padding: 40px 20px;
   text-align: center;
+  background-color: #fafafa;
   border: 2px dashed #d9d9d9;
   border-radius: 6px;
-  background-color: #fafafa;
   transition: border-color 0.3s;
 }
 
@@ -225,11 +225,11 @@ function beforeUpload(file: File) {
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5715;
-  color: rgba(0, 0, 0, 0.85);
+  color: rgb(0 0 0 / 85%);
+  cursor: pointer;
   background-color: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
-  cursor: pointer;
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
@@ -239,16 +239,16 @@ function beforeUpload(file: File) {
 }
 
 .upload-button:disabled {
-  color: rgba(0, 0, 0, 0.25);
+  color: rgb(0 0 0 / 25%);
+  cursor: not-allowed;
   background-color: #f5f5f5;
   border-color: #d9d9d9;
-  cursor: not-allowed;
 }
 
 .upload-tip {
   margin-top: 8px;
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgb(0 0 0 / 45%);
 }
 
 .ant-upload-drag-icon {
@@ -258,12 +258,12 @@ function beforeUpload(file: File) {
 .ant-upload-text {
   margin: 0 0 4px;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.85);
+  color: rgb(0 0 0 / 85%);
 }
 
 .ant-upload-hint {
   margin: 0;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgb(0 0 0 / 45%);
 }
 </style>

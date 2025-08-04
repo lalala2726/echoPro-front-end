@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types';
+} from './types/types';
 
 import { ref } from 'vue';
 
@@ -216,10 +216,10 @@ async function handleFilePreview(file: UploadFile) {
   justify-content: center;
   width: 100%;
   height: 100%;
+  cursor: pointer;
+  background-color: #fafafa;
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
-  background-color: #fafafa;
-  cursor: pointer;
   transition: border-color 0.3s;
 }
 
@@ -240,16 +240,16 @@ async function handleFilePreview(file: UploadFile) {
 }
 
 .upload-tips {
-  margin-top: 12px;
   padding: 8px 12px;
+  margin-top: 12px;
   background-color: #f6f8fa;
-  border-radius: 4px;
   border: 1px solid #e1e4e8;
+  border-radius: 4px;
 }
 
 .tip-item {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.65);
   line-height: 1.5;
+  color: rgb(0 0 0 / 65%);
 }
 </style>

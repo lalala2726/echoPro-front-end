@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types';
+} from './types/types';
 
 import { ref } from 'vue';
 
@@ -187,23 +187,23 @@ function beforeUpload(file: File) {
 .upload-drag-text {
   margin: 0 0 8px;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.85);
+  color: rgb(0 0 0 / 85%);
 }
 
 .upload-drag-hint {
   margin: 0 0 12px;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgb(0 0 0 / 45%);
 }
 
 .upload-drag-accept {
   margin-bottom: 4px;
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgb(0 0 0 / 45%);
 }
 
 .upload-drag-size {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgb(0 0 0 / 45%);
 }
 </style>

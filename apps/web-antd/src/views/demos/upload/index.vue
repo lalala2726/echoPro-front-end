@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
 
-import { Card } from 'ant-design-vue';
+import { Card, message } from 'ant-design-vue';
 
 import {
   Upload,
@@ -14,12 +16,17 @@ import {
   UploadPictureList,
 } from '#/components/upload';
 
-function handleUploadSuccess(_response: any) {
-  // 上传成功处理
+// 头像 URL 状态
+const avatarUrl = ref('');
+const avatarWithButton = ref('');
+
+function handleUploadSuccess(response: any) {
+  message.success('文件上传成功');
 }
 
-function handleUploadError(_error: any) {
-  // 上传失败处理
+function handleUploadError(error: any) {
+  console.error('上传失败:', error);
+  message.error(`文件上传失败: ${error.message || '未知错误'}`);
 }
 </script>
 
@@ -30,12 +37,116 @@ function handleUploadError(_error: any) {
     </Card>
 
     <Card class="mb-5" title="头像上传">
-      <UploadAvatar
-        :size="100"
-        :show-button="true"
-        @error="handleUploadError"
-        @success="handleUploadSuccess"
-      />
+      <div class="space-y-6">
+        <!-- 基础头像上传 -->
+        <div>
+          <h4 class="mb-3 text-base font-medium">
+            基础头像上传（点击头像区域选择图片）
+          </h4>
+          <div class="flex items-center space-x-4">
+            <UploadAvatar
+              v-model:value="avatarUrl"
+              :size="100"
+              @error="handleUploadError"
+              @success="handleUploadSuccess"
+            />
+            <div class="text-sm text-gray-600">
+              <p>• 支持图片裁剪功能</p>
+              <p>• 支持缩放、旋转、重置</p>
+              <p>• 自动上传裁剪后的图片</p>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-gray-500">
+            当前头像: {{ avatarUrl || '未设置' }}
+          </p>
+        </div>
+
+        <!-- 带按钮的头像上传 -->
+        <div>
+          <h4 class="mb-3 text-base font-medium">带按钮的头像上传</h4>
+          <div class="flex items-center space-x-4">
+            <UploadAvatar
+              v-model:value="avatarWithButton"
+              :size="100"
+              :show-button="true"
+              @error="handleUploadError"
+              @success="handleUploadSuccess"
+            />
+            <div class="text-sm text-gray-600">
+              <p>• 提供独立的上传按钮</p>
+              <p>• 支持自定义头像尺寸</p>
+              <p>• 支持自定义裁剪比例</p>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-gray-500">
+            当前头像: {{ avatarWithButton || '未设置' }}
+          </p>
+        </div>
+
+        <!-- 不同尺寸演示 -->
+        <div>
+          <h4 class="mb-3 text-base font-medium">不同尺寸演示</h4>
+          <div class="flex items-end space-x-4">
+            <div class="text-center">
+              <UploadAvatar
+                :size="60"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-1 text-xs text-gray-500">60px</p>
+            </div>
+            <div class="text-center">
+              <UploadAvatar
+                :size="80"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-1 text-xs text-gray-500">80px</p>
+            </div>
+            <div class="text-center">
+              <UploadAvatar
+                :size="100"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-1 text-xs text-gray-500">100px</p>
+            </div>
+            <div class="text-center">
+              <UploadAvatar
+                :size="120"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-1 text-xs text-gray-500">120px</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 不同裁剪比例演示 -->
+        <div>
+          <h4 class="mb-3 text-base font-medium">不同裁剪比例</h4>
+          <div class="flex items-center space-x-6">
+            <div class="text-center">
+              <UploadAvatar
+                :size="100"
+                :aspect-ratio="1"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-2 text-xs text-gray-500">1:1 正方形</p>
+            </div>
+            <div class="text-center">
+              <UploadAvatar
+                :size="100"
+                :aspect-ratio="1.5"
+                @error="handleUploadError"
+                @success="handleUploadSuccess"
+              />
+              <p class="mt-2 text-xs text-gray-500">3:2 横向</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </Card>
 
     <Card class="mb-5" title="按钮上传">

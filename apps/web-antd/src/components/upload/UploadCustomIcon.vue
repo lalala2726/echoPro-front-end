@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types';
+} from './types/types';
 
 import { ref } from 'vue';
 
@@ -173,10 +173,10 @@ const uploadListConfig = {
   justify-content: center;
   width: 104px;
   height: 104px;
+  cursor: pointer;
+  background-color: #fafafa;
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
-  background-color: #fafafa;
-  cursor: pointer;
   transition: border-color 0.3s;
 }
 

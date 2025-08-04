@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types';
+} from './types/types';
 
 import { computed, ref } from 'vue';
 
@@ -241,23 +241,23 @@ const hasFilesToUpload = computed(() => {
 }
 
 .upload-actions {
-  margin-top: 16px;
   display: flex;
   gap: 8px;
+  margin-top: 16px;
 }
 
 .upload-tips {
-  margin-top: 12px;
   padding: 8px 12px;
+  margin-top: 12px;
   background-color: #f6f8fa;
-  border-radius: 4px;
   border: 1px solid #e1e4e8;
+  border-radius: 4px;
 }
 
 .tip-item {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.65);
   line-height: 1.5;
+  color: rgb(0 0 0 / 65%);
 }
 
 .upload-icon {

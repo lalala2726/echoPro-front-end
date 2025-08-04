@@ -8,7 +8,7 @@ import { Briefcase, Camera, Edit, MapPin } from '@vben/icons';
 import { Input, Select, Textarea } from 'ant-design-vue';
 
 import { overviewInfo, updateProfile } from '#/api/core/profile';
-import { ImageCropUpload } from '#/components/imageCropUpload';
+import { UploadAvatar } from '#/components/upload';
 
 interface Emits {
   (e: 'editProfile'): void;
@@ -79,7 +79,6 @@ async function handleAvatarUploadSuccess(avatarUrl: string) {
 
     await updateProfile(updateData);
     await loadUserProfile();
-
   } catch (error) {
     console.error('Failed to update avatar:', error);
   } finally {
@@ -227,16 +226,13 @@ onMounted(() => {
               :alt="userInfo.nickname || userInfo.username"
               class="h-24 w-24 rounded-full object-cover"
             />
-            <ImageCropUpload
-              title="修改头像"
-              :on-success="handleAvatarUploadSuccess"
-              :max-size="5"
-              :accept="['image/jpeg', 'image/png', 'image/webp']"
-            >
-              <div class="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer transition-colors">
+            <UploadAvatar @success="handleAvatarUploadSuccess">
+              <div
+                class="absolute bottom-0 right-0 cursor-pointer rounded-full bg-blue-600 p-2 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
                 <Camera class="h-4 w-4" />
               </div>
-            </ImageCropUpload>
+            </UploadAvatar>
           </div>
         </div>
 
