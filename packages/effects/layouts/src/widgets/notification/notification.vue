@@ -34,7 +34,7 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   clear: [];
   makeAll: [];
-  read: [NotificationItem];
+  notificationClick: [NotificationItem];
   viewAll: [];
 }>();
 
@@ -58,7 +58,8 @@ function handleClear() {
 }
 
 function handleClick(item: NotificationItem) {
-  emit('read', item);
+  emit('notificationClick', item);
+  close();
 }
 </script>
 <template>
@@ -93,7 +94,7 @@ function handleClick(item: NotificationItem) {
         <ul class="!flex max-h-[360px] w-full flex-col">
           <template v-for="item in notifications" :key="item.title">
             <li
-              class="hover:bg-accent border-border relative flex w-full cursor-pointer items-start gap-5 border-t px-3 py-3"
+              class="hover:bg-accent border-border relative flex w-full cursor-pointer items-start gap-3 border-t px-3 py-3"
               @click="handleClick(item)"
             >
               <span
@@ -101,16 +102,7 @@ function handleClick(item: NotificationItem) {
                 class="bg-primary absolute right-2 top-2 h-2 w-2 rounded"
               ></span>
 
-              <span
-                class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
-              >
-                <img
-                  :src="item.avatar"
-                  class="aspect-square h-full w-full object-cover"
-                  role="img"
-                />
-              </span>
-              <div class="flex flex-col gap-1 leading-none">
+              <div class="flex w-full flex-col gap-1 leading-none">
                 <p class="font-semibold">{{ item.title }}</p>
                 <p class="text-muted-foreground my-1 line-clamp-2 text-xs">
                   {{ item.message }}
@@ -131,16 +123,8 @@ function handleClick(item: NotificationItem) {
       </template>
 
       <div
-        class="border-border flex items-center justify-between border-t px-4 py-3"
+        class="border-border flex items-center justify-center border-t px-4 py-3"
       >
-        <VbenButton
-          :disabled="notifications.length <= 0"
-          size="sm"
-          variant="ghost"
-          @click="handleClear"
-        >
-          {{ $t('ui.widgets.clearNotifications') }}
-        </VbenButton>
         <VbenButton size="sm" @click="handleViewAll">
           {{ $t('ui.widgets.viewAll') }}
         </VbenButton>
