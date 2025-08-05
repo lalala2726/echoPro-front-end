@@ -1,4 +1,4 @@
-import type { Recordable, UserInfo } from '@vben/types';
+import type { Recordable } from '@vben/types';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
     onSuccess?: () => Promise<void> | void,
   ) {
     // 异步处理用户登录操作并获取 accessToken
-    let userInfo: null | UserInfo = null;
+    let userInfo: any = null;
     try {
       loginLoading.value = true;
       const { accessToken, refreshToken } = await loginApi(params);
@@ -57,14 +57,12 @@ export const useAuthStore = defineStore('auth', () => {
         } else {
           onSuccess
             ? await onSuccess?.()
-            : await router.push(
-                userInfo.homePath || preferences.app.defaultHomePath,
-              );
+            : await router.push(preferences.app.defaultHomePath);
         }
 
-        if (userInfo?.realName) {
+        if (userInfo?.nickname) {
           notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.nickname}`,
             duration: 3,
             message: $t('authentication.loginSuccess'),
           });
@@ -93,17 +91,30 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
+          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+        }
         : {},
     });
   }
 
   async function fetchUserInfo() {
-    let userInfo: null | UserInfo = null;
-    userInfo = await getUserInfoApi();
-    userStore.setUserInfo(userInfo);
-    return userInfo;
+    const apiResponse = await getUserInfoApi();
+
+    // Transform the nested API response to the flat structure expected by the user store
+    let transformedUserInfo = null;
+    if (apiResponse) {
+      transformedUserInfo = {
+        userId: apiResponse.user.userId,
+        username: apiResponse.user.username,
+        nickname: apiResponse.user.nickname,
+        avatar: apiResponse.user.avatar,
+        email: apiResponse.user.email,
+        roles: apiResponse.roles,
+      };
+    }
+
+    userStore.setUserInfo(transformedUserInfo);
+    return transformedUserInfo;
   }
 
   function $reset() {
