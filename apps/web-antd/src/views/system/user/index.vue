@@ -9,6 +9,7 @@ import type { SystemUserApi } from '#/api/system/user';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { ColPage, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -38,6 +39,7 @@ const [ResetPasswordModal, resetPasswordModalApi] = useVbenModal({
 });
 
 const selectedDeptId = ref<string>('');
+const { hasAccessByCodes } = useAccess();
 // 导出状态管理
 const isExporting = ref<boolean>(false);
 
@@ -327,15 +329,26 @@ function onResetPasswordSuccess(username: string) {
 
       <Grid table-title="用户列表">
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['system:user:list'])"
+            type="primary"
+            @click="onCreate"
+          >
             <Plus class="size-5" />
             新增用户
           </Button>
           <span class="mx-2"></span>
-          <Button danger @click="onBatchDelete"> 批量删除</Button>
+          <Button
+            v-if="hasAccessByCodes(['system:user:delete'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
           <span class="mx-2"></span>
           <Button
             :loading="isExporting"
+            v-if="hasAccessByCodes(['system:user:export'])"
             :disabled="isExporting"
             @click="onExport"
           >

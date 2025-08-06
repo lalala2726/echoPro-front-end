@@ -23,14 +23,25 @@ function useAccess() {
 
   /**
    * 基于权限码判断是否有权限
-   * @description: Determine whether there is permission，The permission code is judged by the user's permission code
+   * @description: 判断是否有权限，权限码由用户的权限码判断
    * @param codes
    */
-  function hasAccessByCodes(codes: string[]) {
-    const userCodesSet = new Set(accessStore.accessCodes);
+  function hasAccessByCodes(codes: string[]): boolean {
+    const userCodes = accessStore.accessCodes;
+    return codes.some((required) =>
+      userCodes.some((userCode) => matches(userCode, required)),
+    );
+  }
 
-    const intersection = codes.filter((item) => userCodesSet.has(item));
-    return intersection.length > 0;
+  function matches(pattern: string, code: string): boolean {
+    const pSeg = pattern.split(':');
+    const cSeg = code.split(':');
+
+    // 三段都得对上，* 段可以通配任意同级字符串
+    return (
+      pSeg.length === cSeg.length &&
+      pSeg.every((seg, i) => seg === '*' || seg === cSeg[i])
+    );
   }
 
   async function toggleAccessMode() {
