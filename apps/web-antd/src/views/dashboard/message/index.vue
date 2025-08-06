@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemMessageType } from '#/api/system/message';
+import type { SystemMessageType } from '#/api/dashboard/message';
 
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -11,7 +11,7 @@ import {
   listUserMessageList,
   markMessageAsRead,
   markMessageAsUnRead,
-} from '#/api/system/message';
+} from '#/api/dashboard/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
 import {
@@ -350,8 +350,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
-
 /* 响应式设计 */
 @media (max-width: 768px) {
   .message-center {

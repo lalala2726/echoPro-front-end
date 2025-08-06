@@ -100,7 +100,7 @@ async function listUserMessageList(
   params: SystemMessageType.UserMessageListQueryRequest,
 ) {
   return requestClient.get<SystemMessageType.UserMessageListResponse>(
-    '/system/message/list',
+    '/dashboard/message/list',
     {
       params,
     },
@@ -113,7 +113,7 @@ async function listUserMessageList(
  */
 async function getMessageDetailById(id: number) {
   return requestClient.get<SystemMessageType.UserMessageVo>(
-    `/system/message/${id}`,
+    `/dashboard/message/${id}`,
   );
 }
 
@@ -122,7 +122,7 @@ async function getMessageDetailById(id: number) {
  */
 async function getUnreadCount() {
   return requestClient.get<SystemMessageType.UnreadCountResponse>(
-    '/system/message/count',
+    '/dashboard/message/count',
   );
 }
 
@@ -131,7 +131,7 @@ async function getUnreadCount() {
  * @param ids 消息ID列表
  */
 async function markMessageAsRead(ids: Array<number>) {
-  return requestClient.put(`/system/message/read/${ids.join(',')}`);
+  return requestClient.put(`/dashboard/message/read/${ids.join(',')}`);
 }
 
 /**
@@ -139,7 +139,7 @@ async function markMessageAsRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function markMessageAsUnRead(ids: Array<number>) {
-  return requestClient.put(`/system/message/unread/${ids.join(',')}`);
+  return requestClient.put(`/dashboard/message/unread/${ids.join(',')}`);
 }
 
 /**
@@ -147,7 +147,7 @@ async function markMessageAsUnRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function deleteMessages(ids: Array<number>) {
-  return requestClient.delete(`/system/message/delete/${ids.join(',')}`);
+  return requestClient.delete(`/dashboard/message/delete/${ids.join(',')}`);
 }
 
 export {

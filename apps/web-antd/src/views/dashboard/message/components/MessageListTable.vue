@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemMessageType } from '#/api/system/message';
+import type { SystemMessageType } from '#/api/dashboard/message';
 
 import { computed } from 'vue';
 

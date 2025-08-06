@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
-import type { SystemMessageType } from '#/api/system/message';
+import type { SystemMessageType } from '#/api/dashboard/message';
 
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -18,7 +18,7 @@ import {
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
-import { listUserMessageList } from '#/api/system/message';
+import { listUserMessageList } from '#/api/dashboard/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';

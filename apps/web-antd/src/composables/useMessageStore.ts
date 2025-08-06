@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-import { getUnreadCount, listUserMessageList } from '#/api/system/message';
+import { getUnreadCount, listUserMessageList } from '#/api/dashboard/message';
 
 // 全局消息状态管理
 const globalUnreadCount = ref(0);

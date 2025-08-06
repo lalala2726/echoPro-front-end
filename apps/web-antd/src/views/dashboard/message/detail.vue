@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemMessageType } from '#/api/system/message';
+import type { SystemMessageType } from '#/api/dashboard/message';
 
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -8,7 +8,10 @@ import { IconifyIcon } from '@vben/icons';
 
 import { Button, Card, message, Spin, Tag, Typography } from 'ant-design-vue';
 
-import { getMessageDetailById, markMessageAsRead } from '#/api/system/message';
+import {
+  getMessageDetailById,
+  markMessageAsRead,
+} from '#/api/dashboard/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
 defineOptions({
@@ -209,8 +212,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
-
 @keyframes pulse-dot {
   0%,
   100% {
