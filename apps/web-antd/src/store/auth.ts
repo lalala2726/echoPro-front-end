@@ -77,7 +77,10 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
-  async function logout(redirect: boolean = true, callLogoutApi: boolean = true) {
+  async function logout(
+    redirect: boolean = true,
+    callLogoutApi: boolean = true,
+  ) {
     // 只有在需要时才调用注销API
     if (callLogoutApi) {
       await logoutApi();
@@ -90,8 +93,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-        }
+            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          }
         : {},
     });
   }
