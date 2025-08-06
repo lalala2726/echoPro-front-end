@@ -10,5 +10,13 @@
     "title": "Dashboard",
     "analytics": "Analytics",
     "workspace": "Workspace"
+  },
+  "profile": {
+    "title": "Profile",
+    "overview": "Overview",
+    "accountSecurity": "Account Security",
+    "loginPassword": "Login & Password",
+    "phoneNumber": "Phone Number",
+    "email": "Email"
   }
 }

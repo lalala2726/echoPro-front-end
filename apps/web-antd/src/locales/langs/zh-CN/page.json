@@ -10,5 +10,13 @@
     "title": "概览",
     "analytics": "分析页",
     "workspace": "工作台"
+  },
+  "profile": {
+    "title": "个人资料",
+    "overview": "概览",
+    "accountSecurity": "账户安全",
+    "loginPassword": "登录与密码",
+    "phoneNumber": "手机号码",
+    "email": "邮箱地址"
   }
 }

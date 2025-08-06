@@ -109,5 +109,8 @@
       "canvas",
       "node-gyp"
     ]
+  },
+  "dependencies": {
+    "cropperjs": "^2.0.1"
   }
 }

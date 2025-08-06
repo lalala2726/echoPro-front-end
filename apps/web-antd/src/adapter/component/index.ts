@@ -61,6 +61,29 @@ const TreeSelect = defineAsyncComponent(
 );
 const Upload = defineAsyncComponent(() => import('ant-design-vue/es/upload'));
 
+// 自定义上传组件
+const UploadAvatar = defineAsyncComponent(
+  () => import('#/components/upload/UploadAvatar.vue'),
+);
+const UploadButton = defineAsyncComponent(
+  () => import('#/components/upload/UploadButton.vue'),
+);
+const UploadCustomIcon = defineAsyncComponent(
+  () => import('#/components/upload/UploadCustomIcon.vue'),
+);
+const UploadDragDrop = defineAsyncComponent(
+  () => import('#/components/upload/UploadDragDrop.vue'),
+);
+const UploadManual = defineAsyncComponent(
+  () => import('#/components/upload/UploadManual.vue'),
+);
+const UploadPictureCard = defineAsyncComponent(
+  () => import('#/components/upload/UploadPictureCard.vue'),
+);
+const UploadPictureList = defineAsyncComponent(
+  () => import('#/components/upload/UploadPictureList.vue'),
+);
+
 const withDefaultPlaceholder = <T extends Component>(
   component: T,
   type: 'input' | 'select',
@@ -131,6 +154,13 @@ export type ComponentType =
   | 'TimePicker'
   | 'TreeSelect'
   | 'Upload'
+  | 'UploadAvatar'
+  | 'UploadButton'
+  | 'UploadCustomIcon'
+  | 'UploadDragDrop'
+  | 'UploadManual'
+  | 'UploadPictureCard'
+  | 'UploadPictureList'
   | BaseFormComponentType;
 
 async function initComponentAdapter() {
@@ -186,6 +216,13 @@ async function initComponentAdapter() {
     TimePicker,
     TreeSelect: withDefaultPlaceholder(TreeSelect, 'select'),
     Upload,
+    UploadAvatar,
+    UploadButton,
+    UploadCustomIcon,
+    UploadDragDrop,
+    UploadManual,
+    UploadPictureCard,
+    UploadPictureList,
   };
 
   // 将组件注册到全局共享状态中

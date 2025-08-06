@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
-import { computed, ref, watch } from 'vue';
+import type { SystemMessageType } from '#/api/dashboard/message';
+
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
-import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
 import { useWatermark } from '@vben/hooks';
-import { BookOpenText, CircleHelp, MdiGithub } from '@vben/icons';
+import { Mail, User } from '@vben/icons';
 import {
   BasicLayout,
   LockScreen,
@@ -15,78 +17,83 @@ import {
 } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
-import { openWindow } from '@vben/utils';
 
-import { $t } from '#/locales';
+import { listUserMessageList } from '#/api/dashboard/message';
+import { useMessageStore } from '#/composables/useMessageStore';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
-const notifications = ref<NotificationItem[]>([
-  {
-    avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
-    date: '3小时前',
-    isRead: true,
-    message: '描述信息描述信息描述信息',
-    title: '收到了 14 份新周报',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
-]);
+const router = useRouter();
+
+// 消息相关状态
+const notifications = ref<NotificationItem[]>([]);
+const messageList = ref<SystemMessageType.UserMessageListVo[]>([]);
+const notificationLoading = ref(false);
+const { unreadCount, fetchUnreadCount, setLayoutRefreshCallback } =
+  useMessageStore();
+
+// 消息类型映射
+const MESSAGE_TYPES = {
+  1: { label: '系统消息', color: 'blue' },
+  2: { label: '通知消息', color: 'green' },
+  3: { label: '公告消息', color: 'orange' },
+} as const;
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
-const showDot = computed(() =>
-  notifications.value.some((item) => !item.isRead),
-);
+
+const showDot = computed(() => unreadCount.value > 0);
+
+// 获取消息列表 - 只获取前10条未读消息用于顶部导航显示
+const fetchMessageList = async (showLoading = false) => {
+  try {
+    if (showLoading) {
+      notificationLoading.value = true;
+    }
+    const response = await listUserMessageList({
+      current: 1,
+      size: 10, // 只获取10条消息用于通知显示
+      isRead: 0, // 只获取未读消息
+    });
+
+    messageList.value = response.rows || [];
+
+    // 转换为通知格式 - 只显示未读消息
+    notifications.value = messageList.value.map((msg) => ({
+      id: msg.id?.toString(),
+      title: msg.title || '无标题',
+      message:
+        MESSAGE_TYPES[msg.type as keyof typeof MESSAGE_TYPES]?.label || '消息',
+      date: msg.createTime || '',
+      isRead: false, // 因为我们只获取未读消息，所以都是未读状态
+      // 移除avatar字段，不再显示头像
+    }));
+  } catch (error) {
+    console.error('获取消息列表失败:', error);
+  } finally {
+    if (showLoading) {
+      notificationLoading.value = false;
+    }
+  }
+};
 
 const menus = computed(() => [
   {
     handler: () => {
-      openWindow(VBEN_DOC_URL, {
-        target: '_blank',
-      });
+      router.push('/profile');
     },
-    icon: BookOpenText,
-    text: $t('ui.widgets.document'),
+    icon: User,
+    text: '个人中心',
   },
   {
     handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
-      });
+      router.push('/message');
     },
-    icon: MdiGithub,
-    text: 'GitHub',
-  },
-  {
-    handler: () => {
-      openWindow(`${VBEN_GITHUB_URL}/issues`, {
-        target: '_blank',
-      });
-    },
-    icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
+    icon: Mail,
+    text: '站内消息',
+    badge: unreadCount.value > 0 ? unreadCount.value : undefined,
   },
 ]);
 
@@ -98,19 +105,57 @@ async function handleLogout() {
   await authStore.logout(false);
 }
 
+// 移除清空功能，按要求不显示清空按钮
 function handleNoticeClear() {
-  notifications.value = [];
+  // 不执行任何操作，因为要求移除清空按钮
 }
 
-function handleMakeAll() {
-  notifications.value.forEach((item) => (item.isRead = true));
+function handleMakeAll() {}
+
+// 处理通知点击，导航到消息详情
+function handleNotificationClick(notification: NotificationItem) {
+  if (notification.id) {
+    router.push(`/message/detail/${notification.id}`);
+  }
 }
+
+// 处理查看所有消息
+function handleViewAllMessages() {
+  router.push('/message');
+}
+
+// 处理通知下拉框打开事件 - 实时获取最新数据
+async function handleNotificationOpen() {
+  // 立即显示加载状态，清空之前的消息列表
+  notificationLoading.value = true;
+  notifications.value = []; // 清空旧数据，避免显示过期内容
+
+  try {
+    // 先获取未读数量，再获取消息列表
+    await fetchUnreadCount(); // 更新未读数量徽章
+    await fetchMessageList(false); // 不再传true，因为我们已经手动设置了loading状态
+  } finally {
+    notificationLoading.value = false;
+  }
+}
+
+// 组件挂载时获取数据
+onMounted(async () => {
+  // 首先获取未读数量，确保徽标能正确显示
+  await fetchUnreadCount();
+
+  // 然后获取消息列表用于下拉显示
+  await fetchMessageList(false);
+
+  // 注册布局消息刷新回调
+  setLayoutRefreshCallback(() => fetchMessageList(false));
+});
 watch(
   () => preferences.app.watermark,
   async (enable) => {
     if (enable) {
       await updateWatermark({
-        content: `${userStore.userInfo?.username} - ${userStore.userInfo?.realName}`,
+        content: `${userStore.userInfo?.username} - ${userStore.userInfo?.nickname}`,
       });
     } else {
       destroyWatermark();
@@ -128,8 +173,8 @@ watch(
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
+        :text="userStore.userInfo?.nickname"
+        :description="userStore.userInfo?.email"
         tag-text="Pro"
         @logout="handleLogout"
       />
@@ -138,8 +183,13 @@ watch(
       <Notification
         :dot="showDot"
         :notifications="notifications"
+        :unread-count="unreadCount"
+        :loading="notificationLoading"
         @clear="handleNoticeClear"
         @make-all="handleMakeAll"
+        @notification-click="handleNotificationClick"
+        @view-all="handleViewAllMessages"
+        @open="handleNotificationOpen"
       />
     </template>
     <template #extra>

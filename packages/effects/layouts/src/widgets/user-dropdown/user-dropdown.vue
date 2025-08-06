@@ -47,6 +47,7 @@ interface Props {
    * 菜单数组
    */
   menus?: Array<{
+    badge?: number;
     handler: AnyFunction;
     icon?: Component | Function | string;
     text: string;
@@ -227,11 +228,19 @@ if (enableShortcutKey.value) {
         <DropdownMenuItem
           v-for="menu in menus"
           :key="menu.text"
-          class="mx-1 flex cursor-pointer items-center rounded-sm py-1 leading-8"
+          class="mx-1 flex cursor-pointer items-center justify-between rounded-sm py-1 leading-8"
           @click="menu.handler"
         >
-          <VbenIcon :icon="menu.icon" class="mr-2 size-4" />
-          {{ menu.text }}
+          <div class="flex items-center">
+            <VbenIcon :icon="menu.icon" class="mr-2 size-4" />
+            {{ menu.text }}
+          </div>
+          <div
+            v-if="menu.badge && menu.badge > 0"
+            class="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-medium text-white"
+          >
+            {{ menu.badge > 99 ? '99+' : menu.badge }}
+          </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

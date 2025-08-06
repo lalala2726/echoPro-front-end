@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           affixTab: true,
           icon: 'lucide:area-chart',
-          title: $t('page.dashboard.analytics'),
+          title: '仪表盘',
         },
       },
       {
@@ -28,7 +28,27 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/dashboard/workspace/index.vue'),
         meta: {
           icon: 'carbon:workspace',
-          title: $t('page.dashboard.workspace'),
+          title: '工作台',
+        },
+      },
+      {
+        name: 'Message',
+        path: '/message',
+        component: () => import('#/views/dashboard/message/index.vue'),
+        meta: {
+          icon: 'lucide:message-square',
+          title: '我的消息',
+        },
+      },
+      {
+        name: 'MessageDetail',
+        path: '/message/detail/:id',
+        component: () => import('#/views/dashboard/message/detail.vue'),
+        meta: {
+          icon: 'lucide:message-square',
+          title: '消息详情',
+          activePath: '/message',
+          hideInMenu: true,
         },
       },
     ],

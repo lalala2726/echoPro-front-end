@@ -60,20 +60,22 @@ onMounted(() => {
                 监控状态: {{ config.enabled ? '启用' : '禁用' }}
               </span>
             </div>
-            <div class="text-sm text-gray-500">
+            <div class="dark:text-muted-foreground text-sm text-gray-500">
               版本: {{ config.version || 'Unknown' }}
             </div>
-            <div class="text-sm text-gray-500">
+            <div class="dark:text-muted-foreground text-sm text-gray-500">
               更新时间: {{ config.updateTime || 'Unknown' }}
             </div>
           </div>
           <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-500">启用功能:</span>
+            <span class="dark:text-muted-foreground text-sm text-gray-500"
+              >启用功能:</span
+            >
             <div class="flex space-x-1">
               <span
                 v-for="feature in config.features || []"
                 :key="feature"
-                class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"
+                class="dark:bg-primary/20 dark:text-primary inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"
               >
                 {{ feature.toUpperCase() }}
               </span>
@@ -121,30 +123,6 @@ onMounted(() => {
 
 <style scoped>
 .monitoring-dashboard {
-  @apply min-h-screen bg-gray-50 p-4;
-}
-
-.monitoring-dashboard :deep(.ant-tabs-card .ant-tabs-tab) {
-  @apply border-gray-200 bg-white;
-}
-
-.monitoring-dashboard :deep(.ant-tabs-card .ant-tabs-tab-active) {
-  @apply border-blue-500 bg-blue-50 text-blue-600;
-}
-
-.monitoring-dashboard :deep(.ant-tabs-content-holder) {
-  @apply bg-transparent;
-}
-
-.monitoring-dashboard :deep(.ant-card) {
-  @apply shadow-sm;
-}
-
-.monitoring-dashboard :deep(.ant-card-head) {
-  @apply border-gray-200 bg-gray-50;
-}
-
-.monitoring-dashboard :deep(.ant-card-head-title) {
-  @apply font-semibold text-gray-800;
+  @apply dark:bg-background min-h-screen bg-gray-50 p-4;
 }
 </style>

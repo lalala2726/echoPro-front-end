@@ -160,6 +160,11 @@ const updateCharts = () => {
   const memory = jvmData.value.memory;
   if (memory?.heap && memory?.nonHeap) {
     renderMemoryChart({
+      // 禁用初始动画，图表直接显示
+      animation: false,
+      // 启用数据更新动画
+      animationDurationUpdate: 600,
+      animationEasingUpdate: 'cubicInOut',
       title: {
         text: 'JVM内存使用情况',
         left: 'center',
@@ -181,6 +186,11 @@ const updateCharts = () => {
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['50%', '45%'],
+          // 禁用初始动画
+          animation: false,
+          // 启用数据更新动画
+          animationDurationUpdate: 600,
+          animationEasingUpdate: 'cubicInOut',
           data: [
             {
               value: memory.heap.used || 0,
@@ -213,6 +223,11 @@ const updateCharts = () => {
   // 更新线程状态图表
   if (threadStateData.value.length > 0) {
     renderThreadChart({
+      // 禁用初始动画，图表直接显示
+      animation: false,
+      // 启用数据更新动画
+      animationDurationUpdate: 600,
+      animationEasingUpdate: 'cubicInOut',
       title: {
         text: '线程状态分布',
         left: 'center',
@@ -456,7 +471,7 @@ onUnmounted(() => {
 
 <style scoped>
 .jvm-metrics {
-  @apply min-h-full bg-gray-50/30;
+  @apply dark:bg-background min-h-full bg-gray-50/30;
 }
 
 .metrics-section {
@@ -471,7 +486,7 @@ onUnmounted(() => {
 .metrics-card,
 .chart-card,
 .table-card {
-  @apply h-full border-0 shadow-sm;
+  @apply dark:bg-card dark:border-border h-full border-0 shadow-sm;
 }
 
 .metrics-grid {
@@ -483,38 +498,18 @@ onUnmounted(() => {
 }
 
 .chart-container {
-  @apply h-80;
+  @apply relative h-80 overflow-hidden;
 }
 
-.jvm-metrics :deep(.ant-card) {
-  @apply rounded-lg;
+.chart-container :deep(canvas) {
+  @apply !transform-none;
 }
 
-.jvm-metrics :deep(.ant-card-head) {
-  @apply border-b border-gray-100 bg-white/80;
-}
-
-.jvm-metrics :deep(.ant-card-body) {
-  @apply bg-white p-6;
-}
-
-.jvm-metrics :deep(.ant-statistic-title) {
-  @apply mb-2 text-sm font-medium text-gray-600;
-}
-
-.jvm-metrics :deep(.ant-statistic-content) {
-  @apply text-xl font-semibold;
-}
-
-.jvm-metrics :deep(.ant-descriptions-item-label) {
-  @apply font-medium text-gray-700;
-}
-
-.jvm-metrics :deep(.ant-table) {
-  @apply text-sm;
+.chart-container :deep(div) {
+  @apply !transition-none;
 }
 
 .jvm-metrics :deep(.ant-table-thead > tr > th) {
-  @apply bg-gray-50/80 font-semibold text-gray-700;
+  @apply dark:bg-muted dark:text-foreground bg-gray-50/80 font-semibold text-gray-700;
 }
 </style>

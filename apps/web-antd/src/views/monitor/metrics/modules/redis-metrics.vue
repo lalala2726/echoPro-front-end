@@ -151,6 +151,11 @@ const updateCharts = () => {
     const availableMemory = maxMemory > 0 ? maxMemory - usedMemory : 0;
 
     renderMemoryChart({
+      // 禁用初始动画，图表直接显示
+      animation: false,
+      // 启用数据更新动画
+      animationDurationUpdate: 600,
+      animationEasingUpdate: 'cubicInOut',
       title: {
         text: 'Redis内存使用情况',
         left: 'center',
@@ -172,6 +177,11 @@ const updateCharts = () => {
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['50%', '45%'],
+          // 禁用初始动画
+          animation: false,
+          // 启用数据更新动画
+          animationDurationUpdate: 600,
+          animationEasingUpdate: 'cubicInOut',
           data:
             maxMemory > 0
               ? [
@@ -212,6 +222,11 @@ const updateCharts = () => {
     const missRate = 100 - hitRate;
 
     renderPerformanceChart({
+      // 禁用初始动画，图表直接显示
+      animation: false,
+      // 启用数据更新动画
+      animationDurationUpdate: 600,
+      animationEasingUpdate: 'cubicInOut',
       title: {
         text: '缓存命中率',
         left: 'center',
@@ -233,6 +248,11 @@ const updateCharts = () => {
           type: 'pie',
           radius: ['40%', '70%'],
           center: ['50%', '45%'],
+          // 禁用初始动画
+          animation: false,
+          // 启用数据更新动画
+          animationDurationUpdate: 600,
+          animationEasingUpdate: 'cubicInOut',
           data: [
             {
               value: hitRate,
@@ -308,6 +328,41 @@ onUnmounted(() => {
             {{ redisData.info?.configFile || 'Unknown' }}
           </Descriptions.Item>
         </Descriptions>
+      </Card>
+    </div>
+
+    <!-- 性能统计 -->
+    <div class="metrics-section">
+      <Card title="性能统计" :loading="loading" class="metrics-card">
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+          <Statistic
+            title="命中次数"
+            :value="redisData.performance?.keyspaceHits || 0"
+            :value-style="{ color: '#52c41a' }"
+          />
+          <Statistic
+            title="未命中次数"
+            :value="redisData.performance?.keyspaceMisses || 0"
+            :value-style="{ color: '#ff4d4f' }"
+          />
+          <Statistic
+            title="命中率"
+            :value="redisData.performance?.hitRate || 0"
+            suffix="%"
+            :precision="2"
+            :value-style="{
+              color:
+                (redisData.performance?.hitRate || 0) > 90
+                  ? '#3f8600'
+                  : '#fa8c16',
+            }"
+          />
+          <Statistic
+            title="每秒操作数"
+            :value="redisData.commandStats?.instantaneousOpsPerSec || 0"
+            :value-style="{ color: '#1890ff' }"
+          />
+        </div>
       </Card>
     </div>
 
@@ -389,41 +444,6 @@ onUnmounted(() => {
           </div>
         </Card>
       </div>
-
-      <!-- 性能统计 -->
-      <div class="metrics-section">
-        <Card title="性能统计" :loading="loading" class="metrics-card">
-          <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <Statistic
-              title="命中次数"
-              :value="redisData.performance?.keyspaceHits || 0"
-              :value-style="{ color: '#52c41a' }"
-            />
-            <Statistic
-              title="未命中次数"
-              :value="redisData.performance?.keyspaceMisses || 0"
-              :value-style="{ color: '#ff4d4f' }"
-            />
-            <Statistic
-              title="命中率"
-              :value="redisData.performance?.hitRate || 0"
-              suffix="%"
-              :precision="2"
-              :value-style="{
-                color:
-                  (redisData.performance?.hitRate || 0) > 90
-                    ? '#3f8600'
-                    : '#fa8c16',
-              }"
-            />
-            <Statistic
-              title="每秒操作数"
-              :value="redisData.commandStats?.instantaneousOpsPerSec || 0"
-              :value-style="{ color: '#1890ff' }"
-            />
-          </div>
-        </Card>
-      </div>
     </div>
 
     <!-- 详细数据表格 -->
@@ -455,7 +475,7 @@ onUnmounted(() => {
 
 <style scoped>
 .redis-metrics {
-  @apply min-h-full bg-gray-50/30;
+  @apply dark:bg-background min-h-full bg-gray-50/30;
 }
 
 .metrics-section {
@@ -470,7 +490,7 @@ onUnmounted(() => {
 .metrics-card,
 .chart-card,
 .table-card {
-  @apply h-full border-0 shadow-sm;
+  @apply dark:bg-card dark:border-border h-full border-0 shadow-sm;
 }
 
 .metrics-grid {
@@ -482,10 +502,18 @@ onUnmounted(() => {
 }
 
 .chart-container {
-  @apply h-80;
+  @apply relative h-80 overflow-hidden;
+}
+
+.chart-container :deep(canvas) {
+  @apply !transform-none;
+}
+
+.chart-container :deep(div) {
+  @apply !transition-none;
 }
 
 .redis-metrics :deep(.ant-table-thead > tr > th) {
-  @apply bg-gray-50/80 font-semibold text-gray-700;
+  @apply dark:bg-muted dark:text-foreground bg-gray-50/80 font-semibold text-gray-700;
 }
 </style>
