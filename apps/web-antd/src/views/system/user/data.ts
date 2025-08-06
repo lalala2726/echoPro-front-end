@@ -2,7 +2,9 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemUserApi } from '#/api/system/user';
 
-// todo 角色分配,岗位分配
+import { useAccess } from '@vben/access';
+
+const { hasAccessByCodes } = useAccess();
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
@@ -223,8 +225,17 @@ export function useColumns<T = SystemUserApi.SysUser>(
         },
         name: 'CellOperation',
         options: [
-          'edit', // 默认的编辑按钮
-          'delete', // 默认的删除按钮
+          {
+            code: 'edit',
+            text: '编辑',
+            show: () => hasAccessByCodes(['system:user:edit']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            // 添加权限码检查
+            show: () => hasAccessByCodes(['system:user:delete']),
+          },
         ],
       },
       field: 'operation',
