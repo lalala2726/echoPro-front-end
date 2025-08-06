@@ -3,7 +3,7 @@ import { computed } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 
-import { Button, Checkbox, Divider, Space } from 'ant-design-vue';
+import { Button, Space } from 'ant-design-vue';
 
 interface Props {
   selectedCount: number;
@@ -14,7 +14,6 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'selectAll', checked: boolean): void;
   (e: 'batchAction', action: 'delete' | 'read' | 'unread'): void;
 }
 
@@ -31,21 +30,8 @@ const emit = defineEmits<Emits>();
 
 // 计算属性
 const hasSelected = computed(() => props.selectedCount > 0);
-const isAllSelected = computed(
-  () =>
-    props.currentPageCount > 0 &&
-    props.selectedCount === props.currentPageCount,
-);
-const isIndeterminate = computed(
-  () => props.selectedCount > 0 && props.selectedCount < props.currentPageCount,
-);
 
 // 事件处理
-const handleSelectAll = (e: any) => {
-  const checked = e.target.checked;
-  emit('selectAll', checked);
-};
-
 const handleBatchAction = (action: 'delete' | 'read' | 'unread') => {
   emit('batchAction', action);
 };
@@ -53,19 +39,10 @@ const handleBatchAction = (action: 'delete' | 'read' | 'unread') => {
 
 <template>
   <div
-    class="batch-operation-toolbar mb-4 flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+    class="batch-operation-toolbar mb-4 flex items-center justify-between p-3"
   >
-    <!-- 左侧：全选和选择信息 -->
+    <!-- 左侧：选择信息 -->
     <div class="flex items-center space-x-4">
-      <Checkbox
-        :checked="isAllSelected"
-        :indeterminate="isIndeterminate"
-        :disabled="loading || currentPageCount === 0"
-        @change="handleSelectAll"
-      >
-        全选
-      </Checkbox>
-
       <span class="text-sm text-gray-600 dark:text-gray-400">
         已选择 {{ selectedCount }} 项，共 {{ totalCount }} 项
         <span

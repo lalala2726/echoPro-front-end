@@ -4,7 +4,7 @@ import type { SystemMessageType } from '#/api/system/message';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Card, message, Typography } from 'ant-design-vue';
+import { Button, Card, Input, message, Space } from 'ant-design-vue';
 
 import {
   deleteMessages,
@@ -43,6 +43,8 @@ const pageSize = ref(10);
 const total = ref(0);
 const activeTab = ref<number>(0);
 const localReadCount = ref(0); // 本地已读数量，用于当前页面显示
+const searchTitle = ref<string>(''); // 搜索标题
+const readStatusFilter = ref<number | undefined>(undefined); // 未读/已读状态过滤: undefined-全部, 0-未读, 1-已读
 
 // 查询参数
 const queryParams = ref<SystemMessageType.UserMessageListQueryRequest>({
@@ -60,6 +62,8 @@ const fetchMessageList = async () => {
       type: activeTab.value === 0 ? undefined : activeTab.value,
       current: currentPage.value,
       size: pageSize.value,
+      title: searchTitle.value || undefined,
+      isRead: readStatusFilter.value,
     };
 
     const response = await listUserMessageList(params);
@@ -189,6 +193,29 @@ const handleTabChange = (key: number) => {
   fetchMessageList();
 };
 
+// 搜索标题
+const handleSearchTitle = () => {
+  currentPage.value = 1;
+  selectedRowKeys.value = [];
+  fetchMessageList();
+};
+
+// 清空搜索
+const handleClearSearch = () => {
+  searchTitle.value = '';
+  currentPage.value = 1;
+  selectedRowKeys.value = [];
+  fetchMessageList();
+};
+
+// 切换已读/未读状态
+const handleReadStatusChange = (status: number | undefined) => {
+  readStatusFilter.value = status;
+  currentPage.value = 1;
+  selectedRowKeys.value = [];
+  fetchMessageList();
+};
+
 // 分页变化
 const handlePageChange = (page: number, size: number) => {
   currentPage.value = page;
@@ -234,16 +261,57 @@ onMounted(() => {
 
 <template>
   <div class="message-center dark:bg-background min-h-full bg-gray-50/30 p-4">
-    <!-- 页面标题 -->
-    <div class="mb-6">
-      <Typography.Title :level="3" class="!mb-2"> 消息中心 </Typography.Title>
-      <Typography.Text type="secondary">
-        管理和查看系统消息、通知和公告
-      </Typography.Text>
-    </div>
-
     <!-- 主要内容卡片 -->
     <Card class="dark:bg-card dark:border-border border-0 shadow-sm">
+      <!-- 搜索和过滤区域 -->
+      <div
+        class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <!-- 未读/已读状态切换 -->
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-600 dark:text-gray-400">
+            状态筛选:
+          </span>
+          <Space>
+            <Button
+              :type="readStatusFilter === undefined ? 'primary' : 'default'"
+              size="small"
+              @click="handleReadStatusChange(undefined)"
+            >
+              全部
+            </Button>
+            <Button
+              :type="readStatusFilter === 0 ? 'primary' : 'default'"
+              size="small"
+              @click="handleReadStatusChange(0)"
+            >
+              未读
+            </Button>
+            <Button
+              :type="readStatusFilter === 1 ? 'primary' : 'default'"
+              size="small"
+              @click="handleReadStatusChange(1)"
+            >
+              已读
+            </Button>
+          </Space>
+        </div>
+
+        <!-- 搜索标题 -->
+        <div class="flex-shrink-0">
+          <Input.Search
+            v-model:value="searchTitle"
+            placeholder="搜索消息标题..."
+            allow-clear
+            enter-button="搜索"
+            :loading="loading"
+            @search="handleSearchTitle"
+            @clear="handleClearSearch"
+            class="w-80"
+          />
+        </div>
+      </div>
+
       <!-- Tab导航 -->
       <MessageFilterTabs
         :active-tab="activeTab"
@@ -275,16 +343,14 @@ onMounted(() => {
         @row-select="handleRowSelect"
         @row-click="handleRowClick"
         @page-change="handlePageChange"
+        @select-all="handleSelectAll"
       />
     </Card>
   </div>
 </template>
 
 <style scoped>
-/* 消息中心整体样式 */
-.message-center {
-  @apply transition-colors duration-200;
-}
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {
@@ -292,4 +358,10 @@ onMounted(() => {
     @apply p-2;
   }
 }
+
+.message-center {
+  @apply transition-colors duration-200;
+}
+
+/* 消息中心整体样式 */
 </style>

@@ -32,16 +32,22 @@ export function useMessageStore() {
     }
   };
 
-  // 获取未读消息数量（保持向后兼容）
+  // 获取未读消息数量（使用专用的计数API）
   const fetchUnreadCount = async () => {
     try {
       const response = await getUnreadCount();
-      globalUnreadCount.value = response.count || 0;
+
+      const unreadCount = response.unRead;
+      const readCount = response.read;
+
+      globalUnreadCount.value = unreadCount;
+      globalReadCount.value = readCount;
+
       return globalUnreadCount.value;
     } catch (error) {
       console.error('获取未读消息数量失败:', error);
-      // 如果旧API失败，尝试使用新API
-      return await fetchUnreadCountFromList();
+      // 发生错误时保持当前值不变
+      return globalUnreadCount.value;
     }
   };
 

@@ -83,8 +83,12 @@ export namespace SystemMessageType {
   }
 
   export interface UnreadCountResponse {
-    /** 未读消息数量 */
-    count: number;
+    /** 总数量 */
+    total: number;
+    /** 已读数量 */
+    read: number;
+    /** 未读数量 */
+    unRead: number;
   }
 }
 
@@ -114,11 +118,11 @@ async function getMessageDetailById(id: number) {
 }
 
 /**
- * 获取未读消息数量
+ * 获取未读和已读消息数量
  */
 async function getUnreadCount() {
   return requestClient.get<SystemMessageType.UnreadCountResponse>(
-    '/system/message/unread/count',
+    '/system/message/count',
   );
 }
 
