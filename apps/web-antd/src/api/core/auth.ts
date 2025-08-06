@@ -12,13 +12,6 @@ export namespace AuthApi {
     accessToken: string;
     refreshToken: string;
   }
-
-  export interface RefreshTokenResult {
-    data: {
-      accessToken: string;
-      refreshToken: string;
-    };
-  }
 }
 
 /**
@@ -41,7 +34,7 @@ export async function refreshTokenApi(refreshToken: any) {
  * 退出登录
  */
 export async function logoutApi() {
-  return baseRequestClient.post('/auth/logout', {
+  return requestClient.delete('/auth/logout', {
     withCredentials: true,
   });
 }
@@ -49,6 +42,6 @@ export async function logoutApi() {
 /**
  * 获取用户权限码
  */
-export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/getUserInfo');
+export async function getPermissionCode() {
+  return requestClient.get<string[]>('/auth/permission');
 }

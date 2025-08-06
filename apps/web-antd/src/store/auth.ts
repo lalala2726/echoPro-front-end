@@ -10,7 +10,7 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { getPermissionCode, getUserInfoApi, loginApi, logoutApi } from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
         // 获取用户信息并存储到 accessStore 中
         const [fetchUserInfoResult, accessCodes] = await Promise.all([
           fetchUserInfo(),
-          getAccessCodesApi(),
+          getPermissionCode(),
         ]);
 
         userInfo = fetchUserInfoResult;
@@ -77,14 +77,29 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
+  /**
+   * 登出
+   * @param redirect 是否跳转回登录页
+   * @param callLogoutApi 是否调用注销API
+   */
   async function logout(
     redirect: boolean = true,
     callLogoutApi: boolean = true,
   ) {
-    // 只有在需要时才调用注销API
+    // 尝试调用注销API，但不阻塞后续的清理操作
     if (callLogoutApi) {
-      await logoutApi();
+      try {
+        await logoutApi();
+      } catch (error) {
+        // 注销API失败时只记录错误，不阻塞清理操作
+        console.warn(
+          'Logout API failed, but continuing with local cleanup:',
+          error,
+        );
+      }
     }
+
+    // 无论API是否成功，都执行清理操作
     resetAllStores();
     accessStore.setLoginExpired(false);
 
