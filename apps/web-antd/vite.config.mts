@@ -1,15 +1,27 @@
+import { cwd } from 'node:process';
+
 import { defineConfig } from '@vben/vite-config';
 
-export default defineConfig(async () => {
+import { loadEnv } from 'vite';
+
+export default defineConfig(async (config) => {
+  const { mode = 'development' } = config || {};
+  const root = cwd();
+  const env = loadEnv(mode, root, '');
+
+  const apiPrefix = env.VITE_GLOB_API_URL;
+  const backendUrl = env.VITE_BACKEND_URL;
+
   return {
     application: {},
     vite: {
       server: {
         proxy: {
-          '/api': {
+          [apiPrefix as string]: {
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
-            target: 'http://127.0.0.1:8080',
+            rewrite: (path: string) =>
+              path.replace(new RegExp(`^${apiPrefix}`), ''),
+            target: backendUrl,
             ws: true,
           },
         },
