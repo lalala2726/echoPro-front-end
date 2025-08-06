@@ -20,7 +20,7 @@ import {
 const avatarUrl = ref('');
 const avatarWithButton = ref('');
 
-function handleUploadSuccess(response: any) {
+function handleUploadSuccess() {
   message.success('文件上传成功');
 }
 
