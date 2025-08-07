@@ -76,8 +76,10 @@ defineExpose({
   <Drawer class="w-[40%] min-w-[600px]" title="选择存储类型">
     <div class="p-6">
       <div class="mb-8">
-        <h3 class="mb-3 text-xl font-semibold text-gray-900">创建存储配置</h3>
-        <p class="text-gray-600">
+        <h3 class="mb-3 text-xl font-semibold text-gray-900 dark:text-gray-100">
+          创建存储配置
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400">
           请选择您要配置的对象存储服务类型，系统将为您打开对应的配置表单
         </p>
       </div>
@@ -86,11 +88,12 @@ defineExpose({
         <div
           v-for="option in storageTypeOptions"
           :key="option.value"
-          class="relative cursor-pointer rounded-lg border border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
+          class="relative cursor-pointer rounded-lg border border-gray-200 p-6 transition-all duration-200 hover:border-blue-300 hover:shadow-lg dark:border-gray-700 dark:hover:border-blue-500"
           :class="{
-            'border-blue-500 bg-blue-50 shadow-lg':
+            'border-blue-500 bg-blue-50 shadow-lg dark:border-blue-400 dark:bg-blue-900/20':
               selectedType === option.value,
-            'hover:bg-gray-50': selectedType !== option.value,
+            'hover:bg-gray-50 dark:hover:bg-gray-800':
+              selectedType !== option.value,
           }"
           @click="selectStorageType(option.value)"
         >
@@ -122,10 +125,12 @@ defineExpose({
             </div>
 
             <div class="min-w-0 flex-1">
-              <h4 class="text-lg font-medium text-gray-900">
+              <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ getStorageTypeInfo(option.value).name }}
               </h4>
-              <p class="mt-2 text-sm leading-relaxed text-gray-500">
+              <p
+                class="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400"
+              >
                 {{ getStorageTypeInfo(option.value).description }}
               </p>
             </div>
@@ -188,12 +193,12 @@ defineExpose({
       <!-- 选择提示 -->
       <div
         v-if="!selectedType"
-        class="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4"
+        class="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-900/20"
       >
         <div class="flex">
           <div class="flex-shrink-0">
             <svg
-              class="h-5 w-5 text-yellow-400"
+              class="h-5 w-5 text-yellow-400 dark:text-yellow-300"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -205,7 +210,7 @@ defineExpose({
             </svg>
           </div>
           <div class="ml-3">
-            <p class="text-sm font-medium text-yellow-800">
+            <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
               请选择一个存储类型后点击"下一步"继续配置
             </p>
           </div>
@@ -213,11 +218,11 @@ defineExpose({
       </div>
 
       <!-- 提示信息 -->
-      <div class="mt-8 rounded-lg bg-blue-50 p-4">
+      <div class="mt-8 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
         <div class="flex">
           <div class="flex-shrink-0">
             <svg
-              class="h-5 w-5 text-blue-400"
+              class="h-5 w-5 text-blue-400 dark:text-blue-300"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -229,8 +234,10 @@ defineExpose({
             </svg>
           </div>
           <div class="ml-3">
-            <h4 class="text-sm font-medium text-blue-800">选择建议</h4>
-            <div class="mt-1 text-sm text-blue-700">
+            <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+              选择建议
+            </h4>
+            <div class="mt-1 text-sm text-blue-700 dark:text-blue-300">
               <p>
                 <strong>MinIO:</strong> 适合私有化部署和开发测试环境<br />
                 <strong>云服务:</strong> 适合生产环境，提供更好的可靠性和支持
@@ -245,7 +252,7 @@ defineExpose({
       <div class="flex justify-end space-x-2">
         <button
           type="button"
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           @click="drawerApi.close()"
         >
           取消
@@ -256,8 +263,8 @@ defineExpose({
           class="rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           :class="[
             selectedType
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'cursor-not-allowed bg-gray-300 text-gray-500',
+              ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
+              : 'cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400',
           ]"
           @click="handleNext"
         >
