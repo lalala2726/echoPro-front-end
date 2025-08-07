@@ -2,7 +2,11 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemRoleApi } from '#/api/system/role';
 
+import { useAccess } from '@vben/access';
+
 import { getDictOptions, getDictOptionsSync } from '#/utils';
+
+const { hasAccessByCodes } = useAccess();
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -144,13 +148,22 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
         },
         name: 'CellOperation',
         options: [
-          'edit', // 默认的编辑按钮
+          {
+            code: 'edit',
+            text: '编辑',
+            show: () => hasAccessByCodes(['system:role:update']),
+          },
           {
             code: 'assign',
             text: '分配权限',
             style: { color: '#52c41a' },
+            show: () => hasAccessByCodes(['system:role:assign']),
           },
-          'delete', // 默认的删除按钮
+          {
+            code: 'delete',
+            text: '删除',
+            show: () => hasAccessByCodes(['system:role:delete']),
+          },
         ],
       },
       field: 'operation',

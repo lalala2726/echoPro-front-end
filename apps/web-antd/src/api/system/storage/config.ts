@@ -335,6 +335,13 @@ async function getConfigKeyOptions() {
 }
 
 /**
+ * 取消主配置
+ */
+async function cancelPrimary() {
+  return await requestClient.put('/system/storage/config/cancelPrimary');
+}
+
+/**
  * 导出存储配置列表
  * @param fileName 文件名（可选，不需要扩展名）
  * @param params 查询参数（可选）
@@ -354,6 +361,7 @@ export {
   addAmazonS3StorageConfig,
   addMinioStorageConfig,
   addTencentCosStorageConfig,
+  cancelPrimary,
   deleteStorageConfig,
   exportStorageConfigList,
   getConfigKeyOptions,

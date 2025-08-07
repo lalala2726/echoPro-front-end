@@ -7,6 +7,7 @@ import type { MonitorDeviceApi } from '#/api/system/online/device';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page } from '@vben/common-ui';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -19,6 +20,8 @@ import {
 } from '#/api/system/online/device';
 
 import { useColumns, useGridFormSchema } from './data';
+
+const { hasAccessByCodes } = useAccess();
 
 // 导出状态管理
 const isExporting = ref<boolean>(false);
@@ -148,8 +151,8 @@ async function onExport() {
     <Page auto-content-height>
       <Grid table-title="在线设备列表">
         <template #toolbar-tools>
-          <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['system:online-device:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"
@@ -159,6 +162,7 @@ async function onExport() {
         </template>
         <template #action="{ row }">
           <Button
+            v-if="hasAccessByCodes(['system:online-device:delete'])"
             danger
             size="small"
             type="link"

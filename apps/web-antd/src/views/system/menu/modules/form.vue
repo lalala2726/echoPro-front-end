@@ -327,6 +327,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return ['menu'].includes(values.type);
@@ -342,6 +343,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return ['embedded', 'menu'].includes(values.type);
@@ -357,6 +359,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return !['button'].includes(values.type);
@@ -372,6 +375,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return ['catalog', 'menu'].includes(values.type);
@@ -387,6 +391,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return !['button', 'link'].includes(values.type);
@@ -402,6 +407,7 @@ const schema: VbenFormSchema[] = [
   },
   {
     component: 'Checkbox',
+    defaultValue: false,
     dependencies: {
       show: (values) => {
         return !['button', 'link'].includes(values.type);
@@ -458,10 +464,37 @@ async function onSubmit() {
     drawerApi.lock();
     const data = await formApi.getValues();
 
-    // 构建提交数据，将ID包含在data中
+    // 构建提交数据，确保所有字段都包含在内
     const submitData = {
       ...data,
     };
+
+    // 确保所有字段都有默认值，即使用户没有填写也要向后端发送
+    submitData.keepAlive = data.keepAlive ?? false;
+    submitData.affixTab = data.affixTab ?? false;
+    submitData.hideInMenu = data.hideInMenu ?? false;
+    submitData.hideChildrenInMenu = data.hideChildrenInMenu ?? false;
+    submitData.hideInBreadcrumb = data.hideInBreadcrumb ?? false;
+    submitData.hideInTab = data.hideInTab ?? false;
+
+    // 确保字符串字段有默认值
+    submitData.name = data.name ?? '';
+    submitData.title = data.title ?? '';
+    submitData.path = data.path ?? '';
+    submitData.activePath = data.activePath ?? '';
+    submitData.icon = data.icon ?? '';
+    submitData.activeIcon = data.activeIcon ?? '';
+    submitData.component = data.component ?? '';
+    submitData.link = data.link ?? '';
+    submitData.permission = data.permission ?? '';
+    submitData.badgeType = data.badgeType ?? '';
+    submitData.badge = data.badge ?? '';
+    submitData.badgeVariants = data.badgeVariants ?? '';
+
+    // 确保数字字段有默认值
+    submitData.parentId = data.parentId ?? null;
+    submitData.status = data.status ?? 0;
+    submitData.sort = data.sort ?? 0;
 
     if (data.type === 'link') {
       submitData.meta = { ...data.meta, link: data.linkSrc };

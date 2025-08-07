@@ -4,6 +4,7 @@ import type { SystemSessionTypes } from '#/api/system/online/session';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page } from '@vben/common-ui';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -20,6 +21,7 @@ import { useColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
 
 const detailModalRef = ref();
+const { hasAccessByCodes } = useAccess();
 
 // 导出状态管理
 const isExporting = ref<boolean>(false);
@@ -147,6 +149,7 @@ async function onExport() {
       <Grid table-title="在线会话列表">
         <template #toolbar-tools>
           <Button
+            v-if="hasAccessByCodes(['system:online-session:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"
@@ -156,16 +159,16 @@ async function onExport() {
         </template>
         <template #action="{ row }">
           <Button
+            v-if="hasAccessByCodes(['system:online-session:query'])"
             size="small"
-            type="link"
             @click="onActionClick({ code: 'detail', row })"
           >
             详情
           </Button>
           <Button
             danger
+            v-if="hasAccessByCodes(['system:online-device:delete'])"
             size="small"
-            type="link"
             @click="onActionClick({ code: 'delete', row })"
           >
             删除

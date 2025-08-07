@@ -2,6 +2,8 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemStorageFileAPi } from '#/api/system/storage/file';
 
+import { useAccess } from '@vben/access';
+
 /**
  * 搜索表单配置
  */
@@ -88,6 +90,7 @@ export function useColumns(
   onActionClick?: OnActionClickFn<SystemStorageFileAPi.StorageFileListVo>,
   isTrashMode = false,
 ): VxeTableGridOptions<SystemStorageFileAPi.StorageFileListVo>['columns'] {
+  const { hasAccessByCodes } = useAccess();
   return [
     {
       type: 'checkbox',
@@ -175,15 +178,19 @@ export function useColumns(
               {
                 code: 'detail',
                 text: '详情',
+                visible: () => hasAccessByCodes(['system:storage-file:query']),
               },
               {
                 code: 'download',
                 text: '下载',
+                visible: () =>
+                  hasAccessByCodes(['system:storage-file:download']),
               },
               {
                 code: 'delete',
                 text: '彻底删除',
                 danger: true,
+                visible: () => hasAccessByCodes(['system:storage-file:delete']),
               },
             ]
           : [
@@ -191,15 +198,19 @@ export function useColumns(
               {
                 code: 'detail',
                 text: '详情',
+                visible: () => hasAccessByCodes(['system:storage-file:query']),
               },
               {
                 code: 'download',
                 text: '下载',
+                visible: () =>
+                  hasAccessByCodes(['system:storage-file:download']),
               },
               {
                 code: 'delete',
                 text: '删除',
                 danger: true,
+                visible: () => hasAccessByCodes(['system:storage-file:delete']),
               },
             ],
         attrs: {

@@ -11,6 +11,7 @@ import type { SystemDictApi as DictTypeApi } from '#/api/system/dict/dictType';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -60,6 +61,8 @@ async function fetchDictTypeInfo() {
     isLoading.value = false;
   }
 }
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormModal, formModalApi] = useVbenModal({
   destroyOnClose: true,
@@ -246,7 +249,11 @@ onMounted(async () => {
     <FormModal @success="handleFormSuccess" />
     <Grid :table-title="pageTitle">
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
+        <Button
+          v-if="hasAccessByCodes(['system:dict-data:add'])"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           新增字典值
         </Button>

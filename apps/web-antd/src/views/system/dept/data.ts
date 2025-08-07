@@ -4,8 +4,12 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
+import { useAccess } from '@vben/access';
+
 import { z } from '#/adapter/form';
 import { getDeptOptions } from '#/api/system/dept';
+
+const { hasAccessByCodes } = useAccess();
 
 /**
  * 获取搜索表单的字段配置
@@ -188,10 +192,17 @@ export function useColumns(
           {
             code: 'append',
             text: '新增下级',
+            show: () => hasAccessByCodes(['system:dept:add']),
           },
-          'edit', // 默认的编辑按钮
           {
-            code: 'delete', // 默认的删除按钮
+            code: 'edit',
+            text: '编辑',
+            show: () => hasAccessByCodes(['system:dept:update']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            show: () => hasAccessByCodes(['system:dept:delete']),
             disabled: (row: SystemDeptApi.SystemDept) => {
               return !!(row.children && row.children.length > 0);
             },

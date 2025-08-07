@@ -2,6 +2,8 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemSessionTypes } from '#/api/system/online/session';
 
+import { useAccess } from '@vben/access';
+
 /**
  * 搜索表单配置
  */
@@ -59,6 +61,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 export function useColumns<T = SystemSessionTypes.SessionListVo>(
   _onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
+  const { hasAccessByCodes } = useAccess();
   return [
     {
       field: 'userId',
@@ -97,9 +100,24 @@ export function useColumns<T = SystemSessionTypes.SessionListVo>(
     },
     {
       fixed: 'right',
-      slots: { default: 'action' },
       title: '操作',
       width: 120,
+      cellRender: {
+        name: 'CellOperation',
+        options: [
+          {
+            code: 'detail',
+            text: '详情',
+            visible: () => hasAccessByCodes(['system:online-session:query']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            danger: true,
+            visible: () => hasAccessByCodes(['system:online-session:delete']),
+          },
+        ],
+      },
     },
   ];
 }

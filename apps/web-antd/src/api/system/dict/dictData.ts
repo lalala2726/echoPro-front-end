@@ -76,10 +76,18 @@ async function deleteDictData(ids: number[]) {
   return requestClient.delete(`/system/dict/data/${ids.join(',')}`);
 }
 
+/**
+ * 刷新缓存
+ */
+async function refreshCache() {
+  return requestClient.post('/system/dict/data/refreshCache');
+}
+
 export {
   addDictData,
   deleteDictData,
   getDictDataById,
   getDictDataList,
+  refreshCache,
   updateDictData,
 };

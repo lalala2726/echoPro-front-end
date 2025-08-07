@@ -9,6 +9,7 @@ import type { SystemRoleApi } from '#/api/system/role';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -36,6 +37,7 @@ const [FormModal, formModalApi] = useVbenModal({
   destroyOnClose: true,
 });
 
+const { hasAccessByCodes } = useAccess();
 // 导出状态管理
 const isExporting = ref<boolean>(false);
 
@@ -216,12 +218,17 @@ async function onExport() {
       <FormModal @success="onRefresh" />
       <Grid table-title="角色列表">
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['system:role:add'])"
+            type="primary"
+            @click="onCreate"
+          >
             <Plus class="size-5" />
             新增角色
           </Button>
           <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['system:role:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"

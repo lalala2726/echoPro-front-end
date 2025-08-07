@@ -7,6 +7,7 @@ import type { SystemPostApi } from '#/api/system/post';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -22,6 +23,8 @@ import {
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -232,7 +235,7 @@ async function onExport() {
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-    await exportPostList('岗位列表', formValues);
+    await exportPostList(formValues);
 
     message.success({
       content: '岗位列表导出成功',
@@ -257,14 +260,25 @@ async function onExport() {
     <Page auto-content-height>
       <Grid table-title="岗位列表">
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['system:post:add'])"
+            type="primary"
+            @click="onCreate"
+          >
             <Plus class="size-5" />
             新增岗位
           </Button>
           <span class="mx-2"></span>
-          <Button danger @click="onBatchDelete"> 批量删除 </Button>
+          <Button
+            v-if="hasAccessByCodes(['system:post:delete'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
           <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['system:post:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"
