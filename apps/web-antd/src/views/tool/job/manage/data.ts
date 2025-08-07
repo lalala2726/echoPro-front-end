@@ -1,6 +1,8 @@
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 import type { JobManageType } from '#/api/tool/job/type/manageType';
 
+import { useAccess } from '@vben/access';
+
 /**
  * 表格列配置
  */
@@ -14,6 +16,7 @@ export function useColumns(
     row: JobManageType.SysJobListVo,
   ) => Promise<boolean>,
 ): VxeGridPropTypes.Columns<JobManageType.SysJobListVo> {
+  const { hasAccessByCodes } = useAccess();
   return [
     {
       title: '任务ID',
@@ -66,6 +69,49 @@ export function useColumns(
       fixed: 'right',
       slots: { default: 'action' },
       width: 200,
+      cellRender: {
+        name: 'CellOperation',
+        options: [
+          {
+            code: 'pause',
+            text: '暂停',
+            visible: (row: JobManageType.SysJobListVo) =>
+              row.status === 0 && hasAccessByCodes(['tool:job:pause']),
+          },
+          {
+            code: 'resume',
+            text: '恢复任务',
+            visible: (row: JobManageType.SysJobListVo) =>
+              row.status === 1 && hasAccessByCodes(['tool:job:resume']),
+          },
+          {
+            code: 'run',
+            text: '执行',
+            visible: () => hasAccessByCodes(['tool:job:run']),
+          },
+          {
+            code: 'edit',
+            text: '编辑',
+            visible: () => hasAccessByCodes(['tool:job:update']),
+          },
+          {
+            code: 'log',
+            text: '日志',
+            visible: () => hasAccessByCodes(['tool:job:query']),
+          },
+          {
+            code: 'refresh',
+            text: '刷新',
+            visible: () => hasAccessByCodes(['tool:job:refresh']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            danger: true,
+            visible: () => hasAccessByCodes(['tool:job:delete']),
+          },
+        ],
+      },
     },
   ];
 }

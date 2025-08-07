@@ -5,6 +5,7 @@ import type { JobLogType } from '#/api/tool/job/type/logType';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { ArrowLeft } from '@vben/icons';
 
@@ -24,6 +25,8 @@ import Detail from './modules/detail.vue';
 
 const route = useRoute();
 const router = useRouter();
+
+const { hasAccessByCodes } = useAccess();
 
 const [DetailModal, detailModalApi] = useVbenModal({
   connectedComponent: Detail,
@@ -254,9 +257,21 @@ async function onExport() {
             返回任务管理
           </Button>
           <span class="mx-2"></span>
-          <Button danger @click="onBatchDelete"> 批量删除 </Button>
+          <Button
+            v-if="hasAccessByCodes(['tool:job-log:delete'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
           <span class="mx-2"></span>
-          <Button danger @click="onCleanAll"> 清空全部 </Button>
+          <Button
+            v-if="hasAccessByCodes(['tool:job-log:clean'])"
+            danger
+            @click="onCleanAll"
+          >
+            清空全部
+          </Button>
           <span class="mx-2"></span>
           <Button
             :disabled="isExporting"
@@ -270,11 +285,13 @@ async function onExport() {
           <Button
             size="small"
             type="link"
+            v-if="hasAccessByCodes(['tool:job-log:query'])"
             @click="onActionClick({ code: 'detail', row })"
           >
             详情
           </Button>
           <Button
+            v-if="hasAccessByCodes(['tool:job-log:delete'])"
             danger
             size="small"
             type="link"

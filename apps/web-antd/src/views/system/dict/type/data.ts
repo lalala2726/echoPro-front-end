@@ -1,6 +1,12 @@
+import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
+
 import type { VbenFormSchema } from '#/adapter/form';
-import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { OnActionClickFn } from '#/adapter/vxe-table';
 import type { SystemDictApi } from '#/api/system/dict/dictType';
+
+import { useAccess } from '@vben/access';
+
+const { hasAccessByCodes } = useAccess();
 
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -140,12 +146,21 @@ export function useColumns<T = SystemDictApi.SystemDictType>(
         },
         name: 'CellOperation',
         options: [
-          'edit', // 默认的编辑按钮
           {
             code: 'view',
             text: '查看字典值',
+            show: () => hasAccessByCodes(['system:dict-type:query']),
           },
-          'delete', // 默认的删除按钮
+          {
+            code: 'edit',
+            text: '编辑',
+            show: () => hasAccessByCodes(['system:dict-type:update']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            show: () => hasAccessByCodes(['system:dict-type:delete']),
+          },
         ],
       },
       field: 'operation',

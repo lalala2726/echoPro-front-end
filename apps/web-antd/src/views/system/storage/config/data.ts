@@ -2,6 +2,8 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { StorageConfigApi } from '#/api/system/storage/config';
 
+import { useAccess } from '@vben/access';
+
 /**
  * 存储类型选项
  */
@@ -67,6 +69,7 @@ export function useColumns(
     row: StorageConfigApi.StorageConfigListVo,
   ) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions<StorageConfigApi.StorageConfigListVo>['columns'] {
+  const { hasAccessByCodes } = useAccess();
   return [
     {
       field: 'storageName',
@@ -121,7 +124,19 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
-        options: ['edit', 'delete'],
+        options: [
+          {
+            code: 'edit',
+            text: '编辑',
+            visible: () => hasAccessByCodes(['system:storage-config:update']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            danger: true,
+            visible: () => hasAccessByCodes(['system:storage-config:delete']),
+          },
+        ],
       },
       field: 'operation',
       fixed: 'right',

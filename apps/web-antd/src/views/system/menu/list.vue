@@ -4,6 +4,7 @@ import type {
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon, Plus } from '@vben/icons';
 
@@ -16,6 +17,8 @@ import { deleteMenu, getMenuById, getMenuList } from '#/api/system/menu';
 
 import { useColumns } from './data';
 import Form from './modules/form.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -117,7 +120,11 @@ function onDelete(row: any) {
       <FormDrawer @success="onRefresh" />
       <Grid>
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['system:menu:add'])"
+            type="primary"
+            @click="onCreate"
+          >
             <Plus class="size-5" />
             新增菜单
           </Button>

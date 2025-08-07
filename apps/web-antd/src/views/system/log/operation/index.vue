@@ -7,6 +7,7 @@ import type { SystemOperationLogApi } from '#/api/system/log/operation';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -26,6 +27,7 @@ const [DetailModal, detailModalApi] = useVbenModal({
   connectedComponent: Detail,
   destroyOnClose: true,
 });
+const { hasAccessByCodes } = useAccess();
 
 // 导出状态管理
 const isExporting = ref<boolean>(false);
@@ -239,11 +241,24 @@ async function onExport() {
     <Page auto-content-height>
       <Grid table-title="操作日志">
         <template #toolbar-tools>
-          <Button danger @click="onBatchDelete"> 批量删除</Button>
-          <span class="mx-2"></span>
-          <Button danger @click="onCleanAll"> 清空日志</Button>
+          <Button
+            v-if="hasAccessByCodes(['system:log-operation:delete'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
           <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['system:log-operation:clean'])"
+            danger
+            @click="onCleanAll"
+          >
+            清空日志
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['system:log-operation:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"

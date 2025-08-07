@@ -7,6 +7,7 @@ import type { StorageConfigApi } from '#/api/system/storage/config';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page, prompt } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -28,6 +29,8 @@ import StorageForm from './modules/form.vue';
 defineOptions({
   name: 'StorageConfig',
 });
+
+const { hasAccessByCodes } = useAccess();
 
 // 导出状态管理
 const isExporting = ref<boolean>(false);
@@ -291,14 +294,24 @@ function onCreate() {
 
       <Grid table-title="存储配置列表">
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['system:storage-config:add'])"
+            primary
+            @click="onCreate"
+          >
             <Plus class="size-5" />
             新增配置
           </Button>
           <span class="mx-2"></span>
-          <Button @click="onRefreshCache"> 刷新缓存 </Button>
+          <Button
+            v-if="hasAccessByCodes(['system:storage-config:refresh'])"
+            @click="onRefreshCache"
+          >
+            刷新缓存
+          </Button>
           <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['system:storage-config:export'])"
             :loading="isExporting"
             :disabled="isExporting"
             @click="onExport"

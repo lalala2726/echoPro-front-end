@@ -4,7 +4,10 @@ import type { VxeGridPropTypes } from '@vben/plugins/vxe-table';
 import type { OnActionClickParams } from '#/adapter/vxe-table';
 import type { SystemPostApi } from '#/api/system/post';
 
+import { useAccess } from '@vben/access';
 import { z } from '@vben/common-ui';
+
+const { hasAccessByCodes } = useAccess();
 
 /**
  * 获取表单配置
@@ -192,10 +195,12 @@ export function useColumns(
           {
             code: 'edit',
             text: '编辑',
+            show: () => hasAccessByCodes(['system:post:update']),
           },
           {
             code: 'delete',
             text: '删除',
+            show: () => hasAccessByCodes(['system:post:delete']),
           },
         ],
       },

@@ -4,6 +4,8 @@ import type { VxeGridPropTypes } from '@vben/plugins/vxe-table';
 import type { OnActionClickParams } from '#/adapter/vxe-table';
 import type { SystemLoginLogApi } from '#/api/system/log/login';
 
+import { useAccess } from '@vben/access';
+
 /**
  * 获取搜索表单配置
  */
@@ -62,6 +64,7 @@ export function useColumns(
     params: OnActionClickParams<SystemLoginLogApi.SysLoginLogListVo>,
   ) => void,
 ): VxeGridPropTypes.Columns<SystemLoginLogApi.SysLoginLogListVo> {
+  const { hasAccessByCodes } = useAccess();
   return [
     {
       title: '登录ID',
@@ -123,8 +126,14 @@ export function useColumns(
           {
             code: 'detail',
             text: '详情',
+            visible: () => hasAccessByCodes(['system:log-login:query']),
           },
-          'delete', // 使用默认删除按钮，自带确认对话框
+          {
+            code: 'delete',
+            text: '删除',
+            danger: true,
+            visible: () => hasAccessByCodes(['system:log-login:delete']),
+          },
         ],
       },
       field: 'operation',

@@ -10,6 +10,7 @@ import type { JobManageType } from '#/api/tool/job/type/manageType';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -46,6 +47,7 @@ import {
 import Form from './modules/form.vue';
 
 const router = useRouter();
+const { hasAccessByCodes } = useAccess();
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -512,18 +514,39 @@ async function onExport() {
     <Page auto-content-height>
       <Grid table-title="定时任务管理">
         <template #toolbar-tools>
-          <Button type="primary" @click="onCreate">
+          <Button
+            v-if="hasAccessByCodes(['tool:job:add'])"
+            type="primary"
+            @click="onCreate"
+          >
             <Plus class="mr-1 size-4" />
             新增
           </Button>
           <span class="mx-2"></span>
-          <Button @click="onBatchStart"> 批量启动 </Button>
-          <span class="mx-2"></span>
-          <Button @click="onBatchPause"> 批量暂停 </Button>
-          <span class="mx-2"></span>
-          <Button danger @click="onBatchDelete"> 批量删除 </Button>
+          <Button
+            v-if="hasAccessByCodes(['tool:job:batch'])"
+            @click="onBatchStart"
+          >
+            批量启动
+          </Button>
           <span class="mx-2"></span>
           <Button
+            v-if="hasAccessByCodes(['tool:job:batch'])"
+            @click="onBatchPause"
+          >
+            批量暂停
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['tool:job:batch'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['tool:job:export'])"
             :disabled="isExporting"
             :loading="isExporting"
             @click="onExport"
@@ -543,7 +566,7 @@ async function onExport() {
         </template>
         <template #action="{ row }">
           <Button
-            v-if="row.status === 0"
+            v-if="row.status === 0 && hasAccessByCodes(['tool:job:pause'])"
             size="small"
             type="link"
             @click="onActionClick({ code: 'pause', row })"
@@ -551,7 +574,7 @@ async function onExport() {
             暂停
           </Button>
           <Button
-            v-if="row.status === 1"
+            v-if="row.status === 1 && hasAccessByCodes(['tool:job:start'])"
             size="small"
             type="link"
             @click="onActionClick({ code: 'resume', row })"
@@ -559,6 +582,7 @@ async function onExport() {
             启动
           </Button>
           <Button
+            v-if="hasAccessByCodes(['tool:job:run'])"
             size="small"
             type="link"
             @click="onActionClick({ code: 'run', row })"
@@ -574,6 +598,7 @@ async function onExport() {
               <Menu>
                 <MenuItem key="edit">
                   <Button
+                    v-if="hasAccessByCodes(['tool:job:update'])"
                     size="small"
                     type="text"
                     @click="onActionClick({ code: 'edit', row })"
@@ -583,6 +608,7 @@ async function onExport() {
                 </MenuItem>
                 <MenuItem key="log">
                   <Button
+                    v-if="hasAccessByCodes(['tool:job:log:list'])"
                     size="small"
                     type="text"
                     @click="onActionClick({ code: 'log', row })"
@@ -592,6 +618,7 @@ async function onExport() {
                 </MenuItem>
                 <MenuItem key="refresh">
                   <Button
+                    v-if="hasAccessByCodes(['tool:job:refresh'])"
                     size="small"
                     type="text"
                     @click="onActionClick({ code: 'refresh', row })"
@@ -601,9 +628,9 @@ async function onExport() {
                 </MenuItem>
                 <MenuItem key="delete">
                   <Button
+                    v-if="hasAccessByCodes(['tool:job:delete'])"
                     danger
                     size="small"
-                    type="text"
                     @click="onActionClick({ code: 'delete', row })"
                   >
                     删除

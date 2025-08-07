@@ -5,6 +5,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { IconifyIcon, Plus } from '@vben/icons';
 
@@ -15,6 +16,8 @@ import { deleteDept, getDeptList } from '#/api/system/dept';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -170,7 +173,11 @@ function getDeptIconColor(parentId: string) {
     <FormModal @success="onRefresh" />
     <Grid table-title="部门列表">
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
+        <Button
+          v-if="hasAccessByCodes(['system:dept:add'])"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           新增部门
         </Button>

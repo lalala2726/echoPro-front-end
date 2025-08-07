@@ -1,6 +1,10 @@
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SystemMenuApi } from '#/api/system/menu';
 
+import { useAccess } from '@vben/access';
+
+const { hasAccessByCodes } = useAccess();
+
 export function getMenuTypeOptions() {
   return [
     {
@@ -97,9 +101,18 @@ export function useColumns(
           {
             code: 'append',
             text: '新增下级',
+            show: () => hasAccessByCodes(['system:menu:add']),
           },
-          'edit', // 默认的编辑按钮
-          'delete', // 默认的删除按钮
+          {
+            code: 'edit',
+            text: '编辑',
+            show: () => hasAccessByCodes(['system:menu:update']),
+          },
+          {
+            code: 'delete',
+            text: '删除',
+            show: () => hasAccessByCodes(['system:menu:delete']),
+          },
         ],
       },
       field: 'operation',

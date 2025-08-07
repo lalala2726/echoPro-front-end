@@ -4,6 +4,7 @@ import type { SystemStorageFileAPi } from '#/api/system/storage/file';
 
 import { onBeforeUnmount, ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -26,6 +27,7 @@ const fileDetailRef = ref();
 // 当前激活的标签页
 const activeTab = ref('normal');
 const isDestroyed = ref(false);
+const { hasAccessByCodes } = useAccess();
 
 // 组件卸载前设置标记
 onBeforeUnmount(() => {
@@ -148,16 +150,27 @@ function handleUpload() {
       @action-click="onActionClick"
     >
       <template #toolbar-tools>
-        <Button type="primary" @click="handleUpload">
+        <Button primary @click="handleUpload">
           <template #icon>
             <Plus />
           </template>
           上传文件
         </Button>
         <span class="mx-2"></span>
-        <Button danger @click="handleBatchDelete"> 批量删除 </Button>
+        <Button
+          v-if="hasAccessByCodes(['system:storage-file:delete'])"
+          danger
+          @click="handleBatchDelete"
+        >
+          批量删除
+        </Button>
         <span class="mx-2"></span>
-        <Button @click="handleExport"> 导出列表 </Button>
+        <Button
+          v-if="hasAccessByCodes(['system:storage-file:export'])"
+          @click="handleExport"
+        >
+          导出列表
+        </Button>
         <span class="mx-2"></span>
         <Button @click="activeTab = 'trash'"> 回收站 </Button>
       </template>
@@ -171,9 +184,20 @@ function handleUpload() {
       @action-click="onActionClick"
     >
       <template #toolbar-tools>
-        <Button danger @click="handleBatchDelete"> 彻底删除 </Button>
+        <Button
+          v-if="hasAccessByCodes(['system:storage-file:delete'])"
+          danger
+          @click="handleBatchDelete"
+        >
+          彻底删除
+        </Button>
         <span class="mx-2"></span>
-        <Button @click="handleExport"> 导出列表 </Button>
+        <Button
+          v-if="hasAccessByCodes(['system:storage-file:export'])"
+          @click="handleExport"
+        >
+          导出列表
+        </Button>
         <span class="mx-2"></span>
         <Button @click="activeTab = 'normal'"> 退出回收站 </Button>
       </template>

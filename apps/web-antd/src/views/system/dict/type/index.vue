@@ -9,12 +9,14 @@ import type { SystemDictApi } from '#/api/system/dict/dictType';
 
 import { useRouter } from 'vue-router';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { refreshCache } from '#/api/system/dict/dictData';
 import {
   deleteDictType,
   getDictTypeById,
@@ -27,6 +29,8 @@ import { useColumns } from './data';
 import Form from './modules/form.vue';
 
 const router = useRouter();
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormModal, formModalApi] = useVbenModal({
   destroyOnClose: true,
@@ -173,6 +177,10 @@ function onDelete(row: SystemDictApi.SystemDictType) {
     });
 }
 
+function onRefreshCache() {
+  refreshCache();
+}
+
 function onRefresh() {
   gridApi.query();
 }
@@ -189,9 +197,21 @@ function onCreate() {
     <FormModal @success="onRefresh" />
     <Grid table-title="字典列表">
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
+        <Button
+          v-if="hasAccessByCodes(['system:dict-type:add'])"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           新增字典
+        </Button>
+        <span class="mx-2"></span>
+        <Button
+          v-if="hasAccessByCodes(['system:dict:refresh'])"
+          danger
+          @click="onRefreshCache"
+        >
+          刷新缓存
         </Button>
       </template>
     </Grid>
