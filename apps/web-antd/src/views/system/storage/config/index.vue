@@ -20,6 +20,7 @@ import {
   getStorageConfigById,
   getStorageConfigList,
   refreshCache,
+  cancelPrimary,
   updatePrimaryConfig,
 } from '#/api/system/storage/config';
 
@@ -251,6 +252,40 @@ function onRefreshCache() {
 }
 
 /**
+ * 取消主配置
+ */
+
+function onCancelPrimary() {
+  Modal.confirm({
+    title: '确定取消主配置设置?',
+    content:
+      '取消主配置可能导致无法上传文件和预览文件操作?为了保证存储服务的正常运行请保证系统配置中有相关的存储上传配置!',
+    okText: '确定',
+    cancelText: '取消',
+    okType: 'danger',
+    onOk: () => {
+      const hideLoading = message.loading({
+        content: '正在取消主配置...',
+        duration: 0,
+        key: 'reset_primary_msg',
+      });
+      return cancelPrimary()
+        .then(() => {
+          message.success({
+            content: '主配置取消成功',
+            key: 'reset_primary_msg',
+          });
+          onRefresh();
+        })
+        .catch(() => {
+          hideLoading();
+          throw new Error('取消失败');
+        });
+    },
+  });
+}
+
+/**
  * 导出存储配置列表
  */
 async function onExport() {
@@ -296,7 +331,7 @@ function onCreate() {
         <template #toolbar-tools>
           <Button
             v-if="hasAccessByCodes(['system:storage-config:add'])"
-            primary
+            type="primary"
             @click="onCreate"
           >
             <Plus class="size-5" />
@@ -304,10 +339,19 @@ function onCreate() {
           </Button>
           <span class="mx-2"></span>
           <Button
+            danger
             v-if="hasAccessByCodes(['system:storage-config:refresh'])"
             @click="onRefreshCache"
           >
             刷新缓存
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['system:storage-config:reset'])"
+            danger
+            @click="onCancelPrimary"
+          >
+            取消主配置
           </Button>
           <span class="mx-2"></span>
           <Button
