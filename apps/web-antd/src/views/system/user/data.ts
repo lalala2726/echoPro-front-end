@@ -149,7 +149,6 @@ export function useColumns<T = SystemUserApi.SysUser>(
       type: 'checkbox',
       width: 120,
       fixed: 'left',
-      field: 'nickname',
     },
     {
       field: 'nickname',
