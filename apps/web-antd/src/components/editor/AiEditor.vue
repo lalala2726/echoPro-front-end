@@ -172,6 +172,6 @@ watch(
 }
 
 :deep(.tippy-box) {
-  box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 5px 2px rgb(0 0 0 / 8%) !important;
 }
 </style>
