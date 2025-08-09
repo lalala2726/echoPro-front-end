@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemUserApi } from '#/api/system/user';
+import type { SysUserType } from '#/api/system/user';
 
 import { ref } from 'vue';
 
@@ -83,10 +83,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemUserApi.SysUser>,
+  } as VxeTableGridOptions<SysUserType.SysUser>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemUserApi.SysUser>) {
+function onActionClick(e: OnActionClickParams<SysUserType.SysUser>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -129,7 +129,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(newStatus: number, row: SystemUserApi.SysUser) {
+async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
   const status: Recordable<string> = {
     1: '禁用',
     0: '启用',
@@ -149,7 +149,7 @@ async function onStatusChange(newStatus: number, row: SystemUserApi.SysUser) {
 /**
  * 编辑用户
  */
-function onEdit(row: SystemUserApi.SysUser) {
+function onEdit(row: SysUserType.SysUser) {
   formModalApi.setData(row);
   formModalApi.open();
 }
@@ -157,7 +157,7 @@ function onEdit(row: SystemUserApi.SysUser) {
 /**
  * 删除用户
  */
-function onDelete(row: SystemUserApi.SysUser) {
+function onDelete(row: SysUserType.SysUser) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.username} ...`,
     duration: 0,
@@ -213,10 +213,7 @@ async function onExport() {
     const formValues = await gridApi.formApi.getValues();
 
     // 调用导出API
-    await exportUserList('用户列表', {
-      deptId: selectedDeptId.value,
-      ...formValues,
-    });
+    await exportUserList(formValues);
 
     // 导出成功提示
     message.success({
@@ -263,7 +260,7 @@ async function onBatchDelete() {
     );
 
     const userIds = selectRecords.map(
-      (record: SystemUserApi.SysUser) => record.userId,
+      (record: SysUserType.SysUser) => record.userId,
     );
     message.loading({
       content: '正在批量删除用户...',
@@ -289,7 +286,7 @@ async function onBatchDelete() {
 /**
  * 重置用户密码
  */
-function onResetPassword(row: SystemUserApi.SysUser) {
+function onResetPassword(row: SysUserType.SysUser) {
   resetPasswordModalApi.setData(row);
   resetPasswordModalApi.open();
 }

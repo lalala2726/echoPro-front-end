@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Option } from '@vben/types';
 
-import type { SystemUserApi } from '#/api/system/user';
+import type { SysUserType } from '#/api/system/user';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -21,7 +21,7 @@ interface DeptOption {
 }
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemUserApi.SysUser>>();
+const formData = ref<Partial<SysUserType.SysUser>>();
 const deptOptions = ref<DeptOption[]>([]);
 const roleOptions = ref<Option[]>([]);
 
@@ -117,8 +117,8 @@ const [Modal, modalApi] = useVbenModal({
           ? updateUser({
               ...data,
               userId: formData.value.userId,
-            } as SystemUserApi.SysUser)
-          : addUser(data as SystemUserApi.SysUser));
+            } as SysUserType.SysUser)
+          : addUser(data as SysUserType.SysUser));
         await modalApi.close();
         emit('success');
       } finally {
@@ -137,7 +137,7 @@ const [Modal, modalApi] = useVbenModal({
           // 并行加载基础数据
           await Promise.all([loadDeptOptions(), loadRoleOptions()]);
 
-          const data = modalApi.getData<SystemUserApi.SysUser>();
+          const data = modalApi.getData<SysUserType.SysUser>();
           if (data && data.userId) {
             // 编辑模式：加载完整的用户详情
             formData.value = data;

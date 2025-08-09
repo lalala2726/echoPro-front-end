@@ -117,7 +117,7 @@ async function updateProfile(params: profileType.ProfileUpdateRequest) {
  */
 async function getDeviceList() {
   return await requestClient.get<profileType.SessionDevice[]>(
-    '/system/user/security/device',
+    '/system/user/profile/security/device',
   );
 }
 
@@ -127,7 +127,7 @@ async function getDeviceList() {
  */
 async function deleteDevice(refreshTokenId: string) {
   return await requestClient.delete(
-    `/system/user/security/device/${refreshTokenId}`,
+    `/system/user/profile/security/device/${refreshTokenId}`,
   );
 }
 
@@ -136,7 +136,7 @@ async function deleteDevice(refreshTokenId: string) {
  */
 async function getSecurityLogList() {
   return await requestClient.get<profileType.UserSecurityLog[]>(
-    '/system/user/security/log',
+    '/system/user/profile/security/log',
   );
 }
 
@@ -144,7 +144,7 @@ async function getSecurityLogList() {
  * 退出所有登录
  */
 async function logoutAll() {
-  return await requestClient.delete('/system/user/security/logoutAll');
+  return await requestClient.delete('/system/user/profile/security/logoutAll');
 }
 
 /**
@@ -152,7 +152,7 @@ async function logoutAll() {
  * @param params
  */
 async function updatePassword(params: profileType.UpdatePasswordRequest) {
-  return await requestClient.put('/system/user/security/password', {
+  return await requestClient.put('/system/user/profile/security/password', {
     ...params,
   });
 }
@@ -161,14 +161,14 @@ async function updatePassword(params: profileType.UpdatePasswordRequest) {
  * 获取当前用户的邮箱
  */
 async function getEmail() {
-  return await requestClient.get('/system/user/email');
+  return await requestClient.get('/system/user/profile/email');
 }
 
 /**
  * 获取当前用户的手机号
  */
 async function getPhone() {
-  return await requestClient.get('/system/user/phone');
+  return await requestClient.get('/system/user/profile/phone');
 }
 
 /**
@@ -176,7 +176,7 @@ async function getPhone() {
  * @param data
  */
 async function updatePhone(data: profileType.UpdatePhoneRequest) {
-  return await requestClient.put('/system/user/phone', data);
+  return await requestClient.put('/system/user/profile/phone', data);
 }
 
 /**
@@ -184,7 +184,7 @@ async function updatePhone(data: profileType.UpdatePhoneRequest) {
  * @param data
  */
 async function updateEmail(data: profileType.UpdateEmailRequest) {
-  return await requestClient.put('/system/user/email', data);
+  return await requestClient.put('/system/user/profile/email', data);
 }
 
 export {
