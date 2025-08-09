@@ -91,40 +91,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
   gridEvents: {
     checkboxChange: () => {
-      try {
-        const currentPageRecords =
-          gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
-        const currentPageData = gridApi.grid.getTableData()
-          .fullData as SystemPostApi.SysPost[];
-
-        const currentIds = new Set(currentPageData.map((r) => r.id!));
-        const otherPagesSelected = selectedPosts.value.filter(
-          (r) => !currentIds.has(r.id!),
-        );
-
-        let next = [...otherPagesSelected, ...currentPageRecords];
-
-        if (!props.multiple && next.length > 1) {
-          message.warning('只能选择一个岗位');
-          next = currentPageRecords.slice(-1);
-          gridApi.grid.clearCheckboxRow();
-          if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
-        }
-
-        const max = props.maxCount ?? 1000;
-        if (next.length > max) {
-          message.warning(`最多只能选择 ${max} 个岗位`);
-          return;
-        }
-
-        selectedPosts.value = next;
-        const ids = next
-          .map((r) => r.id!)
-          .filter((id): id is number => id !== undefined);
-        emit('update:modelValue', ids);
-      } catch (error) {
-        console.error('处理岗位勾选变化失败:', error);
-      }
+      syncSelectionAfterToggle();
     },
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
@@ -169,6 +136,43 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
   },
 });
+
+function syncSelectionAfterToggle() {
+  try {
+    const currentPageRecords =
+      gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
+    const currentPageData = gridApi.grid.getTableData()
+      .fullData as SystemPostApi.SysPost[];
+
+    const currentIds = new Set(currentPageData.map((r) => r.id!));
+    const otherPagesSelected = selectedPosts.value.filter(
+      (r) => !currentIds.has(r.id!),
+    );
+
+    let next = [...otherPagesSelected, ...currentPageRecords];
+
+    if (!props.multiple && next.length > 1) {
+      message.warning('只能选择一个岗位');
+      next = currentPageRecords.slice(-1);
+      gridApi.grid.clearCheckboxRow();
+      if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
+    }
+
+    const max = props.maxCount ?? 1000;
+    if (next.length > max) {
+      message.warning(`最多只能选择 ${max} 个岗位`);
+      return;
+    }
+
+    selectedPosts.value = next;
+    const ids = next
+      .map((r) => r.id!)
+      .filter((id): id is number => id !== undefined);
+    emit('update:modelValue', ids);
+  } catch (error) {
+    console.error('处理岗位勾选变化失败:', error);
+  }
+}
 
 // 确认选择
 async function handleConfirm() {
@@ -225,7 +229,7 @@ function removePost(post: SystemPostApi.SysPost) {
     selectedPosts.value = selectedPosts.value.filter((r) => r.id !== post.id);
     try {
       gridApi.grid.setCheckboxRow(post, false);
-    } catch {}
+    } catch { }
     const postIds = selectedPosts.value
       .map((u) => u.id!)
       .filter((id): id is number => id !== undefined);
@@ -243,6 +247,20 @@ defineExpose({
 
 const selectedCount = computed(() => selectedPosts.value.length);
 const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
+
+// 选择操作按钮：与勾选行为一致
+function selectRow(row: SystemPostApi.SysPost) {
+  try {
+    const isChecked = (gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[]).some(
+      (r) => r.id === row.id,
+    );
+    gridApi.grid.setCheckboxRow(row, !isChecked);
+    // 手动同步右侧已选与 v-model
+    syncSelectionAfterToggle();
+  } catch (error) {
+    console.error('操作失败:', error);
+  }
+}
 </script>
 
 <template>
@@ -258,6 +276,10 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
                 {{ postStatusMap[row.status ?? 0]?.text || '未知' }}
               </Tag>
             </template>
+            <!-- 操作列插槽：选择按钮 -->
+            <template #action="{ row }">
+              <Button type="link" size="small" @click="() => selectRow(row)">选择</Button>
+            </template>
           </Grid>
         </div>
       </div>
@@ -271,12 +293,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
               <span class="ml-1 text-blue-600">{{ selectedCount }}</span>
               <span class="text-gray-500">/ {{ props.maxCount }}</span>
             </span>
-            <Button
-              v-if="selectedCount > 0"
-              size="small"
-              type="text"
-              @click="clearSelection"
-            >
+            <Button v-if="selectedCount > 0" size="small" type="text" @click="clearSelection">
               清空
             </Button>
           </div>
@@ -290,51 +307,32 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
 
         <!-- 已选择岗位列表 -->
         <div class="flex-1 overflow-y-auto p-4">
-          <div
-            v-if="selectedCount === 0"
-            class="flex h-full items-center justify-center"
-          >
-            <Empty
-              :image="Empty.PRESENTED_IMAGE_SIMPLE"
-              description="暂无选择的岗位"
-            />
+          <div v-if="selectedCount === 0" class="flex h-full items-center justify-center">
+            <Empty :image="Empty.PRESENTED_IMAGE_SIMPLE" description="暂无选择的岗位" />
           </div>
 
           <div v-else class="space-y-2">
-            <div
-              v-for="post in selectedPosts"
-              :key="post.id"
-              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm"
-            >
+            <div v-for="post in selectedPosts" :key="post.id"
+              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <span class="truncate text-sm font-medium text-gray-900">
                     {{ post.postName }}
                   </span>
-                  <Tag
-                    size="small"
-                    :color="postStatusMap[post.status ?? 0]?.color || 'default'"
-                  >
+                  <Tag size="small" :color="postStatusMap[post.status ?? 0]?.color || 'default'">
                     {{ postStatusMap[post.status ?? 0]?.text || '未知' }}
                   </Tag>
                 </div>
                 <div class="mt-1 truncate text-xs text-gray-500">
                   {{ post.postCode }}
                 </div>
-                <div
-                  v-if="post.remark"
-                  class="mt-1 truncate text-xs text-gray-400"
-                >
+                <div v-if="post.remark" class="mt-1 truncate text-xs text-gray-400">
                   {{ post.remark }}
                 </div>
               </div>
 
-              <Button
-                size="small"
-                type="text"
-                class="opacity-0 transition-opacity group-hover:opacity-100"
-                @click="removePost(post)"
-              >
+              <Button size="small" type="text" class="opacity-0 transition-opacity group-hover:opacity-100"
+                @click="removePost(post)">
                 移除
               </Button>
             </div>
@@ -344,9 +342,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
     </div>
 
     <!-- 操作按钮区域 -->
-    <div
-      class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4"
-    >
+    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4">
       <Button @click="handleCancel"> 取消 </Button>
       <Button type="primary" @click="handleConfirm"> 确定选择 </Button>
     </div>

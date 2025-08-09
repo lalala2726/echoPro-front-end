@@ -51,6 +51,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
   gridOptions: {
     checkboxConfig: {
+      labelField: 'deptName',
       highlight: true,
     },
     columns: deptColumns,
@@ -81,35 +82,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
   gridEvents: {
     checkboxChange: () => {
-      try {
-        const currentSelected = gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
-        // 树形不分页：直接限制与单选处理
-        let next = currentSelected;
-        if (!props.multiple && next.length > 1) {
-          message.warning('只能选择一个部门');
-          next = currentSelected.slice(-1);
-          gridApi.grid.clearCheckboxRow();
-          if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
-        }
-
-        const max = props.maxCount ?? 1000;
-        if (next.length > max) {
-          message.warning(`最多只能选择 ${max} 个部门`);
-          return;
-        }
-
-        selectedDepts.value = next;
-        const ids = next
-          .map((r) => r.deptId)
-          .filter((id): id is string => id !== undefined && id !== null) as string[];
-        emit('update:modelValue', ids);
-      } catch (error) {
-        console.error('处理部门勾选变化失败:', error);
-      }
+      syncSelectionAfterToggle();
     },
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
-        const allData = gridApi.grid.getTableData().fullData as SystemDeptApi.SystemDept[];
+        const allData = gridApi.grid.getTableData()
+          .fullData as SystemDeptApi.SystemDept[];
         if (checked) {
           const next = allData;
           const max = props.maxCount ?? 1000;
@@ -133,7 +111,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
         }
         const ids = selectedDepts.value
           .map((r) => r.deptId)
-          .filter((id): id is string => id !== undefined && id !== null) as string[];
+          .filter(
+            (id): id is string => id !== undefined && id !== null,
+          ) as string[];
         emit('update:modelValue', ids);
       } catch (error) {
         console.error('处理部门全选变化失败:', error);
@@ -142,9 +122,41 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
 });
 
+function syncSelectionAfterToggle() {
+  try {
+    const currentSelected =
+      gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
+    // 树形不分页：直接限制与单选处理
+    let next = currentSelected;
+    if (!props.multiple && next.length > 1) {
+      message.warning('只能选择一个部门');
+      next = currentSelected.slice(-1);
+      gridApi.grid.clearCheckboxRow();
+      if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
+    }
+
+    const max = props.maxCount ?? 1000;
+    if (next.length > max) {
+      message.warning(`最多只能选择 ${max} 个部门`);
+      return;
+    }
+
+    selectedDepts.value = next;
+    const ids = next
+      .map((r) => r.deptId)
+      .filter(
+        (id): id is string => id !== undefined && id !== null,
+      ) as string[];
+    emit('update:modelValue', ids);
+  } catch (error) {
+    console.error('处理部门勾选变化失败:', error);
+  }
+}
+
 // 确认选择
 async function handleConfirm() {
-  const selectedRows = gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
+  const selectedRows =
+    gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
 
   if (!props.multiple && selectedRows.length > 1) {
     message.warning('只能选择一个部门');
@@ -193,13 +205,17 @@ function clearSelection() {
 // 移除单个部门
 function removeDept(dept: SystemDeptApi.SystemDept) {
   if (dept.deptId !== undefined && dept.deptId !== null) {
-    selectedDepts.value = selectedDepts.value.filter((r) => r.deptId !== dept.deptId);
+    selectedDepts.value = selectedDepts.value.filter(
+      (r) => r.deptId !== dept.deptId,
+    );
     try {
       gridApi.grid.setCheckboxRow(dept, false);
-    } catch { }
+    } catch {}
     const deptIds = selectedDepts.value
       .map((u) => u.deptId)
-      .filter((id): id is string => id !== undefined && id !== null) as string[];
+      .filter(
+        (id): id is string => id !== undefined && id !== null,
+      ) as string[];
     emit('update:modelValue', deptIds);
   }
 }
@@ -207,6 +223,20 @@ function removeDept(dept: SystemDeptApi.SystemDept) {
 onMounted(() => {
   gridApi.query();
 });
+
+// 选择操作按钮：与勾选行为一致
+function selectRow(row: SystemDeptApi.SystemDept) {
+  try {
+    const isChecked = (
+      gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[]
+    ).some((r) => r.deptId === row.deptId);
+    gridApi.grid.setCheckboxRow(row, !isChecked);
+    // 手动同步右侧已选与 v-model
+    syncSelectionAfterToggle();
+  } catch (error) {
+    console.error('操作失败:', error);
+  }
+}
 
 defineExpose({
   clearSelection,
@@ -219,12 +249,18 @@ const selectedCount = computed(() => selectedDepts.value.length);
   <div class="user-select-interface h-full">
     <div class="flex h-full min-h-0 gap-6">
       <!-- 左侧面板 - 部门树表格 -->
-      <div class="flex min-h-0 flex-1 flex-col rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5">
+      <div
+        class="flex min-h-0 flex-1 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
+      >
+        <div
+          class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5"
+        >
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <div class="text-xl font-semibold text-gray-900">部门树</div>
-              <div class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600">
+              <div
+                class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600"
+              >
                 选择需要的部门
               </div>
             </div>
@@ -237,30 +273,56 @@ const selectedCount = computed(() => selectedDepts.value.length);
         <div class="min-h-0 flex-1 overflow-hidden p-1">
           <Grid class="h-full">
             <template #status="{ row }">
-              <Tag :color="deptStatusMap[Number(row.status) ?? 0]?.color || 'default'">
+              <Tag
+                :color="
+                  deptStatusMap[Number(row.status) ?? 0]?.color || 'default'
+                "
+              >
                 {{ deptStatusMap[Number(row.status) ?? 0]?.text || '未知' }}
               </Tag>
+            </template>
+            <template #action="slotProps">
+              <Button
+                type="link"
+                size="small"
+                @click="() => selectRow((slotProps as any).row)"
+              >
+                选择
+              </Button>
             </template>
           </Grid>
         </div>
       </div>
 
       <!-- 右侧面板 - 已选择部门展示 -->
-      <div class="flex min-h-0 w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5">
+      <div
+        class="flex min-h-0 w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
+      >
+        <div
+          class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5"
+        >
           <div class="mb-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <div class="flex items-center space-x-3">
                 <div class="h-2.5 w-2.5 rounded-full bg-blue-500"></div>
-                <span class="text-lg font-semibold text-gray-900">已选择部门</span>
-                <span class="rounded-full border border-gray-200 bg-white px-2 py-1 text-sm text-gray-500">
+                <span class="text-lg font-semibold text-gray-900"
+                  >已选择部门</span
+                >
+                <span
+                  class="rounded-full border border-gray-200 bg-white px-2 py-1 text-sm text-gray-500"
+                >
                   {{ selectedCount }}/{{ props.maxCount }}
                 </span>
               </div>
             </div>
             <div class="flex items-center space-x-2">
-              <Button v-if="selectedCount > 0" type="link" size="small" @click="clearSelection"
-                class="text-sm font-medium text-gray-500 transition-colors hover:text-red-500">
+              <Button
+                v-if="selectedCount > 0"
+                type="link"
+                size="small"
+                @click="clearSelection"
+                class="text-sm font-medium text-gray-500 transition-colors hover:text-red-500"
+              >
                 清空全部
               </Button>
             </div>
@@ -269,28 +331,48 @@ const selectedCount = computed(() => selectedDepts.value.length);
           <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
             <div
               class="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
-              :style="{ width: `${Math.min((selectedCount / props.maxCount) * 100, 100)}%` }"></div>
+              :style="{
+                width: `${Math.min((selectedCount / props.maxCount) * 100, 100)}%`,
+              }"
+            ></div>
           </div>
         </div>
 
         <div class="min-h-0 flex-1 overflow-hidden">
-          <div v-if="selectedCount === 0" class="flex h-full items-center justify-center p-8">
-            <Empty description="暂无选择部门" :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+          <div
+            v-if="selectedCount === 0"
+            class="flex h-full items-center justify-center p-8"
+          >
+            <Empty
+              description="暂无选择部门"
+              :image="Empty.PRESENTED_IMAGE_SIMPLE"
+            />
           </div>
 
           <div v-else class="scrollbar-thin h-full overflow-y-auto p-6">
             <div class="space-y-2">
-              <div v-for="dept in selectedDepts" :key="dept.deptId"
-                class="group relative rounded-lg border border-gray-200 bg-gray-50/50 p-3 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow">
+              <div
+                v-for="dept in selectedDepts"
+                :key="dept.deptId"
+                class="group relative rounded-lg border border-gray-200 bg-gray-50/50 p-3 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow"
+              >
                 <div class="flex items-center justify-between">
                   <div class="min-w-0 flex-1">
-                    <div class="mb-1 truncate text-sm font-medium text-gray-900">
+                    <div
+                      class="mb-1 truncate text-sm font-medium text-gray-900"
+                    >
                       {{ dept.deptName }}
                     </div>
-                    <div class="truncate text-xs text-gray-500">ID: {{ dept.deptId }}</div>
+                    <div class="truncate text-xs text-gray-500">
+                      ID: {{ dept.deptId }}
+                    </div>
                   </div>
-                  <Button type="text" size="small" class="opacity-0 transition-opacity group-hover:opacity-100"
-                    @click="removeDept(dept)">
+                  <Button
+                    type="text"
+                    size="small"
+                    class="opacity-0 transition-opacity group-hover:opacity-100"
+                    @click="removeDept(dept)"
+                  >
                     移除
                   </Button>
                 </div>
@@ -302,7 +384,9 @@ const selectedCount = computed(() => selectedDepts.value.length);
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4">
+    <div
+      class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4"
+    >
       <Button @click="handleCancel"> 取消 </Button>
       <Button type="primary" @click="handleConfirm"> 确定选择 </Button>
     </div>

@@ -91,38 +91,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
   gridEvents: {
     checkboxChange: () => {
-      try {
-        const currentPageRecords =
-          gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[];
-        const currentPageData = gridApi.grid.getTableData()
-          .fullData as SystemRoleApi.SystemRole[];
-
-        const currentIds = new Set(currentPageData.map((r) => r.id!));
-        const otherPagesSelected = selectedRoles.value.filter(
-          (r) => !currentIds.has(r.id!),
-        );
-
-        let next = [...otherPagesSelected, ...currentPageRecords];
-
-        if (!props.multiple && next.length > 1) {
-          message.warning('只能选择一个角色');
-          next = currentPageRecords.slice(-1);
-          gridApi.grid.clearCheckboxRow();
-          if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
-        }
-
-        const max = props.maxCount ?? 1000;
-        if (next.length > max) {
-          message.warning(`最多只能选择 ${max} 个角色`);
-          return;
-        }
-
-        selectedRoles.value = next;
-        const ids = next.map((r) => r.id!).filter((id) => id !== undefined);
-        emit('update:modelValue', ids);
-      } catch (error) {
-        console.error('处理角色勾选变化失败:', error);
-      }
+      syncSelectionAfterToggle();
     },
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
@@ -167,6 +136,41 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
   },
 });
+
+function syncSelectionAfterToggle() {
+  try {
+    const currentPageRecords =
+      gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[];
+    const currentPageData = gridApi.grid.getTableData()
+      .fullData as SystemRoleApi.SystemRole[];
+
+    const currentIds = new Set(currentPageData.map((r) => r.id!));
+    const otherPagesSelected = selectedRoles.value.filter(
+      (r) => !currentIds.has(r.id!),
+    );
+
+    let next = [...otherPagesSelected, ...currentPageRecords];
+
+    if (!props.multiple && next.length > 1) {
+      message.warning('只能选择一个角色');
+      next = currentPageRecords.slice(-1);
+      gridApi.grid.clearCheckboxRow();
+      if (next.length > 0) gridApi.grid.setCheckboxRow(next, true);
+    }
+
+    const max = props.maxCount ?? 1000;
+    if (next.length > max) {
+      message.warning(`最多只能选择 ${max} 个角色`);
+      return;
+    }
+
+    selectedRoles.value = next;
+    const ids = next.map((r) => r.id!).filter((id) => id !== undefined);
+    emit('update:modelValue', ids);
+  } catch (error) {
+    console.error('处理角色勾选变化失败:', error);
+  }
+}
 
 // 勾选事件：选择即同步（跨页累积）
 // - 单选模式：只保留一个
@@ -232,7 +236,7 @@ function removeRole(role: SystemRoleApi.SystemRole) {
     selectedRoles.value = selectedRoles.value.filter((r) => r.id !== role.id);
     try {
       gridApi.grid.setCheckboxRow(role, false);
-    } catch {}
+    } catch { }
     const roleIds = selectedRoles.value.map((u) => u.id!);
     emit('update:modelValue', roleIds);
   }
@@ -242,6 +246,20 @@ function removeRole(role: SystemRoleApi.SystemRole) {
 onMounted(() => {
   gridApi.query();
 });
+
+// 选择操作按钮：与勾选行为一致
+function selectRow(row: SystemRoleApi.SystemRole) {
+  try {
+    const isChecked = (gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[]).some(
+      (r) => r.id === row.id,
+    );
+    gridApi.grid.setCheckboxRow(row, !isChecked);
+    // 手动同步右侧已选与 v-model
+    syncSelectionAfterToggle();
+  } catch (error) {
+    console.error('操作失败:', error);
+  }
+}
 
 // 暴露方法
 defineExpose({
@@ -268,6 +286,10 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
                 {{ roleStatusMap[row.status ?? 0]?.text || '未知' }}
               </Tag>
             </template>
+            <!-- 操作列插槽：选择按钮 -->
+            <template #action="slotProps">
+              <Button type="link" size="small" @click="() => selectRow((slotProps as any).row)">选择</Button>
+            </template>
           </Grid>
         </div>
       </div>
@@ -282,12 +304,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
               <span class="ml-1 text-blue-600">{{ selectedCount }}</span>
               <span class="text-gray-500">/ {{ props.maxCount }}</span>
             </span>
-            <Button
-              v-if="selectedCount > 0"
-              size="small"
-              type="text"
-              @click="clearSelection"
-            >
+            <Button v-if="selectedCount > 0" size="small" type="text" @click="clearSelection">
               清空
             </Button>
           </div>
@@ -302,51 +319,32 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
 
         <!-- 已选择角色列表 -->
         <div class="flex-1 overflow-y-auto p-4">
-          <div
-            v-if="selectedCount === 0"
-            class="flex h-full items-center justify-center"
-          >
-            <Empty
-              :image="Empty.PRESENTED_IMAGE_SIMPLE"
-              description="暂无选择的角色"
-            />
+          <div v-if="selectedCount === 0" class="flex h-full items-center justify-center">
+            <Empty :image="Empty.PRESENTED_IMAGE_SIMPLE" description="暂无选择的角色" />
           </div>
 
           <div v-else class="space-y-2">
-            <div
-              v-for="role in selectedRoles"
-              :key="role.id"
-              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm"
-            >
+            <div v-for="role in selectedRoles" :key="role.id"
+              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <span class="truncate text-sm font-medium text-gray-900">
                     {{ role.roleName }}
                   </span>
-                  <Tag
-                    size="small"
-                    :color="roleStatusMap[role.status ?? 0]?.color || 'default'"
-                  >
+                  <Tag size="small" :color="roleStatusMap[role.status ?? 0]?.color || 'default'">
                     {{ roleStatusMap[role.status ?? 0]?.text || '未知' }}
                   </Tag>
                 </div>
                 <div class="mt-1 truncate text-xs text-gray-500">
                   {{ role.roleKey }}
                 </div>
-                <div
-                  v-if="role.remark"
-                  class="mt-1 truncate text-xs text-gray-400"
-                >
+                <div v-if="role.remark" class="mt-1 truncate text-xs text-gray-400">
                   {{ role.remark }}
                 </div>
               </div>
 
-              <Button
-                size="small"
-                type="text"
-                class="opacity-0 transition-opacity group-hover:opacity-100"
-                @click="removeRole(role)"
-              >
+              <Button size="small" type="text" class="opacity-0 transition-opacity group-hover:opacity-100"
+                @click="removeRole(role)">
                 移除
               </Button>
             </div>
@@ -356,9 +354,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
     </div>
 
     <!-- 操作按钮区域 -->
-    <div
-      class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4"
-    >
+    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4">
       <Button @click="handleCancel"> 取消 </Button>
       <Button type="primary" @click="handleConfirm"> 确定选择 </Button>
     </div>

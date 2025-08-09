@@ -88,5 +88,12 @@ export function useUserSelectColumns(): VxeTableGridOptions['columns'] {
       field: 'status',
       title: '状态',
     },
+    {
+      title: '操作',
+      field: 'operation',
+      align: 'center',
+      width: 100,
+      slots: { default: 'action' },
+    },
   ];
 }

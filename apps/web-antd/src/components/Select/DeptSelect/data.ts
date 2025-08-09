@@ -5,20 +5,24 @@ import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 export const deptColumns: VxeGridPropTypes.Columns = [
   {
     type: 'checkbox',
-    width: 42,
-    align: 'left',
-  },
-  {
     title: '部门名称',
-    field: 'deptName',
+    align: 'left',
+    // 让树形展开箭头显示在勾选这列
     treeNode: true,
-    showOverflow: 'tooltip',
+    minWidth: 220,
   },
   {
     title: '状态',
     field: 'status',
     align: 'center',
     slots: { default: 'status' },
+  },
+  {
+    title: '操作',
+    field: 'operation',
+    align: 'center',
+    width: 100,
+    slots: { default: 'action' },
   },
 ];
 

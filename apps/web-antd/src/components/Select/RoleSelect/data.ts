@@ -35,6 +35,13 @@ export const roleColumns: VxeGridPropTypes.Columns = [
       return cellValue ? formatDateTime(cellValue) : '-';
     },
   },
+  {
+    title: '操作',
+    field: 'operation',
+    align: 'center',
+    width: 100,
+    slots: { default: 'action' },
+  },
 ];
 
 /**
