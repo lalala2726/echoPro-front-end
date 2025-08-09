@@ -1,24 +1,16 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 
-import { formatDateTime } from '@vben/utils';
-
 // 角色表格列配置
 export const roleColumns: VxeGridPropTypes.Columns = [
   {
     align: 'left',
     title: '角色名称',
     type: 'checkbox',
-    width: 120,
   },
   {
     title: '角色标识',
-    field: 'roleCode',
-    showOverflow: 'tooltip',
-  },
-  {
-    title: '角色描述',
-    field: 'description',
+    field: 'roleKey',
     showOverflow: 'tooltip',
   },
   {
@@ -26,14 +18,6 @@ export const roleColumns: VxeGridPropTypes.Columns = [
     field: 'status',
     align: 'center',
     slots: { default: 'status' },
-  },
-  {
-    title: '创建时间',
-    field: 'createTime',
-    minWidth: 160,
-    formatter: ({ cellValue }) => {
-      return cellValue ? formatDateTime(cellValue) : '-';
-    },
   },
   {
     title: '操作',

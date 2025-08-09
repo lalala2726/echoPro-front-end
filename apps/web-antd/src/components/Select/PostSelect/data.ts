@@ -1,7 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 
-import { formatDateTime } from '@vben/utils';
 
 // 岗位表格列配置
 export const postColumns: VxeGridPropTypes.Columns = [
@@ -9,40 +8,22 @@ export const postColumns: VxeGridPropTypes.Columns = [
     align: 'left',
     title: '岗位名称',
     type: 'checkbox',
-    width: 120,
   },
   {
     title: '岗位编码',
     field: 'postCode',
     showOverflow: 'tooltip',
-    minWidth: 120,
-  },
-  {
-    title: '排序',
-    field: 'sort',
-    width: 80,
-    align: 'center',
   },
   {
     title: '状态',
     field: 'status',
     align: 'center',
     slots: { default: 'status' },
-    width: 100,
-  },
-  {
-    title: '创建时间',
-    field: 'createTime',
-    minWidth: 160,
-    formatter: ({ cellValue }) => {
-      return cellValue ? formatDateTime(cellValue) : '-';
-    },
   },
   {
     title: '操作',
     field: 'operation',
     align: 'center',
-    width: 100,
     slots: { default: 'action' },
   },
 ];
