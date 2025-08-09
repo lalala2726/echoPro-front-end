@@ -160,12 +160,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
           });
         }
 
-        // 触发回调
+        // 触发回调 - 仅更新v-model，不触发change事件
         const userIds = selectedUsers.value
           .map((u) => u.userId!)
           .filter((id) => id !== undefined);
         emit('update:modelValue', userIds);
-        emit('change', selectedUsers.value);
       } catch (error) {
         console.error('全选操作失败:', error);
         message.error('全选操作失败，请重试');
@@ -216,12 +215,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
           // 更新选择状态（移除重复通知，由confirm事件处理）
         }
 
-        // 触发回调
+        // 触发回调 - 仅更新v-model，不触发change事件
         const userIds = selectedUsers.value
           .map((row) => row.userId!)
           .filter((id) => id !== undefined);
         emit('update:modelValue', userIds);
-        emit('change', selectedUsers.value);
       } catch (error) {
         console.error('处理勾选变化失败:', error);
       }
@@ -347,9 +345,8 @@ function clearSelection() {
     console.error('清空复选框状态失败:', error);
   }
 
-  // 触发回调
+  // 触发回调 - 仅更新v-model，不触发change事件
   emit('update:modelValue', []);
-  emit('change', []);
 
   // 清空反馈由父组件处理，避免重复通知
 }
@@ -364,7 +361,6 @@ function removeUser(user: SysUserType.UserListVo) {
     } catch {}
     const userIds = selectedUsers.value.map((u) => u.userId!);
     emit('update:modelValue', userIds);
-    emit('change', selectedUsers.value);
 
     // 移除反馈由父组件处理，避免重复通知
   }
@@ -389,7 +385,6 @@ defineExpose({
       <!-- 左侧面板 - 用户表格（主要操作区域） -->
       <div
         class="flex min-h-0 flex-1 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
-        style="flex: 0 0 58%"
       >
         <!-- 表格标题栏 -->
         <div
@@ -429,10 +424,9 @@ defineExpose({
         </div>
       </div>
 
-      <!-- 右侧面板 - 已选择用户展示 -->
+      <!-- 右侧面板 - 已选择用户展示（与角色选择保持一致宽度） -->
       <div
-        class="flex min-h-0 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
-        style="flex: 0 0 38%"
+        class="flex min-h-0 w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
       >
         <!-- 右侧面板头部 - 状态指示器 -->
         <div

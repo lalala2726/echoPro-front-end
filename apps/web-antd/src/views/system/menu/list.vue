@@ -86,7 +86,6 @@ async function onEdit(row: any) {
   const menu = await getMenuById(row.id);
   formDrawerApi.setData(menu).open();
 }
-
 function onCreate() {
   formDrawerApi.setData({}).open();
 }
