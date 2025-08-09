@@ -56,7 +56,7 @@ export function useUserSelectColumns(): VxeTableGridOptions['columns'] {
       align: 'left',
       title: '用户名',
       type: 'checkbox',
-      fixed: 'left',
+      width: 120,
     },
     {
       field: 'nickname',

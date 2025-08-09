@@ -3,29 +3,32 @@ import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 
 import { formatDateTime } from '@vben/utils';
 
-// 角色表格列配置
-export const roleColumns: VxeGridPropTypes.Columns = [
+// 岗位表格列配置
+export const postColumns: VxeGridPropTypes.Columns = [
   {
     align: 'left',
-    title: '角色名称',
+    title: '岗位名称',
     type: 'checkbox',
     width: 120,
   },
   {
-    title: '角色标识',
-    field: 'roleCode',
+    title: '岗位编码',
+    field: 'postCode',
     showOverflow: 'tooltip',
+    minWidth: 120,
   },
   {
-    title: '角色描述',
-    field: 'description',
-    showOverflow: 'tooltip',
+    title: '排序',
+    field: 'sort',
+    width: 80,
+    align: 'center',
   },
   {
     title: '状态',
     field: 'status',
     align: 'center',
     slots: { default: 'status' },
+    width: 100,
   },
   {
     title: '创建时间',
@@ -38,16 +41,16 @@ export const roleColumns: VxeGridPropTypes.Columns = [
 ];
 
 /**
- * 角色选择组件的搜索表单配置
+ * 岗位选择组件的搜索表单配置
  */
-export function useRoleSelectFormSchema(): VbenFormSchema[] {
+export function usePostSelectFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
-      fieldName: 'roleName',
-      label: '角色名称',
+      fieldName: 'postName',
+      label: '岗位名称',
       componentProps: {
-        placeholder: '请输入角色名称',
+        placeholder: '请输入岗位名称',
       },
     },
     {
@@ -58,16 +61,16 @@ export function useRoleSelectFormSchema(): VbenFormSchema[] {
         allowClear: true,
         placeholder: '请选择状态',
         options: [
-          { label: '启用', value: 1 },
-          { label: '禁用', value: 0 },
+          { label: '正常', value: 0 },
+          { label: '停用', value: 1 },
         ],
       },
     },
   ];
 }
 
-// 角色状态映射
-export const roleStatusMap: Record<number, { color: string; text: string }> = {
-  0: { text: '禁用', color: 'red' },
-  1: { text: '启用', color: 'green' },
+// 岗位状态映射（0-正常, 1-停用）
+export const postStatusMap: Record<number, { color: string; text: string }> = {
+  0: { text: '正常', color: 'green' },
+  1: { text: '停用', color: 'red' },
 };

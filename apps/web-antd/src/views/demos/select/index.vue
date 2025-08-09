@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemPostApi } from '#/api/system/post';
 import type { SystemRoleApi } from '#/api/system/role';
 import type { SysUserType } from '#/api/system/user';
 
@@ -10,6 +11,7 @@ import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Button, Card, Divider, message, Space } from 'ant-design-vue';
 
 import DeptSelect from '#/components/Select/DeptSelect/index.vue';
+import PostSelect from '#/components/Select/PostSelect/index.vue';
 import RoleSelect from '#/components/Select/RoleSelect/index.vue';
 import UserSelect from '#/components/Select/UserSelect/index.vue';
 
@@ -66,6 +68,23 @@ const limitedSelectedDeptData = ref<SystemDeptApi.SystemDept[]>([]);
 // 大量部门选择示例
 const bulkSelectedDepts = ref<string[]>([]);
 const bulkSelectedDeptData = ref<SystemDeptApi.SystemDept[]>([]);
+
+// 岗位选择示例
+// 单选岗位示例
+const singleSelectedPosts = ref<number[]>([]);
+const singleSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+
+// 多选岗位示例
+const multipleSelectedPosts = ref<number[]>([]);
+const multipleSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+
+// 限制数量的多选岗位示例
+const limitedSelectedPosts = ref<number[]>([]);
+const limitedSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+
+// 大量岗位选择示例
+const bulkSelectedPosts = ref<number[]>([]);
+const bulkSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
 
 // 模态框角色示例
 const modalSelectedRoles = ref<string[]>([]);
@@ -154,6 +173,31 @@ const [LimitedDeptDrawer, limitedDeptDrawerApi] = useVbenDrawer({
 
 const [BulkDeptDrawer, bulkDeptDrawerApi] = useVbenDrawer({
   title: '选择部门（大量选择）',
+  class: 'w-[60%]',
+  footer: false,
+});
+
+// 岗位选择抽屉配置
+const [SinglePostDrawer, singlePostDrawerApi] = useVbenDrawer({
+  title: '选择岗位（单选模式）',
+  class: 'w-[60%]',
+  footer: false,
+});
+
+const [MultiplePostDrawer, multiplePostDrawerApi] = useVbenDrawer({
+  title: '选择岗位（多选模式）',
+  class: 'w-[60%]',
+  footer: false,
+});
+
+const [LimitedPostDrawer, limitedPostDrawerApi] = useVbenDrawer({
+  title: '选择岗位（限制数量）',
+  class: 'w-[60%]',
+  footer: false,
+});
+
+const [BulkPostDrawer, bulkPostDrawerApi] = useVbenDrawer({
+  title: '选择岗位（大量选择）',
   class: 'w-[60%]',
   footer: false,
 });
@@ -312,6 +356,47 @@ function handleBulkDeptConfirm(data: {
   bulkDeptDrawerApi.close();
 }
 
+// 岗位选择确认处理函数
+// 单选岗位确认处理
+function handleSinglePostConfirm(data: {
+  postIds: number[];
+  posts: SystemPostApi.SysPost[];
+}) {
+  singleSelectedPostData.value = data.posts;
+  message.success(`已确认选择岗位: ${data.posts[0]?.postName || '未知岗位'}`);
+  singlePostDrawerApi.close();
+}
+
+// 多选岗位确认处理
+function handleMultiplePostConfirm(data: {
+  postIds: number[];
+  posts: SystemPostApi.SysPost[];
+}) {
+  multipleSelectedPostData.value = data.posts;
+  message.success(`已确认选择 ${data.posts.length} 个岗位`);
+  multiplePostDrawerApi.close();
+}
+
+// 限制数量多选岗位确认处理
+function handleLimitedPostConfirm(data: {
+  postIds: number[];
+  posts: SystemPostApi.SysPost[];
+}) {
+  limitedSelectedPostData.value = data.posts;
+  message.success(`已确认选择 ${data.posts.length} 个岗位（限制最多3个）`);
+  limitedPostDrawerApi.close();
+}
+
+// 大量岗位选择确认处理
+function handleBulkPostConfirm(data: {
+  postIds: number[];
+  posts: SystemPostApi.SysPost[];
+}) {
+  bulkSelectedPostData.value = data.posts;
+  message.success(`已确认选择 ${data.posts.length} 个岗位（支持大量选择）`);
+  bulkPostDrawerApi.close();
+}
+
 // 清空所有选择
 function clearAllSelections() {
   singleSelectedUsers.value = [];
@@ -370,10 +455,7 @@ function getSelectionResults() {
             <Button type="primary" @click="singleRoleDrawerApi.open()">
               打开角色选择器（单选）
             </Button>
-            <div
-              v-if="singleSelectedRoleData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="singleSelectedRoleData.length > 0" class="text-sm text-gray-600">
               已选择: {{ singleSelectedRoleData[0]?.roleName }}
             </div>
           </div>
@@ -384,10 +466,7 @@ function getSelectionResults() {
             <Button type="primary" @click="multipleRoleDrawerApi.open()">
               打开角色选择器（多选）
             </Button>
-            <div
-              v-if="multipleSelectedRoleData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="multipleSelectedRoleData.length > 0" class="text-sm text-gray-600">
               已选择: {{ multipleSelectedRoleData.length }} 个角色
             </div>
           </div>
@@ -398,10 +477,7 @@ function getSelectionResults() {
             <Button type="primary" @click="limitedRoleDrawerApi.open()">
               选择角色（最多3个）
             </Button>
-            <div
-              v-if="limitedSelectedRoleData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="limitedSelectedRoleData.length > 0" class="text-sm text-gray-600">
               已选择: {{ limitedSelectedRoleData.length }}/3 个角色
             </div>
           </div>
@@ -412,10 +488,7 @@ function getSelectionResults() {
             <Button type="primary" @click="bulkRoleDrawerApi.open()">
               选择角色（最多100个）
             </Button>
-            <div
-              v-if="bulkSelectedRoleData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="bulkSelectedRoleData.length > 0" class="text-sm text-gray-600">
               已选择: {{ bulkSelectedRoleData.length }}/100 个角色
             </div>
           </div>
@@ -426,10 +499,7 @@ function getSelectionResults() {
             <Button type="primary" @click="roleModalApi.open()">
               打开角色选择器（模态框）
             </Button>
-            <div
-              v-if="modalSelectedRoleData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="modalSelectedRoleData.length > 0" class="text-sm text-gray-600">
               已选择: {{ modalSelectedRoleData.length }} 个角色
             </div>
           </div>
@@ -442,8 +512,7 @@ function getSelectionResults() {
           <div>
             <strong>基本用法:</strong>
             <pre
-              class="mt-1 rounded bg-gray-100 p-2 text-xs"
-            ><code>&lt;RoleSelect v-model="selectedRoles" @confirm="handleConfirm" /&gt;</code></pre>
+              class="mt-1 rounded bg-gray-100 p-2 text-xs"><code>&lt;RoleSelect v-model="selectedRoles" @confirm="handleConfirm" /&gt;</code></pre>
           </div>
 
           <div>
@@ -492,10 +561,7 @@ function getSelectionResults() {
             <Button type="primary" @click="singleDeptDrawerApi.open()">
               选择部门（单选）
             </Button>
-            <div
-              v-if="singleSelectedDeptData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="singleSelectedDeptData.length > 0" class="text-sm text-gray-600">
               已选择: {{ singleSelectedDeptData[0]?.deptName }}
             </div>
           </div>
@@ -506,10 +572,7 @@ function getSelectionResults() {
             <Button type="primary" @click="multipleDeptDrawerApi.open()">
               选择部门（多选）
             </Button>
-            <div
-              v-if="multipleSelectedDeptData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="multipleSelectedDeptData.length > 0" class="text-sm text-gray-600">
               已选择: {{ multipleSelectedDeptData.length }} 个部门
             </div>
           </div>
@@ -520,10 +583,7 @@ function getSelectionResults() {
             <Button type="primary" @click="limitedDeptDrawerApi.open()">
               选择部门（最多3个）
             </Button>
-            <div
-              v-if="limitedSelectedDeptData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="limitedSelectedDeptData.length > 0" class="text-sm text-gray-600">
               已选择: {{ limitedSelectedDeptData.length }}/3 个部门
             </div>
           </div>
@@ -534,10 +594,7 @@ function getSelectionResults() {
             <Button type="primary" @click="bulkDeptDrawerApi.open()">
               选择部门（最多50个）
             </Button>
-            <div
-              v-if="bulkSelectedDeptData.length > 0"
-              class="text-sm text-gray-600"
-            >
+            <div v-if="bulkSelectedDeptData.length > 0" class="text-sm text-gray-600">
               已选择: {{ bulkSelectedDeptData.length }}/50 个部门
             </div>
           </div>
@@ -550,8 +607,7 @@ function getSelectionResults() {
           <div>
             <strong>基本用法:</strong>
             <pre
-              class="mt-1 rounded bg-gray-100 p-2 text-xs"
-            ><code>&lt;DeptSelect v-model="selectedDepts" @confirm="handleConfirm" /&gt;</code></pre>
+              class="mt-1 rounded bg-gray-100 p-2 text-xs"><code>&lt;DeptSelect v-model="selectedDepts" @confirm="handleConfirm" /&gt;</code></pre>
           </div>
 
           <div>
@@ -591,6 +647,102 @@ function getSelectionResults() {
       </div>
     </Card>
 
+    <!-- 岗位选择器演示 -->
+    <Card title="岗位选择器组件演示" class="mb-6">
+      <div class="space-y-4">
+        <!-- 岗位选择示例 -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- 单选岗位 -->
+          <div class="space-y-2">
+            <h4 class="font-medium">单选岗位</h4>
+            <Button type="primary" @click="singlePostDrawerApi.open()">
+              选择岗位（单选）
+            </Button>
+            <div v-if="singleSelectedPostData.length > 0" class="text-sm text-gray-600">
+              已选择: {{ singleSelectedPostData[0]?.postName }}
+            </div>
+          </div>
+
+          <!-- 多选岗位选择 -->
+          <div class="space-y-2">
+            <h4 class="font-medium">多选岗位选择</h4>
+            <Button type="primary" @click="multiplePostDrawerApi.open()">
+              选择岗位（多选）
+            </Button>
+            <div v-if="multipleSelectedPostData.length > 0" class="text-sm text-gray-600">
+              已选择: {{ multipleSelectedPostData.length }} 个岗位
+            </div>
+          </div>
+
+          <!-- 限制数量的多选岗位选择 -->
+          <div class="space-y-2">
+            <h4 class="font-medium">限制数量多选</h4>
+            <Button type="primary" @click="limitedPostDrawerApi.open()">
+              选择岗位（最多3个）
+            </Button>
+            <div v-if="limitedSelectedPostData.length > 0" class="text-sm text-gray-600">
+              已选择: {{ limitedSelectedPostData.length }}/3 个岗位
+            </div>
+          </div>
+
+          <!-- 大量岗位选择 -->
+          <div class="space-y-2">
+            <h4 class="font-medium">大量岗位选择</h4>
+            <Button type="primary" @click="bulkPostDrawerApi.open()">
+              选择岗位（最多50个）
+            </Button>
+            <div v-if="bulkSelectedPostData.length > 0" class="text-sm text-gray-600">
+              已选择: {{ bulkSelectedPostData.length }}/50 个岗位
+            </div>
+          </div>
+        </div>
+
+        <Divider />
+
+        <!-- 岗位选择器说明 -->
+        <div class="space-y-4 text-sm">
+          <div>
+            <strong>基本用法:</strong>
+            <pre
+              class="mt-1 rounded bg-gray-100 p-2 text-xs"><code>&lt;PostSelect v-model="selectedPosts" @confirm="handleConfirm" /&gt;</code></pre>
+          </div>
+
+          <div>
+            <strong>属性说明:</strong>
+            <ul class="mt-1 list-disc space-y-1 pl-5">
+              <li><code>v-model</code>: 绑定选中的岗位ID数组（number[]）</li>
+              <li><code>multiple</code>: 是否多选，默认为 true</li>
+              <li><code>max-count</code>: 最大选择数量，默认为 1000</li>
+              <li><code>placeholder</code>: 占位符文本</li>
+              <li><code>show-search</code>: 是否显示搜索框，默认为 true</li>
+              <li><code>allow-clear</code>: 是否可清空，默认为 true</li>
+            </ul>
+          </div>
+
+          <div>
+            <strong>事件说明:</strong>
+            <ul class="mt-1 list-disc space-y-1 pl-5">
+              <li>
+                <code>@confirm</code>: 确认选择时触发，参数为 { postIds, posts }
+              </li>
+              <li><code>@cancel</code>: 取消选择时触发</li>
+            </ul>
+          </div>
+
+          <div>
+            <strong>功能特性:</strong>
+            <ul class="mt-1 list-disc space-y-1 pl-5">
+              <li>✅ 岗位名称、岗位编码、状态、排序等字段展示</li>
+              <li>✅ 支持按岗位名称、岗位编码搜索</li>
+              <li>✅ 状态标识（正常/停用）</li>
+              <li>✅ 排序显示</li>
+              <li>✅ 响应式设计，支持抽屉和模态框模式</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Card>
+
     <!-- 单选示例 -->
     <Card class="mb-5" title="单选用户">
       <div class="space-y-4">
@@ -606,11 +758,7 @@ function getSelectionResults() {
         <div v-if="singleSelectedUserData.length > 0">
           <div class="mb-2 text-sm font-medium">已选择用户信息:</div>
           <div class="rounded bg-gray-50 p-3">
-            <div
-              v-for="user in singleSelectedUserData"
-              :key="user.userId"
-              class="text-sm"
-            >
+            <div v-for="user in singleSelectedUserData" :key="user.userId" class="text-sm">
               <div><strong>用户名:</strong> {{ user.username }}</div>
               <div><strong>昵称:</strong> {{ user.nickname || '--' }}</div>
               <div><strong>部门:</strong> {{ user.deptName || '--' }}</div>
@@ -640,11 +788,8 @@ function getSelectionResults() {
             已选择用户 ({{ multipleSelectedUserData.length }}/10):
           </div>
           <div class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-            <div
-              v-for="user in multipleSelectedUserData"
-              :key="user.userId"
-              class="rounded border bg-white p-3 text-sm"
-            >
+            <div v-for="user in multipleSelectedUserData" :key="user.userId"
+              class="rounded border bg-white p-3 text-sm">
               <div>
                 <strong>{{ user.username }}</strong>
               </div>
@@ -673,11 +818,8 @@ function getSelectionResults() {
             已选择用户 ({{ limitedSelectedUserData.length }}/3):
           </div>
           <div class="flex flex-wrap gap-2">
-            <div
-              v-for="user in limitedSelectedUserData"
-              :key="user.userId"
-              class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800"
-            >
+            <div v-for="user in limitedSelectedUserData" :key="user.userId"
+              class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
               {{ user.username }}
             </div>
           </div>
@@ -731,11 +873,8 @@ function getSelectionResults() {
             已选择用户 ({{ modalSelectedUserData.length }}):
           </div>
           <div class="flex flex-wrap gap-2">
-            <div
-              v-for="user in modalSelectedUserData"
-              :key="user.userId"
-              class="rounded bg-green-100 px-2 py-1 text-sm text-green-800"
-            >
+            <div v-for="user in modalSelectedUserData" :key="user.userId"
+              class="rounded bg-green-100 px-2 py-1 text-sm text-green-800">
               {{ user.username }}
             </div>
           </div>
@@ -749,8 +888,7 @@ function getSelectionResults() {
         <div>
           <strong>基本用法:</strong>
           <pre
-            class="mt-1 rounded bg-gray-100 p-2 text-xs"
-          ><code>&lt;UserSelect v-model="selectedUsers" @change="handleChange" /&gt;</code></pre>
+            class="mt-1 rounded bg-gray-100 p-2 text-xs"><code>&lt;UserSelect v-model="selectedUsers" @change="handleChange" /&gt;</code></pre>
         </div>
 
         <div>
@@ -821,143 +959,95 @@ function getSelectionResults() {
 
   <!-- 抽屉组件 -->
   <SingleDrawer>
-    <UserSelect
-      v-model="singleSelectedUsers"
-      :multiple="false"
-      placeholder="请选择一个用户"
-      @confirm="handleSingleConfirm"
-    />
+    <UserSelect v-model="singleSelectedUsers" :multiple="false" placeholder="请选择一个用户" @confirm="handleSingleConfirm" />
   </SingleDrawer>
 
   <MultipleDrawer>
-    <UserSelect
-      v-model="multipleSelectedUsers"
-      :multiple="true"
-      placeholder="请选择用户"
-      @confirm="handleMultipleConfirm"
-    />
+    <UserSelect v-model="multipleSelectedUsers" :multiple="true" placeholder="请选择用户" @confirm="handleMultipleConfirm" />
   </MultipleDrawer>
 
   <LimitedDrawer>
-    <UserSelect
-      v-model="limitedSelectedUsers"
-      :multiple="true"
-      :max-count="3"
-      placeholder="请选择用户（最多3个）"
-      @confirm="handleLimitedConfirm"
-    />
+    <UserSelect v-model="limitedSelectedUsers" :multiple="true" :max-count="3" placeholder="请选择用户（最多3个）"
+      @confirm="handleLimitedConfirm" />
   </LimitedDrawer>
 
   <BulkDrawer>
-    <UserSelect
-      v-model="bulkSelectedUsers"
-      :multiple="true"
-      :max-count="1000"
-      placeholder="请选择用户（最多1000个）"
-      @confirm="handleBulkConfirm"
-      @cancel="handleCancel"
-    />
+    <UserSelect v-model="bulkSelectedUsers" :multiple="true" :max-count="1000" placeholder="请选择用户（最多1000个）"
+      @confirm="handleBulkConfirm" @cancel="handleCancel" />
   </BulkDrawer>
 
   <!-- 模态框组件 -->
   <ModalDialog>
-    <UserSelect
-      v-model="modalSelectedUsers"
-      :multiple="true"
-      placeholder="请选择用户（模态框模式）"
-      @confirm="handleModalConfirm"
-      @cancel="handleCancel"
-    />
+    <UserSelect v-model="modalSelectedUsers" :multiple="true" placeholder="请选择用户（模态框模式）" @confirm="handleModalConfirm"
+      @cancel="handleCancel" />
   </ModalDialog>
 
   <!-- 角色选择抽屉组件 -->
   <SingleRoleDrawer>
-    <RoleSelect
-      v-model="singleSelectedRoles"
-      :multiple="false"
-      placeholder="请选择一个角色"
-      @confirm="handleSingleRoleConfirm"
-    />
+    <RoleSelect v-model="singleSelectedRoles" :multiple="false" placeholder="请选择一个角色"
+      @confirm="handleSingleRoleConfirm" />
   </SingleRoleDrawer>
 
   <MultipleRoleDrawer>
-    <RoleSelect
-      v-model="multipleSelectedRoles"
-      :multiple="true"
-      placeholder="请选择角色"
-      @confirm="handleMultipleRoleConfirm"
-    />
+    <RoleSelect v-model="multipleSelectedRoles" :multiple="true" placeholder="请选择角色"
+      @confirm="handleMultipleRoleConfirm" />
   </MultipleRoleDrawer>
 
   <LimitedRoleDrawer>
-    <RoleSelect
-      v-model="limitedSelectedRoles"
-      :multiple="true"
-      :max-count="3"
-      placeholder="请选择角色（最多3个）"
-      @confirm="handleLimitedRoleConfirm"
-    />
+    <RoleSelect v-model="limitedSelectedRoles" :multiple="true" :max-count="3" placeholder="请选择角色（最多3个）"
+      @confirm="handleLimitedRoleConfirm" />
   </LimitedRoleDrawer>
 
   <BulkRoleDrawer>
-    <RoleSelect
-      v-model="bulkSelectedRoles"
-      :multiple="true"
-      :max-count="100"
-      placeholder="请选择角色（最多100个）"
-      @confirm="handleBulkRoleConfirm"
-      @cancel="handleCancel"
-    />
+    <RoleSelect v-model="bulkSelectedRoles" :multiple="true" :max-count="100" placeholder="请选择角色（最多100个）"
+      @confirm="handleBulkRoleConfirm" @cancel="handleCancel" />
   </BulkRoleDrawer>
 
   <!-- 角色模态框组件 -->
   <RoleModalDialog>
-    <RoleSelect
-      v-model="modalSelectedRoles"
-      :multiple="true"
-      placeholder="请选择角色（模态框模式）"
-      @confirm="handleRoleModalConfirm"
-      @cancel="handleCancel"
-    />
+    <RoleSelect v-model="modalSelectedRoles" :multiple="true" placeholder="请选择角色（模态框模式）"
+      @confirm="handleRoleModalConfirm" @cancel="handleCancel" />
   </RoleModalDialog>
 
   <!-- 部门选择抽屉组件 -->
   <SingleDeptDrawer>
-    <DeptSelect
-      v-model="singleSelectedDepts"
-      :multiple="false"
-      placeholder="请选择一个部门"
-      @confirm="handleSingleDeptConfirm"
-    />
+    <DeptSelect v-model="singleSelectedDepts" :multiple="false" placeholder="请选择一个部门"
+      @confirm="handleSingleDeptConfirm" />
   </SingleDeptDrawer>
 
   <MultipleDeptDrawer>
-    <DeptSelect
-      v-model="multipleSelectedDepts"
-      :multiple="true"
-      placeholder="请选择部门"
-      @confirm="handleMultipleDeptConfirm"
-    />
+    <DeptSelect v-model="multipleSelectedDepts" :multiple="true" placeholder="请选择部门"
+      @confirm="handleMultipleDeptConfirm" />
   </MultipleDeptDrawer>
 
   <LimitedDeptDrawer>
-    <DeptSelect
-      v-model="limitedSelectedDepts"
-      :multiple="true"
-      :max-count="3"
-      placeholder="请选择部门（最多3个）"
-      @confirm="handleLimitedDeptConfirm"
-    />
+    <DeptSelect v-model="limitedSelectedDepts" :multiple="true" :max-count="3" placeholder="请选择部门（最多3个）"
+      @confirm="handleLimitedDeptConfirm" />
   </LimitedDeptDrawer>
 
   <BulkDeptDrawer>
-    <DeptSelect
-      v-model="bulkSelectedDepts"
-      :multiple="true"
-      :max-count="50"
-      placeholder="请选择部门（最多50个）"
-      @confirm="handleBulkDeptConfirm"
-      @cancel="handleCancel"
-    />
+    <DeptSelect v-model="bulkSelectedDepts" :multiple="true" :max-count="50" placeholder="请选择部门（最多50个）"
+      @confirm="handleBulkDeptConfirm" @cancel="handleCancel" />
   </BulkDeptDrawer>
+
+  <!-- 岗位选择抽屉组件 -->
+  <SinglePostDrawer>
+    <PostSelect v-model="singleSelectedPosts" :multiple="false" placeholder="请选择一个岗位"
+      @confirm="handleSinglePostConfirm" />
+  </SinglePostDrawer>
+
+  <MultiplePostDrawer>
+    <PostSelect v-model="multipleSelectedPosts" :multiple="true" placeholder="请选择岗位"
+      @confirm="handleMultiplePostConfirm" />
+  </MultiplePostDrawer>
+
+  <LimitedPostDrawer>
+    <PostSelect v-model="limitedSelectedPosts" :multiple="true" :max-count="3" placeholder="请选择岗位（最多3个）"
+      @confirm="handleLimitedPostConfirm" />
+  </LimitedPostDrawer>
+
+  <BulkPostDrawer>
+    <PostSelect v-model="bulkSelectedPosts" :multiple="true" :max-count="50" placeholder="请选择岗位（最多50个）"
+      @confirm="handleBulkPostConfirm" @cancel="handleCancel" />
+  </BulkPostDrawer>
 </template>
