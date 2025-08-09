@@ -3,18 +3,11 @@ import type { SysUserType } from '#/api/system/user';
 
 import { ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
+import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 
 import { Button, Card, Divider, message, Space } from 'ant-design-vue';
 
 import UserSelect from '#/components/Select/UserSelect/index.vue';
-
-// UserSelect组件引用
-const singleSelectRef = ref<InstanceType<typeof UserSelect>>();
-const multipleSelectRef = ref<InstanceType<typeof UserSelect>>();
-const limitedSelectRef = ref<InstanceType<typeof UserSelect>>();
-const bulkSelectRef = ref<InstanceType<typeof UserSelect>>();
-const modalSelectRef = ref<InstanceType<typeof UserSelect>>();
 
 // 单选示例
 const singleSelectedUsers = ref<number[]>([]);
@@ -36,6 +29,37 @@ const bulkSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 const modalSelectedUsers = ref<number[]>([]);
 const modalSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
+// 抽屉配置（隐藏默认底部按钮，避免与子组件重复；高度占满视口）
+const [SingleDrawer, singleDrawerApi] = useVbenDrawer({
+  title: '选择用户（单选模式）',
+  class: 'w-[60vw] h-[100vh]',
+  footer: false,
+});
+
+const [MultipleDrawer, multipleDrawerApi] = useVbenDrawer({
+  title: '选择用户（多选模式）',
+  class: 'w-[60vw] h-[100vh]',
+  footer: false,
+});
+
+const [LimitedDrawer, limitedDrawerApi] = useVbenDrawer({
+  title: '选择用户（限制3个）',
+  class: 'w-[60vw] h-[100vh]',
+  footer: false,
+});
+
+const [BulkDrawer, bulkDrawerApi] = useVbenDrawer({
+  title: '选择用户（大量选择测试）',
+  class: 'w-[60vw] h-[100vh]',
+  footer: false,
+});
+
+// 模态框配置
+const [ModalDialog, modalApi] = useVbenModal({
+  title: '选择用户（模态框模式）',
+  class: 'w-[600px] h-[500px]',
+});
+
 // 单选处理
 function handleSingleChange(users: SysUserType.UserListVo[]) {
   singleSelectedUserData.value = users;
@@ -51,7 +75,7 @@ function handleSingleConfirm(data: {
     message.success(`已确认选择用户: ${data.users[0].username}`);
   }
   // 自动关闭抽屉
-  singleSelectRef.value?.closeSelector();
+  singleDrawerApi.close();
 }
 
 // 多选处理
@@ -67,7 +91,7 @@ function handleMultipleConfirm(data: {
   multipleSelectedUserData.value = data.users;
   message.success(`已确认选择 ${data.users.length} 个用户`);
   // 自动关闭抽屉
-  multipleSelectRef.value?.closeSelector();
+  multipleDrawerApi.close();
 }
 
 // 限制数量多选处理
@@ -83,7 +107,7 @@ function handleLimitedConfirm(data: {
   limitedSelectedUserData.value = data.users;
   message.success(`已确认选择 ${data.users.length} 个用户（限制3个）`);
   // 自动关闭抽屉
-  limitedSelectRef.value?.closeSelector();
+  limitedDrawerApi.close();
 }
 
 // 大量用户选择处理
@@ -99,7 +123,7 @@ function handleBulkConfirm(data: {
   bulkSelectedUserData.value = data.users;
   message.success(`已确认选择 ${data.users.length} 个用户（大量选择测试）`);
   // 自动关闭抽屉
-  bulkSelectRef.value?.closeSelector();
+  bulkDrawerApi.close();
 }
 
 // 模态框模式处理
@@ -114,8 +138,8 @@ function handleModalConfirm(data: {
 }) {
   modalSelectedUserData.value = data.users;
   message.success(`模态框模式已确认选择 ${data.users.length} 个用户`);
-  // 自动关闭抽屉
-  modalSelectRef.value?.closeSelector();
+  // 自动关闭模态框
+  modalApi.close();
 }
 
 // 取消选择回调处理
@@ -175,14 +199,9 @@ function getSelectionResults() {
       <div class="space-y-4">
         <div>
           <div class="mb-2 text-sm text-gray-600">选择一个用户（单选模式）</div>
-          <UserSelect
-            ref="singleSelectRef"
-            v-model="singleSelectedUsers"
-            :multiple="false"
-            placeholder="请选择一个用户"
-            @change="handleSingleChange"
-            @confirm="handleSingleConfirm"
-          />
+          <Button type="primary" @click="singleDrawerApi.open()">
+            打开用户选择器（单选）
+          </Button>
         </div>
 
         <Divider />
@@ -212,14 +231,9 @@ function getSelectionResults() {
           <div class="mb-2 text-sm text-gray-600">
             选择多个用户（默认最多10个）
           </div>
-          <UserSelect
-            ref="multipleSelectRef"
-            v-model="multipleSelectedUsers"
-            :multiple="true"
-            placeholder="请选择用户"
-            @change="handleMultipleChange"
-            @confirm="handleMultipleConfirm"
-          />
+          <Button type="primary" @click="multipleDrawerApi.open()">
+            打开用户选择器（多选）
+          </Button>
         </div>
 
         <Divider />
@@ -250,15 +264,9 @@ function getSelectionResults() {
       <div class="space-y-4">
         <div>
           <div class="mb-2 text-sm text-gray-600">最多选择3个用户</div>
-          <UserSelect
-            ref="limitedSelectRef"
-            v-model="limitedSelectedUsers"
-            :multiple="true"
-            :max-count="3"
-            placeholder="请选择用户（最多3个）"
-            @change="handleLimitedChange"
-            @confirm="handleLimitedConfirm"
-          />
+          <Button type="primary" @click="limitedDrawerApi.open()">
+            打开用户选择器（限制3个）
+          </Button>
         </div>
 
         <Divider />
@@ -287,16 +295,9 @@ function getSelectionResults() {
           <div class="mb-2 text-sm text-gray-600">
             选择大量用户测试新的两列布局和性能优化（最多1000个用户）
           </div>
-          <UserSelect
-            ref="bulkSelectRef"
-            v-model="bulkSelectedUsers"
-            :multiple="true"
-            :max-count="1000"
-            placeholder="请选择用户（最多1000个）"
-            @change="handleBulkChange"
-            @confirm="handleBulkConfirm"
-            @cancel="handleCancel"
-          />
+          <Button type="primary" @click="bulkDrawerApi.open()">
+            打开用户选择器（大量选择测试）
+          </Button>
         </div>
 
         <Divider />
@@ -321,18 +322,9 @@ function getSelectionResults() {
           <div class="mb-2 text-sm text-gray-600">
             使用模态框模式的用户选择（响应式设计）
           </div>
-          <UserSelect
-            ref="modalSelectRef"
-            v-model="modalSelectedUsers"
-            :multiple="true"
-            :modal-mode="true"
-            :width="600"
-            :height="500"
-            placeholder="请选择用户（模态框模式）"
-            @change="handleModalChange"
-            @confirm="handleModalConfirm"
-            @cancel="handleCancel"
-          />
+          <Button type="primary" @click="modalApi.open()">
+            打开用户选择器（模态框模式）
+          </Button>
         </div>
 
         <Divider />
@@ -429,4 +421,60 @@ function getSelectionResults() {
       </div>
     </Card>
   </Page>
+
+  <!-- 抽屉组件 -->
+  <SingleDrawer>
+    <UserSelect
+      v-model="singleSelectedUsers"
+      :multiple="false"
+      placeholder="请选择一个用户"
+      @change="handleSingleChange"
+      @confirm="handleSingleConfirm"
+    />
+  </SingleDrawer>
+
+  <MultipleDrawer>
+    <UserSelect
+      v-model="multipleSelectedUsers"
+      :multiple="true"
+      placeholder="请选择用户"
+      @change="handleMultipleChange"
+      @confirm="handleMultipleConfirm"
+    />
+  </MultipleDrawer>
+
+  <LimitedDrawer>
+    <UserSelect
+      v-model="limitedSelectedUsers"
+      :multiple="true"
+      :max-count="3"
+      placeholder="请选择用户（最多3个）"
+      @change="handleLimitedChange"
+      @confirm="handleLimitedConfirm"
+    />
+  </LimitedDrawer>
+
+  <BulkDrawer>
+    <UserSelect
+      v-model="bulkSelectedUsers"
+      :multiple="true"
+      :max-count="1000"
+      placeholder="请选择用户（最多1000个）"
+      @change="handleBulkChange"
+      @confirm="handleBulkConfirm"
+      @cancel="handleCancel"
+    />
+  </BulkDrawer>
+
+  <!-- 模态框组件 -->
+  <ModalDialog>
+    <UserSelect
+      v-model="modalSelectedUsers"
+      :multiple="true"
+      placeholder="请选择用户（模态框模式）"
+      @change="handleModalChange"
+      @confirm="handleModalConfirm"
+      @cancel="handleCancel"
+    />
+  </ModalDialog>
 </template>

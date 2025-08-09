@@ -57,17 +57,14 @@ export function useUserSelectColumns(): VxeTableGridOptions['columns'] {
       title: '用户名',
       type: 'checkbox',
       fixed: 'left',
-      width: 120,
     },
     {
       field: 'nickname',
       title: '昵称',
-      width: 120,
     },
     {
       field: 'deptName',
       title: '所属部门',
-      width: 150,
       formatter: ({ row }) => {
         // 尝试多种可能的部门名称字段
         return (
@@ -78,7 +75,6 @@ export function useUserSelectColumns(): VxeTableGridOptions['columns'] {
     {
       field: 'phone',
       title: '手机号',
-      width: 130,
       formatter: ({ cellValue }) => cellValue || '--',
     },
     {
@@ -91,7 +87,6 @@ export function useUserSelectColumns(): VxeTableGridOptions['columns'] {
       },
       field: 'status',
       title: '状态',
-      width: 100,
     },
   ];
 }
