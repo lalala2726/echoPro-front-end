@@ -481,15 +481,14 @@ onUnmounted(() => {
               </template>
             </Form>
           </slot>
+
           <div
             v-if="isSeparator"
             :style="{
               ...(separatorBg ? { backgroundColor: separatorBg } : undefined),
             }"
             class="bg-background-deep z-100 absolute -left-2 bottom-1 h-2 w-[calc(100%+1rem)] overflow-hidden md:bottom-2"
-          >
-            >
-          </div>
+          ></div>
         </div>
       </template>
       <!-- loading -->

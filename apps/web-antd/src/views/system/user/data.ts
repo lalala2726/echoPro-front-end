@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemUserApi } from '#/api/system/user';
+import type { SysUserType } from '#/api/system/user';
 
 import { useAccess } from '@vben/access';
 
@@ -138,7 +138,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemUserApi.SysUser>(
+export function useColumns<T = SysUserType.SysUser>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
