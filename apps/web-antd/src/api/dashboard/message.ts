@@ -1,15 +1,17 @@
+import type { PageResult } from '@vben/types';
+
 import { requestClient } from '#/api/request';
 
-export namespace SystemMessageType {
+export namespace DashBoardMessageType {
   export interface UserMessageListVo {
     /** 消息ID */
     id?: number;
     /** 消息标题 */
     title?: string;
     /** 消息类型 */
-    type?: number;
+    type?: MessageSendMethod;
     /** 消息级别 */
-    level?: number;
+    level?: MessageLevel;
     /** 是否已读 */
     isRead?: number;
     /** 发送者名称 */
@@ -23,10 +25,10 @@ export namespace SystemMessageType {
   export interface UserMessageListQueryRequest {
     /** 消息标题 */
     title?: string;
-    /** 消息类型：1-系统消息 2-通知消息 3-公告消息 */
-    type?: number;
-    /** 消息级别：1-普通 2-重要 3-紧急 */
-    level?: number;
+    /** 消息类型 */
+    type?: MessageType;
+    /** 消息级别 */
+    level?: MessageLevel;
     /** 是否已读 */
     isRead?: number;
     /** 发送者名称 */
@@ -45,9 +47,9 @@ export namespace SystemMessageType {
     /** 消息内容 */
     content?: string;
     /** 消息类型 */
-    type?: number;
+    type?: MessageType;
     /** 消息级别 */
-    level?: number;
+    level?: MessageLevel;
     /** 是否已读 */
     isRead?: number;
     /** 发送者ID */
@@ -64,24 +66,6 @@ export namespace SystemMessageType {
     updateTime?: string;
   }
 
-  export interface UserMessageListResponse {
-    /** 消息列表 */
-    rows: UserMessageListVo[];
-    /** 总数 - API返回字符串格式 */
-    total: string;
-    /** 页码 - API返回字符串格式 */
-    pageNum: string;
-    /** 每页大小 - API返回字符串格式 */
-    pageSize: string;
-    /** 额外信息 */
-    extra: {
-      /** 已读消息数量 - API返回字符串格式 */
-      read: string;
-      /** 未读消息数量 - API返回字符串格式 */
-      unread: string;
-    };
-  }
-
   export interface UnreadCountResponse {
     /** 总数量 */
     total: number;
@@ -90,6 +74,35 @@ export namespace SystemMessageType {
     /** 未读数量 */
     unRead: number;
   }
+
+  export enum MessageSendMethod {
+    /** 给所有用户发送消息 */
+    ALL = 'all',
+    /** 给指定部门发送消息 */
+    DEPT = 'dept',
+    /** 给指定角色发送消息 */
+    ROLE = 'role',
+    /** 给指定用户发送消息 */
+    USER = 'user',
+  }
+
+  export enum MessageType {
+    /** 公告消息 */
+    ANNOUNCEMENT = 'announcement',
+    /** 通知消息 */
+    NOTICE = 'notice',
+    /** 系统消息 */
+    SYSTEM = 'system',
+  }
+
+  export enum MessageLevel {
+    /** 重要 */
+    IMPORTANT = 'important',
+    /** 普通 */
+    NORMAL = 'normal',
+    /** 紧急 */
+    URGENT = 'urgent',
+  }
 }
 
 /**
@@ -97,9 +110,9 @@ export namespace SystemMessageType {
  * @param params 查询参数
  */
 async function listUserMessageList(
-  params: SystemMessageType.UserMessageListQueryRequest,
+  params: DashBoardMessageType.UserMessageListQueryRequest,
 ) {
-  return requestClient.get<SystemMessageType.UserMessageListResponse>(
+  return requestClient.get<PageResult<DashBoardMessageType.UserMessageListVo>>(
     '/dashboard/message/list',
     {
       params,
@@ -112,7 +125,7 @@ async function listUserMessageList(
  * @param id 消息ID
  */
 async function getMessageDetailById(id: number) {
-  return requestClient.get<SystemMessageType.UserMessageVo>(
+  return requestClient.get<DashBoardMessageType.UserMessageVo>(
     `/dashboard/message/${id}`,
   );
 }
@@ -121,7 +134,7 @@ async function getMessageDetailById(id: number) {
  * 获取未读和已读消息数量
  */
 async function getUnreadCount() {
-  return requestClient.get<SystemMessageType.UnreadCountResponse>(
+  return requestClient.get<DashBoardMessageType.UnreadCountResponse>(
     '/dashboard/message/count',
   );
 }
@@ -147,7 +160,7 @@ async function markMessageAsUnRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function deleteMessages(ids: Array<number>) {
-  return requestClient.delete(`/dashboard/message/delete/${ids.join(',')}`);
+  return requestClient.delete(`/dashboard/message/${ids.join(',')}`);
 }
 
 export {

@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import type { SystemMessageType } from '#/api/dashboard/message';
-
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { Button, Card, Input, message, Space } from 'ant-design-vue';
 
 import {
+  DashBoardMessageType,
   deleteMessages,
   listUserMessageList,
   markMessageAsRead,
@@ -36,20 +35,18 @@ const {
 
 // 响应式数据
 const loading = ref(false);
-const messageList = ref<SystemMessageType.UserMessageListVo[]>([]);
+const messageList = ref<DashBoardMessageType.UserMessageListVo[]>([]);
 const selectedRowKeys = ref<number[]>([]);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
-const activeTab = ref<number>(0);
+const activeTab = ref<'all' | DashBoardMessageType.MessageType>('all');
 const localReadCount = ref(0); // 本地已读数量，用于当前页面显示
 const searchTitle = ref<string>(''); // 搜索标题
 const readStatusFilter = ref<number | undefined>(undefined); // 未读/已读状态过滤: undefined-全部, 0-未读, 1-已读
 
 // 查询参数
-const queryParams = ref<SystemMessageType.UserMessageListQueryRequest>({
-  type: undefined,
-});
+const queryParams = ref<DashBoardMessageType.UserMessageListQueryRequest>({});
 
 // 使用全局的fetchUnreadCount
 
@@ -57,9 +54,9 @@ const queryParams = ref<SystemMessageType.UserMessageListQueryRequest>({
 const fetchMessageList = async () => {
   try {
     loading.value = true;
-    const params = {
+    const params: DashBoardMessageType.UserMessageListQueryRequest = {
       ...queryParams.value,
-      type: activeTab.value === 0 ? undefined : activeTab.value,
+      type: activeTab.value === 'all' ? undefined : activeTab.value,
       current: currentPage.value,
       size: pageSize.value,
       title: searchTitle.value || undefined,
@@ -146,12 +143,9 @@ const handleDeleteMessages = async (ids: number[]) => {
     await deleteMessages(ids);
     message.success('删除成功');
 
-    // 从本地列表中移除
-    messageList.value = messageList.value.filter(
-      (msg) => !ids.includes(msg.id!),
-    );
+    // 重新请求列表，确保数据与统计同步
     selectedRowKeys.value = [];
-    total.value -= ids.length;
+    await fetchMessageList();
   } catch (error) {
     console.error('删除消息失败:', error);
     message.error('删除消息失败');
@@ -178,7 +172,7 @@ const handleRowSelect = (id: number, checked: boolean) => {
 };
 
 // 行点击事件 - 导航到详情页面
-const handleRowClick = (record: SystemMessageType.UserMessageListVo) => {
+const handleRowClick = (record: DashBoardMessageType.UserMessageListVo) => {
   if (record.id) {
     // 使用Vue Router导航到消息详情页面
     router.push(`/message/detail/${record.id}`);
@@ -186,7 +180,7 @@ const handleRowClick = (record: SystemMessageType.UserMessageListVo) => {
 };
 
 // Tab切换
-const handleTabChange = (key: number) => {
+const handleTabChange = (key: 'all' | DashBoardMessageType.MessageType) => {
   activeTab.value = key;
   currentPage.value = 1;
   selectedRowKeys.value = [];

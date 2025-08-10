@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
-import type { SystemMessageType } from '#/api/dashboard/message';
+import type { DashBoardMessageType } from '#/api/dashboard/message';
 
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -27,7 +27,7 @@ const router = useRouter();
 
 // 消息相关状态
 const notifications = ref<NotificationItem[]>([]);
-const messageList = ref<SystemMessageType.UserMessageListVo[]>([]);
+const messageList = ref<DashBoardMessageType.UserMessageListVo[]>([]);
 const notificationLoading = ref(false);
 const { unreadCount, fetchUnreadCount, setLayoutRefreshCallback } =
   useMessageStore();

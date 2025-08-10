@@ -37,8 +37,8 @@ const TARGET_TYPES = {
 const [Modal, modalApi] = useVbenModal({
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemMessageManageType.SysMessageVo>();
-      messageData.value = data;
+      messageData.value =
+        modalApi.getData<SystemMessageManageType.SysMessageVo>();
     }
   },
 });

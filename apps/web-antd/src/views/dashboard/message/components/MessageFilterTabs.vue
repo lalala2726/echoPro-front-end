@@ -3,21 +3,23 @@ import { computed } from 'vue';
 
 import { Tabs } from 'ant-design-vue';
 
+import { DashBoardMessageType } from '#/api/dashboard/message';
+
 interface TabItem {
-  key: number;
+  key: 'all' | DashBoardMessageType.MessageType;
   label: string;
   count?: number;
 }
 
 interface Props {
-  activeTab: number;
+  activeTab: 'all' | DashBoardMessageType.MessageType;
   loading?: boolean;
   unreadCount?: number;
   readCount?: number;
 }
 
 interface Emits {
-  (e: 'change', key: number): void;
+  (e: 'change', key: 'all' | DashBoardMessageType.MessageType): void;
 }
 
 defineOptions({
@@ -35,18 +37,22 @@ const emit = defineEmits<Emits>();
 // Tab配置
 const tabs = computed<TabItem[]>(() => [
   {
-    key: 0,
+    key: 'all',
     label: '全部消息',
     count: (props.readCount || 0) + (props.unreadCount || 0),
   },
-  { key: 1, label: '系统消息' },
-  { key: 2, label: '通知消息' },
-  { key: 3, label: '公告消息' },
+  { key: DashBoardMessageType.MessageType.SYSTEM, label: '系统消息' },
+  { key: DashBoardMessageType.MessageType.NOTICE, label: '通知消息' },
+  { key: DashBoardMessageType.MessageType.ANNOUNCEMENT, label: '公告消息' },
 ]);
 
 // Tab切换处理
 const handleTabChange = (activeKey: string) => {
-  const key = Number(activeKey);
+  const key = (
+    activeKey === 'all'
+      ? 'all'
+      : (activeKey as DashBoardMessageType.MessageType)
+  ) as 'all' | DashBoardMessageType.MessageType;
   emit('change', key);
 };
 </script>
