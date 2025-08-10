@@ -14,8 +14,8 @@ export function useMessageStore() {
   const fetchUnreadCountFromList = async () => {
     try {
       const response = await listUserMessageList({
-        current: 1,
-        size: 1, // 只需要获取计数信息，不需要实际消息数据
+        pageNum: 1,
+        pageSize: 1, // 只需要获取计数信息，不需要实际消息数据
       });
 
       // 使用新的API响应格式
