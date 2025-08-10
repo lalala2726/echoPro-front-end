@@ -18,7 +18,7 @@ defineOptions({
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-// Navigation menu items
+// 导航菜单选项
 const menuItems = computed(() => [
   {
     key: 'overview',
@@ -40,7 +40,7 @@ const menuItems = computed(() => [
   },
 ]);
 
-// Handle menu item click
+// 处理菜单项点击事件
 function handleMenuClick(key: string) {
   emit('sectionChange', key);
 }
@@ -48,14 +48,14 @@ function handleMenuClick(key: string) {
 
 <template>
   <div class="rounded-lg bg-white shadow-sm dark:bg-[rgb(24,24,32)]">
-    <!-- Navigation Header -->
+    <!-- 导航头部 -->
     <div class="border-b border-gray-200 p-4 dark:border-gray-700">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
         账户中心
       </h3>
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- 导航菜单 -->
     <nav class="p-2">
       <ul class="space-y-1">
         <li v-for="item in menuItems" :key="item.key">
@@ -68,7 +68,7 @@ function handleMenuClick(key: string) {
             ]"
             @click="handleMenuClick(item.key)"
           >
-            <!-- Icon -->
+            <!-- 图标 -->
             <div
               class="mr-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md"
               :class="[
@@ -80,7 +80,7 @@ function handleMenuClick(key: string) {
               <component :is="item.icon" class="h-4 w-4" />
             </div>
 
-            <!-- Content -->
+            <!-- 内容 -->
             <div class="min-w-0 flex-1">
               <div
                 class="text-sm font-medium"
@@ -103,12 +103,6 @@ function handleMenuClick(key: string) {
                 {{ item.description }}
               </div>
             </div>
-
-            <!-- Active Indicator -->
-            <div
-              v-if="props.activeSection === item.key"
-              class="ml-2 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"
-            ></div>
           </button>
         </li>
       </ul>
@@ -117,7 +111,7 @@ function handleMenuClick(key: string) {
 </template>
 
 <style scoped>
-/* Fix cursor styles for interactive elements */
+/* 修复交互元素的鼠标样式 */
 button {
   cursor: pointer;
 }
@@ -130,12 +124,12 @@ button:disabled {
   cursor: pointer;
 }
 
-/* Ensure text elements don't show text cursor when clickable */
+/* 确保可点击时文本元素不显示文本光标 */
 button * {
   cursor: inherit;
 }
 
-/* Prevent text cursor on all other elements */
+/* 防止其他元素显示文本光标 */
 div,
 span,
 p,
@@ -152,7 +146,7 @@ nav {
   cursor: default;
 }
 
-/* Clickable text elements should have pointer cursor */
+/* 可点击的文本元素应显示指针光标 */
 .cursor-pointer {
   cursor: pointer;
 }

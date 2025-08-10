@@ -9,7 +9,7 @@ export namespace DashBoardMessageType {
     /** 消息标题 */
     title?: string;
     /** 消息类型 */
-    type?: MessageSendMethod;
+    type?: MessageType;
     /** 消息级别 */
     level?: MessageLevel;
     /** 是否已读 */

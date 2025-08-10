@@ -31,26 +31,6 @@ const routes: RouteRecordRaw[] = [
           title: '工作台',
         },
       },
-      {
-        name: 'Message',
-        path: '/message',
-        component: () => import('#/views/dashboard/message/index.vue'),
-        meta: {
-          icon: 'lucide:message-square',
-          title: '我的消息',
-        },
-      },
-      {
-        name: 'MessageDetail',
-        path: '/message/detail/:id',
-        component: () => import('#/views/dashboard/message/modules/detail.vue'),
-        meta: {
-          icon: 'lucide:message-square',
-          title: '消息详情',
-          activePath: '/dashboard/message',
-          hideInMenu: true,
-        },
-      },
     ],
   },
 ];

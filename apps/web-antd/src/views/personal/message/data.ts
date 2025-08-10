@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { DashBoardMessageType } from '#/api/dashboard/message';
+import type { DashBoardMessageType } from '#/api/personal/message';
 
 import { useAccess } from '@vben/access';
 

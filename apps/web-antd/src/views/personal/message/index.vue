@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { DashBoardMessageType } from '#/api/dashboard/message';
+import type { DashBoardMessageType } from '#/api/personal/message';
 
 import { useRouter } from 'vue-router';
 
@@ -18,7 +18,7 @@ import {
   listUserMessageList,
   markMessageAsRead,
   markMessageAsUnRead,
-} from '#/api/dashboard/message';
+} from '#/api/personal/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
 import { useColumns, useGridFormSchema } from './data';

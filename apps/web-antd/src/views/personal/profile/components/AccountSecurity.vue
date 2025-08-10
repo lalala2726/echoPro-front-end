@@ -30,7 +30,7 @@ interface PasswordRequirement {
 type SessionDevice = profileType.SessionDevice;
 type SecurityLog = profileType.UserSecurityLog;
 
-// Reactive state
+// 响应式状态
 const passwordForm = ref<PasswordForm>({
   oldPassword: '',
   newPassword: '',
@@ -54,7 +54,7 @@ const loading = ref(true);
 const devices = ref<SessionDevice[]>([]);
 const securityLogs = ref<SecurityLog[]>([]);
 
-// Password requirements validation
+// 密码要求验证
 const passwordRequirements = computed<PasswordRequirement[]>(() => [
   {
     text: '至少8个字符',
@@ -104,7 +104,7 @@ const canSubmitPassword = computed(() => {
   );
 });
 
-// Load data functions
+// 数据加载函数
 const loadDevices = async () => {
   isDevicesLoading.value = true;
   try {
@@ -129,7 +129,7 @@ const loadSecurityLogs = async () => {
   }
 };
 
-// Password management
+// 密码管理
 const handlePasswordUpdate = async () => {
   if (!canSubmitPassword.value) {
     console.warn('请填写完整的密码信息');
@@ -154,7 +154,7 @@ const handlePasswordUpdate = async () => {
   }
 };
 
-// Device management
+// 设备管理
 const handleLogoutDevice = async (sessionId: string) => {
   try {
     await deleteDevice(sessionId);
@@ -192,7 +192,7 @@ function openConfirm() {
     });
 }
 
-// Security logs management
+// 安全日志管理
 const displayedLogs = computed(() => {
   return showAllLogs.value
     ? securityLogs.value
@@ -204,7 +204,7 @@ const _formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('zh-CN');
 };
 
-// Initialize data
+// 初始化数据
 onMounted(async () => {
   loading.value = true;
   try {

@@ -10,7 +10,7 @@ import {
   DashBoardMessageType,
   getMessageDetailById,
   markMessageAsRead,
-} from '#/api/dashboard/message';
+} from '#/api/personal/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
 defineOptions({
