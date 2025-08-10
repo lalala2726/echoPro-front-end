@@ -43,11 +43,11 @@ const routes: RouteRecordRaw[] = [
       {
         name: 'MessageDetail',
         path: '/message/detail/:id',
-        component: () => import('#/views/dashboard/message/detail.vue'),
+        component: () => import('#/views/dashboard/message/modules/detail.vue'),
         meta: {
           icon: 'lucide:message-square',
           title: '消息详情',
-          activePath: '/message',
+          activePath: '/dashboard/message',
           hideInMenu: true,
         },
       },

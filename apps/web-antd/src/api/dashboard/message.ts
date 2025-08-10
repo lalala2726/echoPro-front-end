@@ -1,4 +1,4 @@
-import type { PageResult } from '@vben/types';
+import type { BaseRequest, PageResult } from '@vben/types';
 
 import { requestClient } from '#/api/request';
 
@@ -22,7 +22,7 @@ export namespace DashBoardMessageType {
     createTime?: string;
   }
 
-  export interface UserMessageListQueryRequest {
+  export interface UserMessageListQueryRequest extends BaseRequest {
     /** 消息标题 */
     title?: string;
     /** 消息类型 */
@@ -33,10 +33,6 @@ export namespace DashBoardMessageType {
     isRead?: number;
     /** 发送者名称 */
     senderName?: string;
-    /** 当前页码 */
-    current?: number;
-    /** 每页大小 */
-    size?: number;
   }
 
   export interface UserMessageVo {

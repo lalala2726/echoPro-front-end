@@ -1,11 +1,19 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import type {
+  OnActionClickParams,
+  VxeTableGridOptions,
+} from '#/adapter/vxe-table';
+import type { DashBoardMessageType } from '#/api/dashboard/message';
+
 import { useRouter } from 'vue-router';
 
-import { Button, Card, Input, message, Space } from 'ant-design-vue';
+import { useAccess } from '@vben/access';
+import { Page } from '@vben/common-ui';
 
+import { Button, message, Modal } from 'ant-design-vue';
+
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  DashBoardMessageType,
   deleteMessages,
   listUserMessageList,
   markMessageAsRead,
@@ -13,347 +21,387 @@ import {
 } from '#/api/dashboard/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
-import {
-  BatchOperationToolbar,
-  MessageFilterTabs,
-  MessageListTable,
-} from './components';
+import { useColumns, useGridFormSchema } from './data';
 
 defineOptions({
-  name: 'MessageCenter',
+  name: 'MessageIndex',
 });
 
 const router = useRouter();
+const { hasAccessByCodes } = useAccess();
 
 // 全局消息状态
-const {
-  unreadCount,
-  readCount,
-  fetchUnreadCountFromList,
-  triggerLayoutRefresh,
-} = useMessageStore();
+const { fetchUnreadCountFromList, triggerLayoutRefresh } = useMessageStore();
 
-// 响应式数据
-const loading = ref(false);
-const messageList = ref<DashBoardMessageType.UserMessageListVo[]>([]);
-const selectedRowKeys = ref<number[]>([]);
-const currentPage = ref(1);
-const pageSize = ref(10);
-const total = ref(0);
-const activeTab = ref<'all' | DashBoardMessageType.MessageType>('all');
-const localReadCount = ref(0); // 本地已读数量，用于当前页面显示
-const searchTitle = ref<string>(''); // 搜索标题
-const readStatusFilter = ref<number | undefined>(undefined); // 未读/已读状态过滤: undefined-全部, 0-未读, 1-已读
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
+    schema: useGridFormSchema(),
+    submitOnChange: true,
+  },
+  gridOptions: {
+    checkboxConfig: {
+      highlight: true,
+      labelField: 'title',
+    },
+    columns: useColumns(onActionClick),
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: {
+      enabled: true,
+    },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await listUserMessageList({
+            pageNum: page?.currentPage,
+            pageSize: page?.pageSize,
+            ...formValues,
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: true,
+      refreshOptions: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<DashBoardMessageType.UserMessageListVo>,
+});
 
-// 查询参数
-const queryParams = ref<DashBoardMessageType.UserMessageListQueryRequest>({});
-
-// 使用全局的fetchUnreadCount
-
-// 获取消息列表
-const fetchMessageList = async () => {
-  try {
-    loading.value = true;
-    const params: DashBoardMessageType.UserMessageListQueryRequest = {
-      ...queryParams.value,
-      type: activeTab.value === 'all' ? undefined : activeTab.value,
-      current: currentPage.value,
-      size: pageSize.value,
-      title: searchTitle.value || undefined,
-      isRead: readStatusFilter.value,
-    };
-
-    const response = await listUserMessageList(params);
-
-    // 使用新的API响应格式
-    messageList.value = response.rows || [];
-    total.value = Number(response.total) || 0;
-
-    // 从API响应中获取全局已读和未读数量
-    const apiUnreadCount = Math.abs(Number(response.extra?.unread || 0));
-    const apiReadCount = Number(response.extra?.read || 0);
-
-    // 更新全局状态
-    unreadCount.value = apiUnreadCount;
-    readCount.value = apiReadCount;
-
-    // 计算当前页面的已读数量（用于显示）
-    localReadCount.value = messageList.value.filter(
-      (msg) => msg.isRead === 1,
-    ).length;
-  } catch (error) {
-    console.error('获取消息列表失败:', error);
-    message.error('获取消息列表失败');
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 标记消息为已读
-const handleMarkAsRead = async (ids: number[]) => {
-  try {
-    await markMessageAsRead(ids);
-    message.success('标记成功');
-
-    // 更新本地状态
-    messageList.value.forEach((msg) => {
-      if (ids.includes(msg.id!)) {
-        msg.isRead = 1;
-      }
-    });
-
-    selectedRowKeys.value = [];
-
-    // 更新未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
-  } catch (error) {
-    console.error('标记已读失败:', error);
-    message.error('标记已读失败');
-  }
-};
-
-// 标记消息为未读
-const handleMarkAsUnread = async (ids: number[]) => {
-  try {
-    await markMessageAsUnRead(ids);
-    message.success('标记成功');
-
-    // 更新本地状态
-    messageList.value.forEach((msg) => {
-      if (ids.includes(msg.id!)) {
-        msg.isRead = 0;
-      }
-    });
-
-    selectedRowKeys.value = [];
-
-    // 更新未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
-  } catch (error) {
-    console.error('标记未读失败:', error);
-    message.error('标记未读失败');
-  }
-};
-
-// 删除消息
-const handleDeleteMessages = async (ids: number[]) => {
-  try {
-    await deleteMessages(ids);
-    message.success('删除成功');
-
-    // 重新请求列表，确保数据与统计同步
-    selectedRowKeys.value = [];
-    await fetchMessageList();
-  } catch (error) {
-    console.error('删除消息失败:', error);
-    message.error('删除消息失败');
-  }
-};
-
-// 全选/取消全选
-const handleSelectAll = (checked: boolean) => {
-  selectedRowKeys.value = checked
-    ? messageList.value.map((msg) => msg.id!)
-    : [];
-};
-
-// 单行选择
-const handleRowSelect = (id: number, checked: boolean) => {
-  if (checked) {
-    // 避免重复添加
-    if (!selectedRowKeys.value.includes(id)) {
-      selectedRowKeys.value.push(id);
+function onActionClick(
+  e: OnActionClickParams<DashBoardMessageType.UserMessageListVo>,
+) {
+  switch (e.code) {
+    case 'delete': {
+      onDelete(e.row);
+      break;
     }
-  } else {
-    selectedRowKeys.value = selectedRowKeys.value.filter((key) => key !== id);
+    case 'markRead': {
+      onMarkRead(e.row);
+      break;
+    }
+    case 'markUnread': {
+      onMarkUnread(e.row);
+      break;
+    }
+    case 'view': {
+      onView(e.row);
+      break;
+    }
   }
-};
+}
 
-// 行点击事件 - 导航到详情页面
-const handleRowClick = (record: DashBoardMessageType.UserMessageListVo) => {
-  if (record.id) {
-    // 使用Vue Router导航到消息详情页面
-    router.push(`/message/detail/${record.id}`);
+/**
+ * 将Antd的Modal.confirm封装为promise，方便在异步函数中调用。
+ * @param content 提示内容
+ * @param title 提示标题
+ */
+function confirm(content: string, title: string) {
+  return new Promise((resolve, reject) => {
+    Modal.confirm({
+      content,
+      onCancel() {
+        reject(new Error('已取消'));
+      },
+      onOk() {
+        resolve(true);
+      },
+      title,
+    });
+  });
+}
+
+/**
+ * 查看消息详情
+ */
+function onView(row: DashBoardMessageType.UserMessageListVo) {
+  router.push(`/message/detail/${row.id}`);
+}
+
+/**
+ * 标记消息为已读
+ */
+async function onMarkRead(row: DashBoardMessageType.UserMessageListVo) {
+  try {
+    await markMessageAsRead([row.id!]);
+    message.success({
+      content: `消息已标记为已读`,
+      key: 'mark_read_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    message.error({
+      content: `标记失败: ${error.message || '未知错误'}`,
+      key: 'mark_read_msg',
+    });
   }
-};
+}
 
-// Tab切换
-const handleTabChange = (key: 'all' | DashBoardMessageType.MessageType) => {
-  activeTab.value = key;
-  currentPage.value = 1;
-  selectedRowKeys.value = [];
-  fetchMessageList();
-};
+/**
+ * 标记消息为未读
+ */
+async function onMarkUnread(row: DashBoardMessageType.UserMessageListVo) {
+  message.loading({
+    content: `正在标记消息为未读...`,
+    duration: 0,
+    key: 'mark_unread_msg',
+  });
+  try {
+    await markMessageAsUnRead([row.id!]);
+    message.success({
+      content: `消息已标记为未读`,
+      key: 'mark_unread_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    message.error({
+      content: `标记失败: ${error.message || '未知错误'}`,
+      key: 'mark_unread_msg',
+    });
+  }
+}
 
-// 搜索标题
-const handleSearchTitle = () => {
-  currentPage.value = 1;
-  selectedRowKeys.value = [];
-  fetchMessageList();
-};
+/**
+ * 删除消息
+ */
+async function onDelete(row: DashBoardMessageType.UserMessageListVo) {
+  try {
+    await confirm(`确定要删除消息 "${row.title}" 吗？`, '删除确认');
+    message.loading({
+      content: `正在删除消息...`,
+      duration: 0,
+      key: 'delete_msg',
+    });
+    await deleteMessages([row.id!]);
+    message.success({
+      content: `消息删除成功`,
+      key: 'delete_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    if (error.message !== '已取消') {
+      message.error({
+        content: `删除失败: ${error.message || '未知错误'}`,
+        key: 'delete_msg',
+      });
+    }
+  }
+}
 
-// 清空搜索
-const handleClearSearch = () => {
-  searchTitle.value = '';
-  currentPage.value = 1;
-  selectedRowKeys.value = [];
-  fetchMessageList();
-};
+function onRefresh() {
+  gridApi.query();
+}
 
-// 切换已读/未读状态
-const handleReadStatusChange = (status: number | undefined) => {
-  readStatusFilter.value = status;
-  currentPage.value = 1;
-  selectedRowKeys.value = [];
-  fetchMessageList();
-};
-
-// 分页变化
-const handlePageChange = (page: number, size: number) => {
-  currentPage.value = page;
-  pageSize.value = size;
-  fetchMessageList();
-};
-
-// 单个消息操作已移除 - 所有操作通过批量操作工具栏进行
-
-// 批量操作
-const handleBatchAction = async (action: 'delete' | 'read' | 'unread') => {
-  if (selectedRowKeys.value.length === 0) {
-    message.warning('请选择要操作的消息');
+/**
+ * 批量标记为已读
+ */
+async function onBatchMarkRead() {
+  const selectRecords = gridApi.grid.getCheckboxRecords();
+  if (selectRecords.length === 0) {
+    message.warning('请选择要标记的消息');
     return;
   }
 
-  switch (action) {
-    case 'delete': {
-      await handleDeleteMessages(selectedRowKeys.value);
-      break;
-    }
-    case 'read': {
-      await handleMarkAsRead(selectedRowKeys.value);
-      break;
-    }
-    case 'unread': {
-      await handleMarkAsUnread(selectedRowKeys.value);
-      break;
-    }
+  // 过滤出未读消息
+  const unreadRecords = selectRecords.filter(
+    (record: DashBoardMessageType.UserMessageListVo) => record.isRead === 0,
+  );
+
+  if (unreadRecords.length === 0) {
+    message.warning('所选消息都已是已读状态');
+    gridApi.grid.clearCheckboxRow();
+    return;
   }
-};
 
-// 监听Tab变化
-watch(activeTab, () => {
-  fetchMessageList();
-});
+  try {
+    await confirm(
+      `确定要将这 ${unreadRecords.length} 条消息标记为已读吗？`,
+      '批量标记已读确认',
+    );
 
-// 组件挂载时获取数据
-onMounted(() => {
-  fetchMessageList(); // 这个函数现在会同时更新未读数量
-});
+    const messageIds = unreadRecords.map(
+      (record: DashBoardMessageType.UserMessageListVo) => record.id!,
+    );
+    message.loading({
+      content: '正在批量标记为已读...',
+      duration: 0,
+      key: 'batch_mark_read_msg',
+    });
+    await markMessageAsRead(messageIds);
+    message.success({
+      content: `成功标记 ${unreadRecords.length} 条消息为已读`,
+      key: 'batch_mark_read_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    if (error.message !== '已取消') {
+      message.error({
+        content: `批量标记失败: ${error.message || '未知错误'}`,
+        key: 'batch_mark_read_msg',
+      });
+    }
+  } finally {
+    // 无论成功还是失败都清除复选框选择
+    gridApi.grid.clearCheckboxRow();
+  }
+}
+
+/**
+ * 批量标记为未读
+ */
+async function onBatchMarkUnread() {
+  const selectRecords = gridApi.grid.getCheckboxRecords();
+  if (selectRecords.length === 0) {
+    message.warning('请选择要标记的消息');
+    return;
+  }
+
+  // 过滤出已读消息
+  const readRecords = selectRecords.filter(
+    (record: DashBoardMessageType.UserMessageListVo) => record.isRead === 1,
+  );
+
+  if (readRecords.length === 0) {
+    message.warning('所选消息都已是未读状态');
+    gridApi.grid.clearCheckboxRow();
+    return;
+  }
+
+  try {
+    await confirm(
+      `确定要将这 ${readRecords.length} 条消息标记为未读吗？`,
+      '批量标记未读确认',
+    );
+
+    const messageIds = readRecords.map(
+      (record: DashBoardMessageType.UserMessageListVo) => record.id!,
+    );
+    message.loading({
+      content: '正在批量标记为未读...',
+      duration: 0,
+      key: 'batch_mark_unread_msg',
+    });
+    await markMessageAsUnRead(messageIds);
+    message.success({
+      content: `成功标记 ${readRecords.length} 条消息为未读`,
+      key: 'batch_mark_unread_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    if (error.message !== '已取消') {
+      message.error({
+        content: `批量标记失败: ${error.message || '未知错误'}`,
+        key: 'batch_mark_unread_msg',
+      });
+    }
+  } finally {
+    // 无论成功还是失败都清除复选框选择
+    gridApi.grid.clearCheckboxRow();
+  }
+}
+
+/**
+ * 批量删除消息
+ */
+async function onBatchDelete() {
+  const selectRecords = gridApi.grid.getCheckboxRecords();
+  if (selectRecords.length === 0) {
+    message.warning('请选择要删除的消息');
+    return;
+  }
+
+  try {
+    await confirm(
+      `确定要删除这 ${selectRecords.length} 条消息吗？`,
+      '批量删除确认',
+    );
+
+    const messageIds = selectRecords.map(
+      (record: DashBoardMessageType.UserMessageListVo) => record.id!,
+    );
+    message.loading({
+      content: '正在批量删除消息...',
+      duration: 0,
+      key: 'batch_delete_msg',
+    });
+    await deleteMessages(messageIds);
+    message.success({
+      content: `成功删除 ${selectRecords.length} 条消息`,
+      key: 'batch_delete_msg',
+    });
+    onRefresh();
+    // 更新全局未读数量并刷新布局
+    await fetchUnreadCountFromList();
+    triggerLayoutRefresh();
+  } catch (error: any) {
+    if (error.message !== '已取消') {
+      message.error({
+        content: `批量删除失败: ${error.message || '未知错误'}`,
+        key: 'batch_delete_msg',
+      });
+    }
+  } finally {
+    // 无论成功还是失败都清除复选框选择
+    gridApi.grid.clearCheckboxRow();
+  }
+}
 </script>
 
 <template>
-  <div class="message-center dark:bg-background min-h-full bg-gray-50/30 p-4">
-    <!-- 主要内容卡片 -->
-    <Card class="dark:bg-card dark:border-border border-0 shadow-sm">
-      <!-- 搜索和过滤区域 -->
-      <div
-        class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <!-- 未读/已读状态切换 -->
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600 dark:text-gray-400">
-            状态筛选:
-          </span>
-          <Space>
-            <Button
-              :type="readStatusFilter === undefined ? 'primary' : 'default'"
-              size="small"
-              @click="handleReadStatusChange(undefined)"
-            >
-              全部
-            </Button>
-            <Button
-              :type="readStatusFilter === 0 ? 'primary' : 'default'"
-              size="small"
-              @click="handleReadStatusChange(0)"
-            >
-              未读
-            </Button>
-            <Button
-              :type="readStatusFilter === 1 ? 'primary' : 'default'"
-              size="small"
-              @click="handleReadStatusChange(1)"
-            >
-              已读
-            </Button>
-          </Space>
-        </div>
-
-        <!-- 搜索标题 -->
-        <div class="flex-shrink-0">
-          <Input.Search
-            v-model:value="searchTitle"
-            placeholder="搜索消息标题..."
-            allow-clear
-            enter-button="搜索"
-            :loading="loading"
-            @search="handleSearchTitle"
-            @clear="handleClearSearch"
-            class="w-80"
-          />
-        </div>
-      </div>
-
-      <!-- Tab导航 -->
-      <MessageFilterTabs
-        :active-tab="activeTab"
-        :loading="loading"
-        :unread-count="unreadCount"
-        :read-count="readCount"
-        @change="handleTabChange"
-      />
-
-      <!-- 批量操作工具栏 -->
-      <BatchOperationToolbar
-        :selected-count="selectedRowKeys.length"
-        :total-count="total"
-        :current-page-count="messageList.length"
-        :unread-count="unreadCount"
-        :loading="loading"
-        @select-all="handleSelectAll"
-        @batch-action="handleBatchAction"
-      />
-
-      <!-- 消息列表表格 -->
-      <MessageListTable
-        :message-list="messageList"
-        :selected-row-keys="selectedRowKeys"
-        :loading="loading"
-        :current-page="currentPage"
-        :page-size="pageSize"
-        :total="total"
-        @row-select="handleRowSelect"
-        @row-click="handleRowClick"
-        @page-change="handlePageChange"
-        @select-all="handleSelectAll"
-      />
-    </Card>
+  <div>
+    <Page auto-content-height>
+      <Grid table-title="消息中心">
+        <template #toolbar-tools>
+          <Button
+            v-if="hasAccessByCodes(['dashboard:message:read'])"
+            type="primary"
+            @click="onBatchMarkRead"
+          >
+            批量标记已读
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['dashboard:message:read'])"
+            @click="onBatchMarkUnread"
+          >
+            批量标记未读
+          </Button>
+          <span class="mx-2"></span>
+          <Button
+            v-if="hasAccessByCodes(['dashboard:message:delete'])"
+            danger
+            @click="onBatchDelete"
+          >
+            批量删除
+          </Button>
+        </template>
+      </Grid>
+    </Page>
   </div>
 </template>
 
 <style scoped>
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .message-center {
-    @apply p-2;
-  }
-}
-
-.message-center {
-  @apply transition-colors duration-200;
-}
-
-/* 消息中心整体样式 */
+/* 可以添加自定义样式 */
 </style>
