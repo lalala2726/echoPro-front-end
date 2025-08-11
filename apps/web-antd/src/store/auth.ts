@@ -67,6 +67,15 @@ export const useAuthStore = defineStore('auth', () => {
             message: $t('authentication.loginSuccess'),
           });
         }
+
+        // 登录成功后初始化 WebSocket 连接
+        try {
+          const { initWebSocket } = await import('#/services/websocket');
+          await initWebSocket();
+          console.log('[Auth] WebSocket 连接成功');
+        } catch (error) {
+          console.warn('[Auth] WebSocket 连接失败:', error);
+        }
       }
     } finally {
       loginLoading.value = false;
@@ -99,6 +108,15 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
+    // 断开 WebSocket 连接
+    try {
+      const { destroyWebSocket } = await import('#/services/websocket');
+      destroyWebSocket();
+      console.log('[Auth] WebSocket 连接已断开');
+    } catch (error) {
+      console.warn('[Auth] WebSocket 断开失败:', error);
+    }
+
     // 无论API是否成功，都执行清理操作
     resetAllStores();
     accessStore.setLoginExpired(false);
@@ -108,8 +126,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
+          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+        }
         : {},
     });
   }

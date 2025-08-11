@@ -3,7 +3,7 @@ import { createApp, watchEffect } from 'vue';
 import { registerAccessDirective } from '@vben/access';
 import { registerLoadingDirective } from '@vben/common-ui/es/loading';
 import { preferences } from '@vben/preferences';
-import { initStores } from '@vben/stores';
+import { initStores, useAccessStore } from '@vben/stores';
 import '@vben/styles';
 import '@vben/styles/antd';
 
@@ -69,6 +69,18 @@ async function bootstrap(namespace: string) {
       useTitle(pageTitle);
     }
   });
+
+  // 初始化 WebSocket 连接（在用户已登录的情况下）
+  const accessStore = useAccessStore();
+  if (accessStore.accessToken) {
+    try {
+      const { initWebSocket } = await import('#/services/websocket');
+      await initWebSocket();
+      console.log('[App] WebSocket 初始化成功');
+    } catch (error) {
+      console.warn('[App] WebSocket 初始化失败:', error);
+    }
+  }
 
   app.mount('#app');
 }

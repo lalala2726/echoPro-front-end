@@ -33,6 +33,8 @@ catalog:
   '@manypkg/get-packages': ^3.0.0
   '@nolebase/vitepress-plugin-git-changelog': ^2.18.0
   '@playwright/test': ^1.53.2
+  '@stomp/stompjs': ^7.0.0
+  '@types/sockjs-client': ^1.5.4
   '@pnpm/workspace.read-manifest': ^1000.2.0
   '@stylistic/stylelint-plugin': ^3.1.3
   '@tailwindcss/nesting': 0.0.0-insiders.565cd3e
@@ -150,6 +152,7 @@ catalog:
   rollup-plugin-visualizer: ^5.14.0
   sass: ^1.89.2
   secure-ls: ^2.0.0
+  sockjs-client: ^1.6.1
   sortablejs: ^1.15.6
   stylelint: ^16.21.0
   stylelint-config-recess-order: ^6.1.0

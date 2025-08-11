@@ -1,0 +1,10 @@
+{
+  "extends": "@vben/tsconfig/base.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "moduleResolution": "bundler"
+  },
+  "include": [
+    "src"
+  ]
+}
