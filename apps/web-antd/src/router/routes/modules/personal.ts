@@ -21,7 +21,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         name: 'Message',
-        path: '/message',
+        path: '/personal/message',
         component: () => import('#/views/personal/message/index.vue'),
         meta: {
           icon: 'lucide:message-square',
@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         name: 'MessageDetail',
-        path: '/message/detail/:id',
+        path: '/personal/message/detail/:id',
         component: () => import('#/views/personal/message/modules/detail.vue'),
         meta: {
           icon: 'lucide:message-square',
