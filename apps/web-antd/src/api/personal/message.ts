@@ -34,7 +34,11 @@ export namespace DashBoardMessageType {
     /** 发送者名称 */
     senderName?: string;
   }
-
+  /**
+   * 用户消息视图对象
+   *
+   * @author Chuang
+   */
   export interface UserMessageVo {
     /** 消息ID */
     id?: number;
@@ -46,20 +50,14 @@ export namespace DashBoardMessageType {
     type?: MessageType;
     /** 消息级别 */
     level?: MessageLevel;
-    /** 是否已读 */
-    isRead?: number;
-    /** 发送者ID */
-    senderId?: number;
-    /** 发送者名称 */
+    /** 发送者姓名 */
     senderName?: string;
-    /** 接收者ID */
-    receiverId?: number;
-    /** 接收者名称 */
-    receiverName?: string;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
+    /** 发送时间 */
+    sentTime?: string;
+    /** 上一条消息ID */
+    previousId?: number;
+    /** 下一条消息ID */
+    nextId?: number;
   }
 
   export interface UnreadCountResponse {

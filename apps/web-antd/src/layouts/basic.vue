@@ -115,7 +115,7 @@ function handleMakeAll() { }
 // 处理通知点击，导航到消息详情
 function handleNotificationClick(notification: NotificationItem) {
   if (notification.id) {
-    router.push(`/personal/message/detail/${notification.id}`);
+    router.push(`/personal/message/detail?id=${notification.id}`);
   }
 }
 

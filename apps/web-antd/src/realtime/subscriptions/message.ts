@@ -41,7 +41,7 @@ export function registerMessageSubscription(service: WebSocketService) {
               size: 'small',
               onClick: () => {
                 notification.close(key);
-                router.push(`/personal/message/detail/${messageData.id}`);
+                router.push(`/personal/message/detail?id=${messageData.id}`);
               },
             },
             { default: () => '查看消息' },

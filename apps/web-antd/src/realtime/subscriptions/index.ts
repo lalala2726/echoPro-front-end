@@ -1,5 +1,6 @@
 import { getWebSocketService } from '../connection';
 import { registerMessageSubscription } from './message';
+import { registerMessageCountSubscription } from './message-count';
 
 // 存储所有订阅的清理函数
 let subscriptionCleanupFunctions: Array<() => void> = [];
@@ -24,6 +25,10 @@ export function registerAppSubscriptions() {
   // 注册新消息订阅
   const messageCleanup = registerMessageSubscription(service);
   subscriptionCleanupFunctions.push(messageCleanup);
+
+  // 注册消息计数订阅（更新徽标）
+  const countCleanup = registerMessageCountSubscription(service);
+  subscriptionCleanupFunctions.push(countCleanup);
 
   // 这里可以继续添加其他业务订阅
   // const otherCleanup = registerOtherSubscription(service);
