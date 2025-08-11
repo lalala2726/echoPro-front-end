@@ -11,7 +11,7 @@ import {
   getPhone,
   updateEmail,
   updatePhone,
-} from '#/api/core/profile';
+} from '#/api/personal/profile';
 
 // 响应式状态
 const loading = ref(true);

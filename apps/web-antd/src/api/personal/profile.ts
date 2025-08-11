@@ -100,7 +100,7 @@ export namespace profileType {
  */
 async function overviewInfo() {
   return await requestClient.get<profileType.ProfileOverviewInfoVo>(
-    '/system/user/profile/overview',
+    '/personal/profile/overview',
   );
 }
 
@@ -109,7 +109,7 @@ async function overviewInfo() {
  * @param params
  */
 async function updateProfile(params: profileType.ProfileUpdateRequest) {
-  return await requestClient.put('/system/user/profile', params);
+  return await requestClient.put('/personal/profile', params);
 }
 
 /**
@@ -117,7 +117,7 @@ async function updateProfile(params: profileType.ProfileUpdateRequest) {
  */
 async function getDeviceList() {
   return await requestClient.get<profileType.SessionDevice[]>(
-    '/system/user/profile/security/device',
+    '/personal/profile/security/device',
   );
 }
 
@@ -127,7 +127,7 @@ async function getDeviceList() {
  */
 async function deleteDevice(refreshTokenId: string) {
   return await requestClient.delete(
-    `/system/user/profile/security/device/${refreshTokenId}`,
+    `/personal/profile/security/device/${refreshTokenId}`,
   );
 }
 
@@ -136,7 +136,7 @@ async function deleteDevice(refreshTokenId: string) {
  */
 async function getSecurityLogList() {
   return await requestClient.get<profileType.UserSecurityLog[]>(
-    '/system/user/profile/security/log',
+    '/personal/profile/security/log',
   );
 }
 
@@ -144,7 +144,7 @@ async function getSecurityLogList() {
  * 退出所有登录
  */
 async function logoutAll() {
-  return await requestClient.delete('/system/user/profile/security/logoutAll');
+  return await requestClient.delete('/personal/profile/security/logoutAll');
 }
 
 /**
@@ -152,7 +152,7 @@ async function logoutAll() {
  * @param params
  */
 async function updatePassword(params: profileType.UpdatePasswordRequest) {
-  return await requestClient.put('/system/user/profile/security/password', {
+  return await requestClient.put('/personal/profile/security/password', {
     ...params,
   });
 }
@@ -161,14 +161,14 @@ async function updatePassword(params: profileType.UpdatePasswordRequest) {
  * 获取当前用户的邮箱
  */
 async function getEmail() {
-  return await requestClient.get('/system/user/profile/email');
+  return await requestClient.get('/personal/profile/email');
 }
 
 /**
  * 获取当前用户的手机号
  */
 async function getPhone() {
-  return await requestClient.get('/system/user/profile/phone');
+  return await requestClient.get('/personal/profile/phone');
 }
 
 /**
@@ -176,7 +176,7 @@ async function getPhone() {
  * @param data
  */
 async function updatePhone(data: profileType.UpdatePhoneRequest) {
-  return await requestClient.put('/system/user/profile/phone', data);
+  return await requestClient.put('/personal/profile/phone', data);
 }
 
 /**
@@ -184,7 +184,7 @@ async function updatePhone(data: profileType.UpdatePhoneRequest) {
  * @param data
  */
 async function updateEmail(data: profileType.UpdateEmailRequest) {
-  return await requestClient.put('/system/user/profile/email', data);
+  return await requestClient.put('/personal/profile/email', data);
 }
 
 export {

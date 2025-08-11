@@ -71,17 +71,6 @@ export namespace DashBoardMessageType {
     unRead: number;
   }
 
-  export enum MessageSendMethod {
-    /** 给所有用户发送消息 */
-    ALL = 'all',
-    /** 给指定部门发送消息 */
-    DEPT = 'dept',
-    /** 给指定角色发送消息 */
-    ROLE = 'role',
-    /** 给指定用户发送消息 */
-    USER = 'user',
-  }
-
   export enum MessageType {
     /** 公告消息 */
     ANNOUNCEMENT = 'announcement',
@@ -109,7 +98,7 @@ async function listUserMessageList(
   params: DashBoardMessageType.UserMessageListQueryRequest,
 ) {
   return requestClient.get<PageResult<DashBoardMessageType.UserMessageListVo>>(
-    '/dashboard/message/list',
+    '/personal/message/list',
     {
       params,
     },
@@ -122,7 +111,7 @@ async function listUserMessageList(
  */
 async function getMessageDetailById(id: number) {
   return requestClient.get<DashBoardMessageType.UserMessageVo>(
-    `/dashboard/message/${id}`,
+    `/personal/message/${id}`,
   );
 }
 
@@ -131,7 +120,7 @@ async function getMessageDetailById(id: number) {
  */
 async function getUnreadCount() {
   return requestClient.get<DashBoardMessageType.UnreadCountResponse>(
-    '/dashboard/message/count',
+    '/personal/message/count',
   );
 }
 
@@ -140,7 +129,7 @@ async function getUnreadCount() {
  * @param ids 消息ID列表
  */
 async function markMessageAsRead(ids: Array<number>) {
-  return requestClient.put(`/dashboard/message/read/${ids.join(',')}`);
+  return requestClient.put(`/personal/message/read/${ids.join(',')}`);
 }
 
 /**
@@ -148,7 +137,7 @@ async function markMessageAsRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function markMessageAsUnRead(ids: Array<number>) {
-  return requestClient.put(`/dashboard/message/unread/${ids.join(',')}`);
+  return requestClient.put(`/personal/message/unread/${ids.join(',')}`);
 }
 
 /**
@@ -156,7 +145,7 @@ async function markMessageAsUnRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function deleteMessages(ids: Array<number>) {
-  return requestClient.delete(`/dashboard/message/${ids.join(',')}`);
+  return requestClient.delete(`/personal/message/${ids.join(',')}`);
 }
 
 export {

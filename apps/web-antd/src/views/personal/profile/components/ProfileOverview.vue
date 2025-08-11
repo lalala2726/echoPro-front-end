@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { UploadFile } from 'ant-design-vue';
 
-import type { profileType } from '#/api/core/profile';
+import type { profileType } from '#/api/personal/profile';
 import type {
   FileUploadResponse,
   ImageUploadResponse,
@@ -13,7 +13,7 @@ import { Briefcase, Edit, MapPin } from '@vben/icons';
 
 import { Input, Select, Textarea } from 'ant-design-vue';
 
-import { overviewInfo, updateProfile } from '#/api/core/profile';
+import { overviewInfo, updateProfile } from '#/api/personal/profile';
 import { UploadAvatar } from '#/components/Upload';
 
 interface Emits {
