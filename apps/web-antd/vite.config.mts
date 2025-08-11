@@ -15,6 +15,10 @@ export default defineConfig(async (config) => {
   return {
     application: {},
     vite: {
+      define: {
+        global: 'globalThis',
+        'process.env': {},
+      },
       server: {
         proxy: {
           [apiPrefix as string]: {

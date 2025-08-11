@@ -41,6 +41,7 @@
     "@vben/styles": "workspace:*",
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
+    "@vben/websocket": "workspace:*",
     "@vueuse/core": "catalog:",
     "aieditor": "^1.4.0",
     "ant-design-vue": "catalog:",

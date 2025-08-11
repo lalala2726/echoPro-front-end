@@ -10,6 +10,10 @@ export interface PageResult<T = any> {
   pageSize: number;
   /** 数据列表 */
   rows: T[];
+  /** 额外信息 */
+  extra?: {
+    [key: string]: any;
+  };
 }
 
 /**

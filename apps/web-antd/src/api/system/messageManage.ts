@@ -41,35 +41,23 @@ export namespace SystemMessageManageType {
   }
 
   export interface SysSendMessageRequest {
-    /**
-     * 消息发送方式，取值说明：
-     * 0 - 按用户ID发送
-     * 1 - 按角色发送
-     * 2 - 按部门发送
-     */
-    sendMethod: number;
-    /**
-     * 接收者ID列表，根据发送方式指定不同类型的ID：
-     * 发送方式为0时是用户ID列表
-     * 发送方式为1时是角色ID列表
-     * 发送方式为2时是部门ID列表
-     */
+    /** 接收类型 */
+    receiveType: MessageSendMethod;
+    /** 接收者ID */
     receiveId?: number[];
-    /**
-     * 要发送的消息内容详情
-     */
+    /** 消息 */
     message: MessageRequest;
   }
 
   export interface MessageRequest {
     /** 消息标题 */
-    title?: string;
+    title: string;
     /** 消息内容 */
-    content?: string;
-    /** 消息类型：1-系统消息 2-通知消息 3-公告消息 */
-    type?: number;
-    /** 消息级别：1-普通 2-重要 3-紧急 */
-    level?: number;
+    content: string;
+    /** 消息类型 */
+    type?: MessageType;
+    /** 消息级别 */
+    level?: MessageLevel;
   }
 
   export interface SysMessageVo {
@@ -105,6 +93,35 @@ export namespace SystemMessageManageType {
     /** 消息级别：1-普通 2-重要 3-紧急 */
     level: number;
   }
+
+  export enum MessageSendMethod {
+    /** 给所有用户发送消息 */
+    ALL = 'all',
+    /** 给指定部门发送消息 */
+    DEPT = 'dept',
+    /** 给指定角色发送消息 */
+    ROLE = 'role',
+    /** 给指定用户发送消息 */
+    USER = 'user',
+  }
+
+  export enum MessageType {
+    /** 公告消息 */
+    ANNOUNCEMENT = 'announcement',
+    /** 通知消息 */
+    NOTICE = 'notice',
+    /** 系统消息 */
+    SYSTEM = 'system',
+  }
+
+  export enum MessageLevel {
+    /** 重要 */
+    IMPORTANT = 'important',
+    /** 普通 */
+    NORMAL = 'normal',
+    /** 紧急 */
+    URGENT = 'urgent',
+  }
 }
 
 /**
@@ -133,7 +150,9 @@ async function sendMessage(
  * 修改消息
  * @param data 修改消息参数
  */
-async function updateMessage(data: SystemMessageManageType.MessageRequest) {
+async function updateMessage(
+  data: SystemMessageManageType.SysMessageUpdateRequest,
+) {
   return requestClient.put('/system/manage/message', data);
 }
 

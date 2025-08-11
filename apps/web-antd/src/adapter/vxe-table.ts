@@ -128,6 +128,47 @@ setupVbenVxeTable({
       },
     });
 
+    // 消息标题渲染器（支持已读/未读状态显示）
+    vxeUI.renderer.add('CellMessageTitle', {
+      renderTableDefault(renderOpts, { column, row }) {
+        const title = row[column.field] || row.title;
+        const isRead = row.isRead;
+
+        return h(
+          'div',
+          {
+            class: [
+              'flex items-center cursor-pointer',
+              isRead === 0
+                ? 'font-semibold text-gray-900 dark:text-gray-100'
+                : 'text-gray-600 dark:text-gray-400',
+            ],
+            onClick: () => {
+              // 触发查看详情
+              renderOpts.attrs?.onClick?.({
+                code: 'view',
+                row,
+              });
+            },
+          },
+          [
+            // 未读消息显示红点标识
+            isRead === 0 &&
+              h('div', {
+                class: 'w-2 h-2 bg-red-500 rounded-full mr-2 flex-shrink-0',
+              }),
+            h(
+              'span',
+              {
+                class: 'truncate',
+              },
+              title || '--',
+            ),
+          ],
+        );
+      },
+    });
+
     /**
      * 注册表格的操作按钮渲染器
      */

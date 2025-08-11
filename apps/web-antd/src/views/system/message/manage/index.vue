@@ -5,11 +5,11 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemMessageManageType } from '#/api/system/messageManage';
 
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
-import { Plus } from '@vben/icons';
+// import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
@@ -80,6 +80,21 @@ const [Grid, gridApi] = useVbenVxeGrid({
       zoom: true,
     },
   } as VxeTableGridOptions<SystemMessageManageType.SysMessageListVo>,
+});
+
+// 是否有选中行（用于禁用/启用批量删除按钮）
+const hasSelection = computed<boolean>(() => {
+  try {
+    const api: any = gridApi as any;
+    const grid = api?.grid;
+    if (grid && typeof grid.getCheckboxRecords === 'function') {
+      return (grid.getCheckboxRecords() as any[]).length > 0;
+    }
+    if (typeof api?.getCheckboxRecords === 'function') {
+      return (api.getCheckboxRecords() as any[]).length > 0;
+    }
+  } catch {}
+  return false;
 });
 
 function onActionClick({
@@ -170,13 +185,7 @@ function onRefresh() {
   gridApi.query();
 }
 
-/**
- * 创建新消息
- */
-function onCreate() {
-  formDrawerApi.setData({});
-  formDrawerApi.open();
-}
+// 已移除创建/发送入口：发送功能已迁移至 /system/message/send 页面
 
 /**
  * 批量删除消息
@@ -262,19 +271,13 @@ function onExport() {
       <PreviewModal />
       <Grid>
         <template #toolbar-tools>
-          <Button
-            v-if="hasAccessByCodes(['system:message:add'])"
-            type="primary"
-            @click="onCreate"
-          >
-            <Plus class="size-5" />
-            新增消息
-          </Button>
-          <span class="mx-2"></span>
+          <!-- 已移除新增/发送入口 -->
           <Button
             v-if="hasAccessByCodes(['system:message:delete'])"
             type="primary"
             danger
+            :disabled="!hasSelection"
+            :ghost="!hasSelection"
             @click="onBatchDelete"
           >
             批量删除

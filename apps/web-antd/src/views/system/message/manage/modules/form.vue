@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { SystemMessageManageType } from '#/api/system/messageManage';
-
 import { computed, nextTick, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -11,9 +9,10 @@ import { useVbenForm } from '#/adapter/form';
 import {
   getMessageById,
   sendMessage,
+  SystemMessageManageType,
   updateMessage,
 } from '#/api/system/messageManage';
-import AiEditor from '#/components/editor/AiEditor.vue';
+import AiEditor from '#/components/Editor/AiEditor.vue';
 
 import { useFormSchema } from '../data';
 
@@ -72,14 +71,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
         await (formData.value?.id
           ? updateMessage({
-              ...submitData,
-              id: formData.value.id,
-            } as SystemMessageManageType.MessageRequest)
+              ...(submitData as unknown as SystemMessageManageType.SysMessageUpdateRequest),
+              id: formData.value.id!,
+            })
           : sendMessage({
-              sendMethod: 2, // 默认全部用户
+              receiveType: SystemMessageManageType.MessageSendMethod.ALL,
               receiveId: [],
               message: submitData as SystemMessageManageType.MessageRequest,
-            }));
+            } as SystemMessageManageType.SysSendMessageRequest));
 
         await drawerApi.close();
         emit('success');
@@ -143,7 +142,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         </label>
         <AiEditor
           v-model="messageContent"
-          :height="400"
+          :height="600"
           width="100%"
           placeholder="请输入消息内容..."
           content-format="html"

@@ -174,4 +174,11 @@ watch(
 :deep(.tippy-box) {
   box-shadow: 0 2px 5px 2px rgb(0 0 0 / 8%) !important;
 }
+
+/* 隐藏编辑器底部的 aie-footer */
+:deep(aie-footer),
+:deep(.aie-footer),
+:deep(.aie-editor-footer) {
+  display: none !important;
+}
 </style>

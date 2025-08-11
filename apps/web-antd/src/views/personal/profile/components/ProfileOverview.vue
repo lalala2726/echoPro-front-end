@@ -5,7 +5,7 @@ import type { profileType } from '#/api/core/profile';
 import type {
   FileUploadResponse,
   ImageUploadResponse,
-} from '#/components/upload/types/types';
+} from '#/components/Upload/types/types';
 
 import { onMounted, ref } from 'vue';
 
@@ -14,7 +14,7 @@ import { Briefcase, Edit, MapPin } from '@vben/icons';
 import { Input, Select, Textarea } from 'ant-design-vue';
 
 import { overviewInfo, updateProfile } from '#/api/core/profile';
-import { UploadAvatar } from '#/components/upload';
+import { UploadAvatar } from '#/components/Upload';
 
 interface Emits {
   (e: 'editProfile'): void;
@@ -26,13 +26,13 @@ defineOptions({
 
 const emit = defineEmits<Emits>();
 
-// Loading state
+// 加载状态
 const loading = ref(false);
 
-// Edit mode state
+// 编辑模式状态
 const isEditing = ref(false);
 
-// User data from API
+// 从API获取的用户数据
 const userInfo = ref<profileType.ProfileOverviewInfoVo>({
   username: '',
   nickname: '',
@@ -47,7 +47,7 @@ const userInfo = ref<profileType.ProfileOverviewInfoVo>({
   roles: [],
 });
 
-// Edit form data (only editable fields)
+// 编辑表单数据（仅可编辑字段）
 const editForm = ref<profileType.ProfileUpdateRequest & { phone?: string }>({
   nickName: '',
   avatar: '',
@@ -56,7 +56,7 @@ const editForm = ref<profileType.ProfileUpdateRequest & { phone?: string }>({
   signature: '',
 });
 
-// Load user profile data
+// 加载用户资料数据
 async function loadUserProfile() {
   try {
     loading.value = true;
@@ -69,7 +69,7 @@ async function loadUserProfile() {
   }
 }
 
-// Handle avatar upload success
+// 处理头像上传成功
 async function handleAvatarUploadSuccess(
   response: FileUploadResponse | ImageUploadResponse,
   _file: UploadFile,
@@ -95,7 +95,7 @@ async function handleAvatarUploadSuccess(
   }
 }
 
-// Handle edit profile
+// 处理编辑资料
 function handleEditProfile() {
   isEditing.value = true;
   editForm.value = {
@@ -109,7 +109,7 @@ function handleEditProfile() {
   emit('editProfile');
 }
 
-// Handle save profile
+// 处理保存资料
 async function handleSaveProfile() {
   try {
     loading.value = true;
@@ -123,12 +123,12 @@ async function handleSaveProfile() {
   }
 }
 
-// Handle cancel edit
+// 处理取消编辑
 function handleCancelEdit() {
   isEditing.value = false;
 }
 
-// Initialize component
+// 初始化组件
 onMounted(() => {
   loadUserProfile();
 });

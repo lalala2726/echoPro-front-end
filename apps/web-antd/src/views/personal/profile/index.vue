@@ -10,32 +10,32 @@ defineOptions({
   name: 'ProfilePage',
 });
 
-// Current active section
+// 当前活跃的选项卡
 const activeSection = ref('overview');
 
-// Handle section change from navigation
+// 处理导航菜单的选项卡切换
 function handleSectionChange(section: string) {
   activeSection.value = section;
 }
 
-// Handle edit profile action
+// 处理编辑个人资料操作
 function handleEditProfile() {
-  // This will be handled within the ProfileOverview component
+  // 这将在 ProfileOverview 组件内部处理
 }
 
-// Handle change password action from Account Security
+// 处理来自账户安全的更改密码操作
 function handleChangePassword() {
   activeSection.value = 'security';
-  // Focus will be handled within the AccountSecurity component
+  // 焦点将在 AccountSecurity 组件内部处理
 }
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-black">
     <div class="mx-auto max-w-none px-6 py-8 sm:px-8 lg:px-12">
-      <!-- Main Content Layout -->
+      <!-- 主要内容布局 -->
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <!-- Left Navigation Menu (1/5 width) -->
+        <!-- 左侧导航菜单 (1/5 宽度) -->
         <div class="lg:col-span-1">
           <ProfileNavigation
             :active-section="activeSection"
@@ -43,12 +43,12 @@ function handleChangePassword() {
           />
         </div>
 
-        <!-- Right Content Area (4/5 width) -->
+        <!-- 右侧内容区域 (4/5 宽度) -->
         <div class="lg:col-span-4">
           <div
             class="rounded-lg bg-white p-6 shadow-sm dark:bg-[rgb(24,24,32)]"
           >
-            <!-- Dynamic Content Based on Active Section -->
+            <!-- 基于活跃选项卡的动态内容 -->
             <ProfileOverview
               v-if="activeSection === 'overview'"
               @edit-profile="handleEditProfile"
@@ -66,5 +66,5 @@ function handleChangePassword() {
 </template>
 
 <style scoped>
-/* Additional custom styles if needed */
+/* 如有需要可在此添加自定义样式 */
 </style>

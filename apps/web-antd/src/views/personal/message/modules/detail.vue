@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { SystemMessageType } from '#/api/dashboard/message';
-
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -9,9 +7,10 @@ import { IconifyIcon } from '@vben/icons';
 import { Button, Card, message, Spin, Tag, Typography } from 'ant-design-vue';
 
 import {
+  DashBoardMessageType,
   getMessageDetailById,
   markMessageAsRead,
-} from '#/api/dashboard/message';
+} from '#/api/personal/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 
 defineOptions({
@@ -26,22 +25,45 @@ const { fetchUnreadCountFromList, triggerLayoutRefresh } = useMessageStore();
 
 // 响应式数据
 const loading = ref(false);
-const messageDetail = ref<null | SystemMessageType.UserMessageVo>(null);
+const messageDetail = ref<DashBoardMessageType.UserMessageVo | null>(null);
 
-// 消息类型映射
-const MESSAGE_TYPES = {
-  0: { label: '全部类型', color: '' },
-  1: { label: '系统消息', color: 'blue' },
-  2: { label: '通知消息', color: 'green' },
-  3: { label: '公告消息', color: 'orange' },
-} as const;
+// 消息类型映射（枚举）
+const MESSAGE_TYPES: Partial<
+  Record<
+    'all' | DashBoardMessageType.MessageType,
+    { color: string; label: string }
+  >
+> = {
+  all: { label: '全部类型', color: '' },
+  [DashBoardMessageType.MessageType.SYSTEM]: {
+    label: '系统消息',
+    color: 'blue',
+  },
+  [DashBoardMessageType.MessageType.NOTICE]: {
+    label: '通知消息',
+    color: 'green',
+  },
+  [DashBoardMessageType.MessageType.ANNOUNCEMENT]: {
+    label: '公告消息',
+    color: 'orange',
+  },
+};
 
-// 消息级别映射
-const MESSAGE_LEVELS = {
-  1: { label: '普通', color: 'default' },
-  2: { label: '重要', color: 'warning' },
-  3: { label: '紧急', color: 'error' },
-} as const;
+// 消息级别映射（枚举）
+const MESSAGE_LEVELS: Record<
+  DashBoardMessageType.MessageLevel,
+  { color: string; label: string }
+> = {
+  [DashBoardMessageType.MessageLevel.NORMAL]: {
+    label: '普通',
+    color: 'default',
+  },
+  [DashBoardMessageType.MessageLevel.IMPORTANT]: {
+    label: '重要',
+    color: 'warning',
+  },
+  [DashBoardMessageType.MessageLevel.URGENT]: { label: '紧急', color: 'error' },
+};
 
 // 获取消息详情
 const fetchMessageDetail = async (id: number) => {

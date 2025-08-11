@@ -1,0 +1,30 @@
+{
+  "name": "@vben/websocket",
+  "version": "5.5.7",
+  "homepage": "https://github.com/vbenjs/vue-vben-admin",
+  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "directory": "packages/effects/websocket"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@vben/stores": "workspace:*",
+    "@vben/utils": "workspace:*",
+    "sockjs-client": "catalog:",
+    "@stomp/stompjs": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@types/sockjs-client": "catalog:"
+  }
+}
