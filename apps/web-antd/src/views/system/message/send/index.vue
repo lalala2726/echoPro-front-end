@@ -13,6 +13,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Radio,
   Segmented,
 } from 'ant-design-vue';
@@ -166,7 +167,7 @@ function handleDeptConfirm(data: {
 }
 
 // 提交发送
-async function onSubmit() {
+function onSubmit() {
   if (!formModel.value.title?.trim()) {
     message.warning('请输入消息标题');
     return;
@@ -183,6 +184,20 @@ async function onSubmit() {
     return;
   }
 
+  // 显示确认弹窗
+  Modal.confirm({
+    title: '确认发送消息',
+    content: `确定要发送消息"${formModel.value.title}"吗？`,
+    okText: '确认发送',
+    cancelText: '取消',
+    onOk: async () => {
+      await doSendMessage();
+    },
+  });
+}
+
+// 实际发送消息
+async function doSendMessage() {
   isSubmitting.value = true;
   const hide = message.loading({ content: '正在发送...', duration: 0 });
   try {
