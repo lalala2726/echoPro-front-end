@@ -12,3 +12,15 @@ export interface MessageNotification {
   /** 发送者 */
   sender?: string;
 }
+
+/**
+ * 用户消息读取数量统计
+ */
+export interface UserMessageReadCountDto {
+  /** 总数量 */
+  total: number;
+  /** 已读数量 */
+  read: number;
+  /** 未读数量 */
+  unRead: number;
+}

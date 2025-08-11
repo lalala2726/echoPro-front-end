@@ -29,7 +29,9 @@ export function registerAppSubscriptions() {
   // const otherCleanup = registerOtherSubscription(service);
   // subscriptionCleanupFunctions.push(otherCleanup);
 
-  console.log(`[RealTime] 已注册 ${subscriptionCleanupFunctions.length} 个订阅`);
+  console.log(
+    `[RealTime] 已注册 ${subscriptionCleanupFunctions.length} 个订阅`,
+  );
 }
 
 /**
@@ -38,8 +40,10 @@ export function registerAppSubscriptions() {
  */
 export function cleanupAppSubscriptions() {
   if (subscriptionCleanupFunctions.length > 0) {
-    console.log(`[RealTime] 清理 ${subscriptionCleanupFunctions.length} 个订阅`);
-    subscriptionCleanupFunctions.forEach(cleanup => cleanup());
+    console.log(
+      `[RealTime] 清理 ${subscriptionCleanupFunctions.length} 个订阅`,
+    );
+    subscriptionCleanupFunctions.forEach((cleanup) => cleanup());
     subscriptionCleanupFunctions = [];
   }
 }

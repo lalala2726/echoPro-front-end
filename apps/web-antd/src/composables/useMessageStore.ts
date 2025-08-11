@@ -56,6 +56,17 @@ export function useMessageStore() {
     globalUnreadCount.value = count;
   };
 
+  // 更新已读数量
+  const updateReadCount = (count: number) => {
+    globalReadCount.value = count;
+  };
+
+  // 更新消息数量（同时更新未读和已读）
+  const updateMessageCounts = (unreadCount: number, readCount: number) => {
+    globalUnreadCount.value = unreadCount;
+    globalReadCount.value = readCount;
+  };
+
   // 减少未读数量
   const decreaseUnreadCount = (amount: number = 1) => {
     globalUnreadCount.value = Math.max(0, globalUnreadCount.value - amount);
@@ -84,6 +95,8 @@ export function useMessageStore() {
     fetchUnreadCount,
     fetchUnreadCountFromList,
     updateUnreadCount,
+    updateReadCount,
+    updateMessageCounts,
     decreaseUnreadCount,
     increaseUnreadCount,
     setLayoutRefreshCallback,
