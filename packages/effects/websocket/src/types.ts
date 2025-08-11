@@ -24,7 +24,7 @@ export interface WebSocketService {
   /** 连接状态 */
   isConnected: boolean;
   /** 连接到服务器 */
-  connect(token?: string): Promise<void>;
+  connect(token?: string, customParams?: Record<string, string>): Promise<void>;
   /** 断开连接 */
   disconnect(): void;
   /** 订阅主题 */

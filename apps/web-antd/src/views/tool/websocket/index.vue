@@ -59,10 +59,15 @@ const accessStore = useAccessStore();
 // 配置
 const wsConfig = ref({
   url: wsUrl,
+  params: [
+    { key: 'token', value: '', enabled: true },
+    { key: 'clientType', value: 'web-test', enabled: false },
+    { key: 'version', value: '1.0', enabled: false },
+  ],
 });
 
 // 订阅相关
-const subscribeDestination = ref('/topic/message/new');
+const subscribeDestination = ref('/user/queue/message');
 const subscriptions = ref<string[]>([]);
 
 // 发送消息相关
@@ -106,6 +111,66 @@ const connectionTime = computed(() => {
 const isLoggedIn = computed(() => {
   return !!accessStore.accessToken;
 });
+
+// URL参数管理
+const addParam = () => {
+  wsConfig.value.params.push({ key: '', value: '', enabled: true });
+};
+
+const removeParam = (index: number) => {
+  if (wsConfig.value.params.length > 1) {
+    wsConfig.value.params.splice(index, 1);
+  }
+};
+
+const refreshToken = () => {
+  const tokenParam = wsConfig.value.params.find((p) => p.key === 'token');
+  if (tokenParam) {
+    tokenParam.value = accessStore.accessToken || '';
+    message.success('访问令牌已更新');
+  }
+};
+
+const previewConnectionUrl = () => {
+  // 模拟连接URL构建过程
+  let finalToken = accessStore.accessToken;
+  const customParams: Record<string, string> = {};
+  let hasTokenParam = false;
+
+  wsConfig.value.params.forEach((param: any) => {
+    if (param.enabled && param.key && param.value) {
+      if (param.key === 'token') {
+        finalToken = param.value;
+        hasTokenParam = true;
+      } else {
+        customParams[param.key] = param.value;
+      }
+    }
+  });
+
+  // 构建URL参数
+  let previewUrl = wsConfig.value.url;
+  const urlParams = new URLSearchParams();
+
+  if (finalToken) {
+    urlParams.append('token', finalToken);
+  }
+
+  Object.entries(customParams).forEach(([key, value]) => {
+    urlParams.append(key, value);
+  });
+
+  if (urlParams.toString()) {
+    previewUrl += (previewUrl.includes('?') ? '&' : '?') + urlParams.toString();
+  }
+
+  addLog('system', `预览连接URL: ${previewUrl}`);
+  addLog('system', `Token来源: ${hasTokenParam ? 'UI配置' : '当前登录令牌'}`);
+  addLog(
+    'system',
+    `Token值: ${finalToken ? `${finalToken.slice(0, 10)}...` : 'None'}`,
+  );
+};
 
 // 定时器
 let durationTimer: NodeJS.Timeout | null = null;
@@ -171,17 +236,54 @@ function stopDurationTimer() {
 
 async function handleConnect() {
   try {
-    const token = accessStore.accessToken;
-    if (!token) {
+    if (!isLoggedIn.value) {
       addLog('error', '请先登录再进行连接测试');
       return;
     }
 
     addLog('system', `正在连接到: ${wsConfig.value.url}`);
-    addLog('system', `使用令牌: ${token.slice(0, 10)}...`);
 
-    // 使用 useWebSocket 的 connect 方法，这样状态会正确更新
-    await connect(token);
+    // 构建自定义URL参数
+    const customParams: Record<string, string> = {};
+    let finalToken = accessStore.accessToken; // 默认使用当前登录令牌
+    let hasTokenParam = false;
+
+    wsConfig.value.params.forEach((param: any) => {
+      if (param.enabled && param.key && param.value) {
+        if (param.key === 'token') {
+          // token 参数特殊处理，直接作为主要认证令牌
+          finalToken = param.value;
+          hasTokenParam = true;
+          addLog(
+            'system',
+            `使用UI配置的token参数: ${param.value.slice(0, 10)}...`,
+          );
+        } else {
+          // 其他参数添加到自定义参数中
+          customParams[param.key] = param.value;
+          addLog(
+            'system',
+            `添加参数: ${param.key} = ${param.value.slice(0, 20)}...`,
+          );
+        }
+      }
+    });
+
+    // 如果没有在UI中配置token，使用当前登录令牌
+    if (!hasTokenParam && finalToken) {
+      addLog(
+        'system',
+        `使用当前登录令牌作为token: ${finalToken.slice(0, 10)}...`,
+      );
+    }
+
+    if (!finalToken) {
+      addLog('error', '没有可用的token，请先登录或在UI中配置token参数');
+      return;
+    }
+
+    // 使用 useWebSocket 的 connect 方法，token作为URL参数传递
+    await connect(finalToken, customParams);
     addLog('system', 'WebSocket 连接成功！');
     startDurationTimer();
   } catch (error_) {
@@ -322,6 +424,9 @@ async function triggerServerPush() {
 onMounted(() => {
   addLog('system', '页面已加载，准备进行 WebSocket 连接测试');
 
+  // 初始化token参数
+  refreshToken();
+
   // 设置 WebSocket 事件监听
   if (service) {
     service.on('connected', () => {
@@ -366,6 +471,61 @@ onUnmounted(() => {
                 placeholder="WebSocket 服务地址"
                 disabled
               />
+            </div>
+          </div>
+
+          <!-- URL参数配置 -->
+          <div>
+            <div class="mb-2 flex items-center justify-between">
+              <Space>
+                <Button
+                  size="small"
+                  @click="addParam"
+                  :disabled="isConnected || isConnecting"
+                >
+                  添加参数
+                </Button>
+                <Button size="small" @click="refreshToken"> 刷新令牌 </Button>
+                <Button size="small" @click="previewConnectionUrl">
+                  预览连接
+                </Button>
+              </Space>
+            </div>
+            <div class="space-y-2">
+              <div
+                v-for="(param, index) in wsConfig.params"
+                :key="index"
+                class="flex items-center gap-2 rounded border p-2"
+              >
+                <Input
+                  v-model:value="param.key"
+                  placeholder="参数名称"
+                  style="width: 150px"
+                  :disabled="isConnected || isConnecting"
+                />
+                <Input
+                  v-model:value="param.value"
+                  placeholder="参数值"
+                  style="flex: 1"
+                  :type="param.key === 'token' ? 'password' : 'text'"
+                  :disabled="isConnected || isConnecting"
+                />
+                <input
+                  type="checkbox"
+                  v-model="param.enabled"
+                  :disabled="isConnected || isConnecting"
+                />
+                <Button
+                  size="small"
+                  danger
+                  @click="removeParam(index)"
+                  :disabled="
+                    isConnected || isConnecting || wsConfig.params.length <= 1
+                  "
+                >
+                  删除
+                </Button>
+              </div>
             </div>
           </div>
 

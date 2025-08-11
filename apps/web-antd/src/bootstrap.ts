@@ -70,16 +70,22 @@ async function bootstrap(namespace: string) {
     }
   });
 
-  // 初始化 WebSocket 连接（在用户已登录的情况下）
+  // 异步初始化 WebSocket 连接和实时消息订阅（不阻塞应用启动）
   const accessStore = useAccessStore();
   if (accessStore.accessToken) {
-    try {
-      const { initWebSocket } = await import('#/services/websocket');
-      await initWebSocket();
-      console.log('[App] WebSocket 初始化成功');
-    } catch (error) {
-      console.warn('[App] WebSocket 初始化失败:', error);
-    }
+    // 使用 Promise.resolve() 确保异步执行，不阻塞应用启动
+    Promise.resolve().then(async () => {
+      try {
+        const { initWebSocket } = await import('#/realtime/connection');
+        const { registerAppSubscriptions } = await import('#/realtime/subscriptions');
+
+        await initWebSocket();
+        registerAppSubscriptions();
+        console.log('[App] WebSocket 连接和订阅初始化成功');
+      } catch (error) {
+        console.warn('[App] WebSocket 初始化失败，将在后台继续尝试重连:', error);
+      }
+    });
   }
 
   app.mount('#app');
