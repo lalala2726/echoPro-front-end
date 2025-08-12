@@ -6,7 +6,7 @@ import { computed, onMounted, ref } from 'vue';
 import { confirm } from '@vben/common-ui';
 import { Eye, EyeOff, Key, Shield, Smartphone } from '@vben/icons';
 
-import { message } from 'ant-design-vue';
+import { message, Pagination } from 'ant-design-vue';
 
 import {
   deleteDevice,
@@ -46,13 +46,33 @@ const showConfirmPassword = ref(false);
 const isPasswordLoading = ref(false);
 const isDevicesLoading = ref(false);
 const isSecurityLogsLoading = ref(false);
-const showAllLogs = ref(false);
-const displayedLogsCount = ref(10);
 const showPasswordForm = ref(false);
 const loading = ref(true);
 
 const devices = ref<SessionDevice[]>([]);
 const securityLogs = ref<SecurityLog[]>([]);
+
+// 分页相关状态
+const pagination = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number, range: [number, number]) =>
+    `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+});
+
+// 设备分页相关状态
+const devicePagination = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number, range: [number, number]) =>
+    `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+});
 
 // 密码要求验证
 const passwordRequirements = computed<PasswordRequirement[]>(() => [
@@ -105,11 +125,25 @@ const canSubmitPassword = computed(() => {
 });
 
 // 数据加载函数
-const loadDevices = async () => {
+const loadDevices = async (pageNum?: number, pageSize?: number) => {
   isDevicesLoading.value = true;
   try {
-    const response = await getDeviceList();
-    devices.value = response || [];
+    const response = await getDeviceList({
+      pageNum: pageNum || devicePagination.value.current,
+      pageSize: pageSize || devicePagination.value.pageSize,
+    });
+    
+    devices.value = response.rows || [];
+
+    if (response.total !== undefined) {
+      devicePagination.value.total = response.total;
+    }
+    if (response.pageNum !== undefined) {
+      devicePagination.value.current = response.pageNum;
+    }
+    if (response.pageSize !== undefined) {
+      devicePagination.value.pageSize = response.pageSize;
+    }
   } catch {
     console.warn('获取设备列表失败');
   } finally {
@@ -117,13 +151,37 @@ const loadDevices = async () => {
   }
 };
 
-const loadSecurityLogs = async () => {
+const loadSecurityLogs = async (pageNum?: number, pageSize?: number) => {
   isSecurityLogsLoading.value = true;
   try {
-    const response = await getSecurityLogList();
-    securityLogs.value = response || [];
-  } catch {
-    console.warn('获取安全日志失败');
+    const response = await getSecurityLogList({
+      pageNum: pageNum || pagination.value.current,
+      pageSize: pageSize || pagination.value.pageSize,
+    });
+
+    // 检查响应结构，可能数据在不同的字段中
+    if (response.rows) {
+      securityLogs.value = response.rows;
+    } else if (Array.isArray(response)) {
+      // 如果直接返回数组
+      securityLogs.value = response;
+      pagination.value.total = response.length;
+    } else {
+      console.warn('未知的响应结构:', response);
+      securityLogs.value = [];
+    }
+
+    if (response.total !== undefined) {
+      pagination.value.total = response.total;
+    }
+    if (response.pageNum !== undefined) {
+      pagination.value.current = response.pageNum;
+    }
+    if (response.pageSize !== undefined) {
+      pagination.value.pageSize = response.pageSize;
+    }
+  } catch (error) {
+    console.error('获取安全日志失败:', error);
   } finally {
     isSecurityLogsLoading.value = false;
   }
@@ -192,12 +250,19 @@ function openConfirm() {
     });
 }
 
-// 安全日志管理
-const displayedLogs = computed(() => {
-  return showAllLogs.value
-    ? securityLogs.value
-    : securityLogs.value.slice(0, displayedLogsCount.value);
-});
+// 分页处理函数
+const handlePageChange = (page: number, pageSize: number) => {
+  pagination.value.current = page;
+  pagination.value.pageSize = pageSize;
+  loadSecurityLogs(page, pageSize);
+};
+
+// 设备分页处理函数
+const handleDevicePageChange = (page: number, pageSize: number) => {
+  devicePagination.value.current = page;
+  devicePagination.value.pageSize = pageSize;
+  loadDevices(page, pageSize);
+};
 
 const _formatDate = (dateString: string) => {
   if (!dateString) return '';
@@ -565,11 +630,20 @@ onMounted(async () => {
           <div class="text-sm text-gray-500 dark:text-gray-400">
             暂无安全活动记录
           </div>
+          <div class="mt-2 text-xs text-gray-400">
+            调试信息: isLoading={{ isSecurityLogsLoading }}, 数组长度={{
+              securityLogs.length
+            }}, total={{ pagination.total }}
+          </div>
         </div>
 
         <div v-else class="space-y-4">
+          <div class="mb-2 text-xs text-gray-400">
+            调试信息: 显示 {{ securityLogs.length }} 条记录，总共
+            {{ pagination.total }} 条
+          </div>
           <div
-            v-for="(log, index) in displayedLogs"
+            v-for="(log, index) in securityLogs"
             :key="index"
             class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
           >
@@ -589,20 +663,18 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div
-            v-if="securityLogs.length > displayedLogsCount"
-            class="text-center"
-          >
-            <button
-              class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-              @click="showAllLogs = !showAllLogs"
-            >
-              {{
-                showAllLogs
-                  ? '收起'
-                  : `查看更多 (${securityLogs.length - displayedLogsCount} 条)`
-              }}
-            </button>
+          <!-- 分页组件 -->
+          <div v-if="pagination.total > 0" class="flex justify-center pt-4">
+            <Pagination
+              v-model:current="pagination.current"
+              v-model:page-size="pagination.pageSize"
+              :total="pagination.total"
+              :show-size-changer="pagination.showSizeChanger"
+              :show-quick-jumper="pagination.showQuickJumper"
+              :show-total="pagination.showTotal"
+              @change="handlePageChange"
+              @show-size-change="handlePageChange"
+            />
           </div>
         </div>
       </div>
@@ -690,6 +762,23 @@ onMounted(async () => {
             >
               注销
             </button>
+          </div>
+
+          <!-- 设备分页组件 -->
+          <div
+            v-if="devicePagination.total > 0"
+            class="flex justify-center pt-4"
+          >
+            <Pagination
+              v-model:current="devicePagination.current"
+              v-model:page-size="devicePagination.pageSize"
+              :total="devicePagination.total"
+              :show-size-changer="devicePagination.showSizeChanger"
+              :show-quick-jumper="devicePagination.showQuickJumper"
+              :show-total="devicePagination.showTotal"
+              @change="handleDevicePageChange"
+              @show-size-change="handleDevicePageChange"
+            />
           </div>
         </div>
       </div>

@@ -1,3 +1,5 @@
+import type { BaseRequest, PageResult } from '@vben/types';
+
 import { requestClient } from '#/api/request';
 
 export namespace profileType {
@@ -63,7 +65,7 @@ export namespace profileType {
 
   export interface SessionDevice {
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     username?: string;
     /** 刷新令牌会话ID */
@@ -115,9 +117,10 @@ async function updateProfile(params: profileType.ProfileUpdateRequest) {
 /**
  * 获取已登录的登录设备列表
  */
-async function getDeviceList() {
-  return await requestClient.get<profileType.SessionDevice[]>(
+async function getDeviceList(params: BaseRequest) {
+  return await requestClient.get<PageResult<profileType.SessionDevice>>(
     '/personal/profile/security/device',
+    { params },
   );
 }
 
@@ -134,9 +137,10 @@ async function deleteDevice(refreshTokenId: string) {
 /**
  * 获取用户安全日志列表
  */
-async function getSecurityLogList() {
-  return await requestClient.get<profileType.UserSecurityLog[]>(
+async function getSecurityLogList(params: BaseRequest) {
+  return await requestClient.get<PageResult<profileType.UserSecurityLog>>(
     '/personal/profile/security/log',
+    { params },
   );
 }
 
