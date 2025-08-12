@@ -3,25 +3,16 @@
   "version": "5.5.7",
   "private": true,
   "keywords": [
-    "monorepo",
-    "turbo",
-    "vben",
-    "vben admin",
-    "vben pro",
-    "vue",
-    "vue admin",
-    "vue vben admin",
-    "vue vben admin pro",
     "vue3"
   ],
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
-  "repository": "vbenjs/vue-vben-admin.git",
+  "homepage": "https://github.com/lalala2726/echoPro-front-end",
+  "bugs": "https://github.com/lalala2726/echoPro-front-end/issues",
+  "repository": "lalala2726/echoPro-front-end",
   "license": "MIT",
   "author": {
-    "name": "vben",
-    "email": "ann.vben@gmail.com",
-    "url": "https://github.com/anncwb"
+    "name": "Chuang",
+    "email": "chuang@zhangchuangla.cn",
+    "url": "https://github.com/lalala2726/echoPro-front-end"
   },
   "type": "module",
   "scripts": {
