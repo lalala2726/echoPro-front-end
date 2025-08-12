@@ -55,9 +55,9 @@ export namespace DashBoardMessageType {
     /** 发送时间 */
     sentTime?: string;
     /** 上一条消息ID */
-    previousId?: number;
+    previousId?: string;
     /** 下一条消息ID */
-    nextId?: number;
+    nextId?: string;
   }
 
   export interface UnreadCountResponse {
@@ -107,7 +107,7 @@ async function listUserMessageList(
  * 根据ID获取消息详情
  * @param id 消息ID
  */
-async function getMessageDetailById(id: number) {
+async function getMessageDetailById(id: string) {
   return requestClient.get<DashBoardMessageType.UserMessageVo>(
     `/personal/message/${id}`,
   );
@@ -126,7 +126,7 @@ async function getUnreadCount() {
  * 标记消息为已读 (支持批量标记)
  * @param ids 消息ID列表
  */
-async function markMessageAsRead(ids: Array<number>) {
+async function markMessageAsRead(ids: Array<string>) {
   return requestClient.put(`/personal/message/read/${ids.join(',')}`);
 }
 
@@ -134,7 +134,7 @@ async function markMessageAsRead(ids: Array<number>) {
  * 标记消息为未读 (支持批量标记)
  * @param ids 消息ID列表
  */
-async function markMessageAsUnRead(ids: Array<number>) {
+async function markMessageAsUnRead(ids: Array<string>) {
   return requestClient.put(`/personal/message/unread/${ids.join(',')}`);
 }
 
@@ -142,7 +142,7 @@ async function markMessageAsUnRead(ids: Array<number>) {
  * 删除消息 (支持批量删除)
  * @param ids 消息ID列表
  */
-async function deleteMessages(ids: Array<number>) {
+async function deleteMessages(ids: Array<string>) {
   return requestClient.delete(`/personal/message/${ids.join(',')}`);
 }
 

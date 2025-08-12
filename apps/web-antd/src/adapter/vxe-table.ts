@@ -14,7 +14,7 @@ import {
 import { get, isFunction, isString } from '@vben/utils';
 
 import { objectOmit } from '@vueuse/core';
-import { Button, Image, Popconfirm, Switch, Tag } from 'ant-design-vue';
+import { Button, Popconfirm, Switch, Tag } from 'ant-design-vue';
 
 import { $t } from '#/locales';
 
@@ -60,11 +60,30 @@ setupVbenVxeTable({
       }
     });
 
-    // 表格配置项可以用 cellRender: { name: 'CellImage' },
+    // 表格配置项可以用 cellRender: { name: 'CellImage', props: { width: 36, height: 36, circle: true } },
     vxeUI.renderer.add('CellImage', {
-      renderTableDefault(_renderOpts, params) {
+      renderTableDefault(renderOpts, params) {
         const { column, row } = params;
-        return h(Image, { src: row[column.field] });
+        const src = get(row, column.field);
+        const width = renderOpts.props?.width ?? 36;
+        const height = renderOpts.props?.height ?? 36;
+        const circle = Boolean(renderOpts.props?.circle);
+
+        const style: Record<string, string> = {
+          width: `${width}px`,
+          height: `${height}px`,
+          objectFit: 'cover',
+          display: 'block',
+          margin: 'auto',
+        };
+        if (circle) style.borderRadius = '50%';
+
+        // 使用原生 img，确保圆角裁剪准确
+        return h('img', {
+          alt: 'image',
+          src,
+          style,
+        });
       },
     });
 

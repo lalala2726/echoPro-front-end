@@ -6,7 +6,7 @@ import { onMounted, ref, watch } from 'vue';
 
 import { Tree } from 'ant-design-vue';
 
-import { getDeptOptions } from '#/api/system/dept';
+import { getDeptTreeOptions } from '#/api/system/dept';
 
 // 定义组件Props
 interface Props {
@@ -87,7 +87,7 @@ function transformDeptData(data: any[]): TreeProps['treeData'] {
 async function loadDeptData() {
   try {
     loading.value = true;
-    const result = await getDeptOptions();
+    const result = await getDeptTreeOptions();
 
     if (result && Array.isArray(result) && result.length > 0) {
       const transformedData = transformDeptData(result);

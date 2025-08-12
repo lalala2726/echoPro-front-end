@@ -1,4 +1,4 @@
-import type { BaseType, PageResult, Recordable } from '@vben/types';
+import type { BaseType, Option, PageResult, Recordable } from '@vben/types';
 
 import { exportFile } from '#/api';
 import { requestClient } from '#/api/request';
@@ -33,6 +33,10 @@ async function getPostList(params?: any) {
  */
 async function getPostById(id: number) {
   return requestClient.get<SystemPostApi.SysPost>(`/system/post/${id}`);
+}
+
+async function getOptions() {
+  return requestClient.get<Array<Option<number>>>('/system/post/options');
 }
 
 /**
@@ -71,6 +75,7 @@ export {
   addPost,
   deletePost,
   exportPostList,
+  getOptions,
   getPostById,
   getPostList,
   updatePost,

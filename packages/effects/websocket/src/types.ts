@@ -48,5 +48,5 @@ export interface WebSocketEvents {
   /** 连接错误 */
   error: (error: any) => void;
   /** 收到消息 */
-  message: object;
+  message: any;
 }

@@ -1,5 +1,4 @@
 import type {
-  MessageNotification,
   WebSocketConfig,
   WebSocketEvents,
   WebSocketService,
@@ -75,7 +74,9 @@ export class WebSocketServiceImpl implements WebSocketService {
         console.log('[WebSocket] URL参数传递token认证:', {
           hasToken: !!token,
           tokenPreview: token ? `${token.slice(0, 10)}...` : 'None',
-          customParamsCount: customParams ? Object.keys(customParams).length : 0,
+          customParamsCount: customParams
+            ? Object.keys(customParams).length
+            : 0,
         });
 
         // 创建 SockJS 连接
@@ -90,13 +91,13 @@ export class WebSocketServiceImpl implements WebSocketService {
           connectHeaders,
           debug: this.config.debug
             ? (str: string) => {
-              // eslint-disable-next-line no-console
-              console.log('[WebSocket Debug]:', str);
-            }
+                // eslint-disable-next-line no-console
+                console.log('[WebSocket Debug]:', str);
+              }
             : undefined,
           reconnectDelay: this.config.reconnect?.interval || 3000,
-          heartbeatIncoming: 4000,
-          heartbeatOutgoing: 4000,
+          heartbeatIncoming: 10_000,
+          heartbeatOutgoing: 10_000,
         });
 
         // 连接成功处理
@@ -319,7 +320,7 @@ export class WebSocketServiceImpl implements WebSocketService {
     // 如果配置了默认订阅主题，则自动订阅
     if (this.config.defaultSubscriptions) {
       this.config.defaultSubscriptions.forEach((destination) => {
-        this.subscribe(destination, (message: MessageNotification) => {
+        this.subscribe(destination, (message: any) => {
           this.emit('message', message);
         });
       });

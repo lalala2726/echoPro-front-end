@@ -69,7 +69,7 @@ const MESSAGE_LEVELS: Record<
 };
 
 // 获取消息详情
-const fetchMessageDetail = async (id: number, isNavigation = false) => {
+const fetchMessageDetail = async (id: string, isNavigation = false) => {
   try {
     if (isNavigation) {
       navigating.value = true;
@@ -78,8 +78,7 @@ const fetchMessageDetail = async (id: number, isNavigation = false) => {
     }
 
     // 获取新的消息详情
-    const newMessageDetail = await getMessageDetailById(id);
-    messageDetail.value = newMessageDetail;
+    messageDetail.value = await getMessageDetailById(id);
 
     // 更新路由查询参数但不刷新页面，使用replace避免创建新标签页
     if (isNavigation) {
@@ -109,7 +108,7 @@ const handleGoBack = () => {
 const handlePreviousMessage = () => {
   if (
     messageDetail.value?.previousId &&
-    messageDetail.value.previousId !== -1
+    messageDetail.value.previousId !== '-1'
   ) {
     fetchMessageDetail(messageDetail.value.previousId, true);
   }
@@ -117,7 +116,7 @@ const handlePreviousMessage = () => {
 
 // 导航到下一条消息
 const handleNextMessage = () => {
-  if (messageDetail.value?.nextId && messageDetail.value.nextId !== -1) {
+  if (messageDetail.value?.nextId && messageDetail.value.nextId !== '-1') {
     fetchMessageDetail(messageDetail.value.nextId, true);
   }
 };
@@ -126,7 +125,7 @@ const handleNextMessage = () => {
 onMounted(() => {
   const messageId = route.query.id as string;
   if (messageId) {
-    fetchMessageDetail(Number(messageId));
+    fetchMessageDetail(messageId);
   } else {
     message.error('消息ID无效');
     handleGoBack();
@@ -150,7 +149,7 @@ onMounted(() => {
         <Button
           :disabled="
             !messageDetail.previousId ||
-            messageDetail.previousId === -1 ||
+            messageDetail.previousId === '-1' ||
             navigating
           "
           @click="handlePreviousMessage"
@@ -160,7 +159,7 @@ onMounted(() => {
         </Button>
         <Button
           :disabled="
-            !messageDetail.nextId || messageDetail.nextId === -1 || navigating
+            !messageDetail.nextId || messageDetail.nextId === '-1' || navigating
           "
           @click="handleNextMessage"
         >

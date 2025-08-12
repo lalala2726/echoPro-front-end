@@ -10,7 +10,7 @@ import type { SysUserType } from '#/api/system/user';
 import { ref } from 'vue';
 
 import { useAccess } from '@vben/access';
-import { ColPage, useVbenModal } from '@vben/common-ui';
+import { ColPage, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -28,7 +28,7 @@ import Dept from './modules/dept.vue';
 import Form from './modules/form.vue';
 import ResetPassword from './modules/reset-password.vue';
 
-const [FormModal, formModalApi] = useVbenModal({
+const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
   destroyOnClose: true,
 });
@@ -139,7 +139,7 @@ async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
       `你要将${row.username}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateUser({ ...row, status: newStatus as 0 | 1 });
+    await updateUser({ userId: row.userId, status: newStatus as 0 | 1 });
     return true;
   } catch {
     return false;
@@ -150,8 +150,8 @@ async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
  * 编辑用户
  */
 function onEdit(row: SysUserType.SysUser) {
-  formModalApi.setData(row);
-  formModalApi.open();
+  formDrawerApi.setData(row);
+  formDrawerApi.open();
 }
 
 /**
@@ -184,8 +184,8 @@ function onRefresh() {
  * 创建新用户
  */
 function onCreate() {
-  formModalApi.setData({});
-  formModalApi.open();
+  formDrawerApi.setData({});
+  formDrawerApi.open();
 }
 
 /**
@@ -301,7 +301,7 @@ function onResetPasswordSuccess(username: string) {
 
 <template>
   <div>
-    <FormModal @success="onRefresh" />
+    <FormDrawer @success="onRefresh" />
     <ResetPasswordModal @success="onResetPasswordSuccess" />
     <ColPage
       auto-content-height
@@ -325,6 +325,20 @@ function onResetPasswordSuccess(username: string) {
       </template>
 
       <Grid table-title="用户列表">
+        <template #avatar="{ row }">
+          <a-image
+            :src="row.avatar"
+            :preview="false"
+            :width="36"
+            :height="36"
+            style="
+              display: block;
+              margin: auto;
+              object-fit: cover;
+              border-radius: 50%;
+            "
+          />
+        </template>
         <template #toolbar-tools>
           <Button
             v-if="hasAccessByCodes(['system:user:list'])"
