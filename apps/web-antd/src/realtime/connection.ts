@@ -3,7 +3,8 @@ import { useAccessStore } from '@vben/stores';
 import { createWebSocketService } from '@vben/websocket';
 
 // 全局 WebSocket 服务实例
-let globalWebSocketService: null | ReturnType<typeof createWebSocketService> = null;
+let globalWebSocketService: null | ReturnType<typeof createWebSocketService> =
+  null;
 
 /**
  * 创建 WebSocket 配置（仅负责连接配置，不包含业务订阅）
@@ -41,10 +42,18 @@ export function getWebSocketService() {
     // 仅设置连接相关的事件处理，业务消息处理由订阅层负责
     globalWebSocketService.on('connected', () => {
       console.log('[WebSocket] 服务连接成功');
+      // 连接成功后自动注册业务订阅
+      import('./subscriptions').then(({ registerAppSubscriptions }) => {
+        registerAppSubscriptions();
+      });
     });
 
     globalWebSocketService.on('disconnected', () => {
       console.log('[WebSocket] 服务连接断开');
+      // 连接断开时清理订阅
+      import('./subscriptions').then(({ cleanupAppSubscriptions }) => {
+        cleanupAppSubscriptions();
+      });
     });
 
     globalWebSocketService.on('error', (error) => {
