@@ -20,7 +20,7 @@ export function useColumns(
     {
       type: 'checkbox',
       title: '公告标题',
-      align : 'left',
+      align: 'left',
     },
     {
       cellRender: {
