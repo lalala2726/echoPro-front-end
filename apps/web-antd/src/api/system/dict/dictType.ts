@@ -3,11 +3,6 @@ import type { PageResult } from '@vben/types';
 import { requestClient } from '#/api/request';
 
 export namespace SystemDictType {
-  /**
-   * 字典类型查询请求对象
-   *
-   * @author Chuang
-   */
   export interface DictTypeQueryRequest {
     /** 主键ID */
     id?: number;

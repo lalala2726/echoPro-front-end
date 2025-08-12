@@ -78,8 +78,8 @@ export namespace SystemDictDataType {
 
 /**
  * 获取字典值列表
- * @param params 查询参数
  * @param dictType 字典类型
+ * @param params
  */
 async function getDictDataList(
   dictType: string,
