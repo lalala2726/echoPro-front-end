@@ -2,7 +2,7 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict/dictData';
+import type { SystemDictDataType } from '#/api/system/dict/dictData';
 
 import { useAccess } from '@vben/access';
 
@@ -41,7 +41,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemDictApi.SystemDictData>(
+export function useColumns<T = SystemDictDataType.SystemDictData>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
@@ -49,29 +49,10 @@ export function useColumns<T = SystemDictApi.SystemDictData>(
     {
       field: 'dictLabel',
       title: '字典标签',
-      width: 150,
     },
     {
       field: 'dictValue',
       title: '字典值',
-      width: 150,
-    },
-    {
-      field: 'isDefault',
-      title: '是否默认',
-      width: 100,
-      cellRender: {
-        name: 'CellTag',
-        options: [
-          { color: 'success', label: '是', value: 1 },
-          { color: 'default', label: '否', value: 0 },
-        ],
-      },
-    },
-    {
-      field: 'sort',
-      title: '排序',
-      width: 80,
     },
     {
       cellRender: {
@@ -90,18 +71,19 @@ export function useColumns<T = SystemDictApi.SystemDictData>(
       },
       field: 'status',
       title: '状态',
-      width: 120,
+    },
+    {
+      field: 'sort',
+      title: '排序',
     },
     {
       field: 'remark',
-      minWidth: 200,
       title: '备注',
       formatter: ({ cellValue }) => cellValue || '--',
     },
     {
       field: 'createTime',
       title: '创建时间',
-      width: 180,
     },
     {
       align: 'center',

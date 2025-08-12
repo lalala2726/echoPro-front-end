@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictApi as DictDataApi } from '#/api/system/dict/dictData';
+import type { SystemDictDataType as DictDataApi } from '#/api/system/dict/dictData';
 import type { SystemDictApi as DictTypeApi } from '#/api/system/dict/dictType';
 
 import { computed, onMounted, ref } from 'vue';
