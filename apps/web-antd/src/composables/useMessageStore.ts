@@ -82,8 +82,11 @@ export function useMessageStore() {
     refreshLayoutMessages = callback;
   };
 
-  // 触发布局消息刷新
+  // 触发布局消息刷新 - WebSocket更新时不再发起HTTP请求
   const triggerLayoutRefresh = () => {
+    // WebSocket更新时不执行任何HTTP请求
+    // 徽标数量直接通过updateMessageCounts更新
+    // 消息列表只在用户主动点击通知时刷新
     if (refreshLayoutMessages) {
       refreshLayoutMessages();
     }

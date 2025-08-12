@@ -133,16 +133,17 @@ function handleViewAllMessages() {
   router.push('/personal/message');
 }
 
-// 处理通知下拉框打开事件 - 实时获取最新数据
+// 处理通知下拉框打开事件 - 用户主动点击时才请求数据
 async function handleNotificationOpen() {
   // 立即显示加载状态，清空之前的消息列表
   notificationLoading.value = true;
   notifications.value = []; // 清空旧数据，避免显示过期内容
 
   try {
-    // 先获取未读数量，再获取消息列表
-    await fetchUnreadCount(); // 更新未读数量徽章
-    await fetchMessageList(false); // 不再传true，因为我们已经手动设置了loading状态
+    // 为了数据一致性，用户点击通知时主动请求消息数量接口进行更新
+    await fetchUnreadCount(); // 确保数据一致性
+    // 然后获取消息列表用于显示
+    await fetchMessageList(false);
   } finally {
     notificationLoading.value = false;
   }
@@ -153,11 +154,13 @@ onMounted(async () => {
   // 首先获取未读数量，确保徽标能正确显示
   await fetchUnreadCount();
 
-  // 然后获取消息列表用于下拉显示
-  await fetchMessageList(false);
+  // 不再在初始化时获取消息列表，只在用户点击通知时获取
 
-  // 注册布局消息刷新回调
-  setLayoutRefreshCallback(() => fetchMessageList(false));
+  // 注册布局消息刷新回调 - WebSocket只更新徽标数量，不发起HTTP请求
+  setLayoutRefreshCallback(() => {
+    // WebSocket更新时什么都不做，直接使用WebSocket数据更新徽标
+    // 消息列表只在用户主动点击通知时刷新
+  });
 });
 watch(
   () => preferences.app.watermark,

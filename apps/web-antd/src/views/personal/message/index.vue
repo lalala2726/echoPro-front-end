@@ -33,7 +33,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
     fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
-    submitOnChange: true,
+    submitOnChange: false, // 改为手动提交，避免频繁查询
   },
   gridOptions: {
     checkboxConfig: {
@@ -65,7 +65,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       export: false,
       refresh: true,
       refreshOptions: { code: 'query' },
-      search: true,
+      search: true, // 保留搜索功能，用户可以手动点击搜索
       zoom: true,
     },
   } as VxeTableGridOptions<DashBoardMessageType.UserMessageListVo>,
