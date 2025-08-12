@@ -72,10 +72,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemDictType.SystemDictType>,
+  } as VxeTableGridOptions<SystemDictType.DictTypeQueryRequest>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemDictType.SystemDictType>) {
+function onActionClick(e: OnActionClickParams<SystemDictType.DictTypeVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -120,7 +120,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: number,
-  row: SystemDictType.SystemDictType,
+  row: SystemDictType.DictTypeVo,
 ) {
   const status: Recordable<string> = {
     1: '禁用',
@@ -131,7 +131,13 @@ async function onStatusChange(
       `你要将${row.dictName}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateDictType({ ...row, status: newStatus as 0 | 1 });
+    await updateDictType({
+      id: row.id!,
+      dictType: row.dictType!,
+      dictName: row.dictName!,
+      status: newStatus as 0 | 1,
+      remark: row.remark,
+    });
     return true;
   } catch {
     return false;
@@ -141,15 +147,15 @@ async function onStatusChange(
 /**
  * 编辑字典
  */
-async function onEdit(row: SystemDictType.SystemDictType) {
-  const res = await getDictTypeById(row.id);
+async function onEdit(row: SystemDictType.DictTypeVo) {
+  const res = await getDictTypeById(row.id!);
   formModalApi.setData(res).open();
 }
 
 /**
  * 查看字典值
  */
-function onViewDict(row: SystemDictType.SystemDictType) {
+function onViewDict(row: SystemDictType.DictTypeVo) {
   router.push({
     path: `/system/dict/data/${row.id}`,
   });
@@ -158,13 +164,13 @@ function onViewDict(row: SystemDictType.SystemDictType) {
 /**
  * 删除字典
  */
-function onDelete(row: SystemDictType.SystemDictType) {
+function onDelete(row: SystemDictType.DictTypeVo) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictName} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteDictType(row.id)
+  deleteDictType(row.id!)
     .then(() => {
       message.success({
         content: `${row.dictName} 删除成功`,

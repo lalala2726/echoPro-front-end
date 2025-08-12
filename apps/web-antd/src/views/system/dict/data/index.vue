@@ -38,7 +38,7 @@ const router = useRouter();
 
 // 从路由参数获取字典类型ID
 const dictTypeId = Number(route.params.id);
-const dictTypeInfo = ref<null | SystemDictType.SystemDictType>(null);
+const dictTypeInfo = ref<SystemDictType.DictTypeVo>();
 const isLoading = ref(false);
 
 // 页面标题计算
@@ -90,7 +90,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
             return { rows: [], total: 0 };
           }
           // 使用字典类型的dictType字段调用接口
-          return await getDictDataList(dictTypeInfo.value.dictType, {
+          return await getDictDataList(dictTypeInfo.value.dictType!, {
             pageNum: page?.currentPage,
             pageSize: page?.pageSize,
             ...formValues,
