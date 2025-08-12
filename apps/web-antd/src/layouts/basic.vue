@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
-import { DashBoardMessageType } from '#/api/personal/message';
-
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -18,7 +16,10 @@ import {
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
-import { listUserMessageList } from '#/api/personal/message';
+import {
+  DashBoardMessageType,
+  listUserMessageList,
+} from '#/api/personal/message';
 import { useMessageStore } from '#/composables/useMessageStore';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
@@ -34,9 +35,18 @@ const { unreadCount, fetchUnreadCount, setLayoutRefreshCallback } =
 
 // 消息类型映射
 const MESSAGE_TYPES = {
-  [DashBoardMessageType.MessageType.SYSTEM]: { label: '系统消息', color: 'blue' },
-  [DashBoardMessageType.MessageType.NOTICE]: { label: '通知消息', color: 'green' },
-  [DashBoardMessageType.MessageType.ANNOUNCEMENT]: { label: '公告消息', color: 'orange' },
+  [DashBoardMessageType.MessageType.SYSTEM]: {
+    label: '系统消息',
+    color: 'blue',
+  },
+  [DashBoardMessageType.MessageType.NOTICE]: {
+    label: '通知消息',
+    color: 'green',
+  },
+  [DashBoardMessageType.MessageType.ANNOUNCEMENT]: {
+    label: '公告消息',
+    color: 'orange',
+  },
 } as const;
 
 const userStore = useUserStore();
@@ -64,8 +74,7 @@ const fetchMessageList = async (showLoading = false) => {
     notifications.value = messageList.value.map((msg) => ({
       id: msg.id?.toString(),
       title: msg.title || '无标题',
-      message:
-        (msg.type && MESSAGE_TYPES[msg.type])?.label || '消息',
+      message: (msg.type && MESSAGE_TYPES[msg.type])?.label || '消息',
       date: msg.createTime || '',
       isRead: false, // 因为我们只获取未读消息，所以都是未读状态
       // 移除avatar字段，不再显示头像
@@ -110,7 +119,7 @@ function handleNoticeClear() {
   // 不执行任何操作，因为要求移除清空按钮
 }
 
-function handleMakeAll() { }
+function handleMakeAll() {}
 
 // 处理通知点击，导航到消息详情
 function handleNotificationClick(notification: NotificationItem) {
@@ -170,17 +179,33 @@ watch(
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
     <template #user-dropdown>
-      <UserDropdown :avatar :menus :text="userStore.userInfo?.nickname" :description="userStore.userInfo?.email"
-        tag-text="Pro" @logout="handleLogout" />
+      <UserDropdown
+        :avatar
+        :menus
+        :text="userStore.userInfo?.nickname"
+        :description="userStore.userInfo?.email"
+        tag-text="Pro"
+        @logout="handleLogout"
+      />
     </template>
     <template #notification>
-      <Notification :dot="showDot" :notifications="notifications" :unread-count="unreadCount"
-        :loading="notificationLoading" @clear="handleNoticeClear" @make-all="handleMakeAll"
-        @notification-click="handleNotificationClick" @view-all="handleViewAllMessages"
-        @open="handleNotificationOpen" />
+      <Notification
+        :dot="showDot"
+        :notifications="notifications"
+        :unread-count="unreadCount"
+        :loading="notificationLoading"
+        @clear="handleNoticeClear"
+        @make-all="handleMakeAll"
+        @notification-click="handleNotificationClick"
+        @view-all="handleViewAllMessages"
+        @open="handleNotificationOpen"
+      />
     </template>
     <template #extra>
-      <AuthenticationLoginExpiredModal v-model:open="accessStore.loginExpired" :avatar>
+      <AuthenticationLoginExpiredModal
+        v-model:open="accessStore.loginExpired"
+        :avatar
+      >
         <LoginForm />
       </AuthenticationLoginExpiredModal>
     </template>

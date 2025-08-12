@@ -70,8 +70,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-
-
 /**
  * 获取表格列配置
  */
