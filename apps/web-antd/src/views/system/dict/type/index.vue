@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict/dictType';
+import type { SystemDictType } from '#/api/system/dict/dictType';
 
 import { useRouter } from 'vue-router';
 
@@ -72,10 +72,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemDictApi.SystemDictType>,
+  } as VxeTableGridOptions<SystemDictType.SystemDictType>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemDictApi.SystemDictType>) {
+function onActionClick(e: OnActionClickParams<SystemDictType.SystemDictType>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -120,7 +120,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: number,
-  row: SystemDictApi.SystemDictType,
+  row: SystemDictType.SystemDictType,
 ) {
   const status: Recordable<string> = {
     1: '禁用',
@@ -141,7 +141,7 @@ async function onStatusChange(
 /**
  * 编辑字典
  */
-async function onEdit(row: SystemDictApi.SystemDictType) {
+async function onEdit(row: SystemDictType.SystemDictType) {
   const res = await getDictTypeById(row.id);
   formModalApi.setData(res).open();
 }
@@ -149,7 +149,7 @@ async function onEdit(row: SystemDictApi.SystemDictType) {
 /**
  * 查看字典值
  */
-function onViewDict(row: SystemDictApi.SystemDictType) {
+function onViewDict(row: SystemDictType.SystemDictType) {
   router.push({
     path: `/system/dict/data/${row.id}`,
   });
@@ -158,7 +158,7 @@ function onViewDict(row: SystemDictApi.SystemDictType) {
 /**
  * 删除字典
  */
-function onDelete(row: SystemDictApi.SystemDictType) {
+function onDelete(row: SystemDictType.SystemDictType) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictName} ...`,
     duration: 0,

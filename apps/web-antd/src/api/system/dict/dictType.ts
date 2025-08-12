@@ -2,7 +2,7 @@ import type { BaseType, PageResult, Recordable } from '@vben/types';
 
 import { requestClient } from '#/api/request';
 
-export namespace SystemDictApi {
+export namespace SystemDictType {
   export interface SystemDictType extends BaseType {
     /** ID */
     id: number;
@@ -32,13 +32,38 @@ export namespace SystemDictApi {
     /** 描述 */
     remark?: string;
   }
+
+  /**
+   * 字典类型查询请求对象
+   *
+   * @author Chuang
+   */
+  export interface SysDictTypeQueryRequest {
+    /** 主键ID */
+    id?: number;
+
+    /** 字典类型 */
+    dictType?: string;
+
+    /** 字典名称 */
+    dictName?: string;
+
+    /** 状态：0启用，1禁用 */
+    status?: number;
+
+    /** 开始时间 */
+    startTime?: string;
+
+    /** 结束时间 */
+    endTime?: string;
+  }
 }
 
 /**
  * 获取字典类型列表数据
  */
 async function getDictTypeList(params: Recordable<any>) {
-  return requestClient.get<PageResult<SystemDictApi.SystemDictType>>(
+  return requestClient.get<PageResult<SystemDictType.SystemDictType>>(
     '/system/dict/type/list',
     { params },
   );
@@ -49,7 +74,7 @@ async function getDictTypeList(params: Recordable<any>) {
  * @param data 字典数据
  */
 async function addDictType(
-  data: Omit<SystemDictApi.SystemDictType, 'createTime' | 'id'>,
+  data: Omit<SystemDictType.SystemDictType, 'createTime' | 'id'>,
 ) {
   return requestClient.post('/system/dict/type', data);
 }
@@ -59,7 +84,7 @@ async function addDictType(
  * @param id 字典类型ID
  */
 async function getDictTypeById(id: number) {
-  return requestClient.get<SystemDictApi.SystemDictType>(
+  return requestClient.get<SystemDictType.SystemDictType>(
     `/system/dict/type/${id}`,
   );
 }
@@ -68,7 +93,7 @@ async function getDictTypeById(id: number) {
  * 更新字典
  * @param data 字典数据
  */
-async function updateDictType(data: SystemDictApi.SystemDictType) {
+async function updateDictType(data: SystemDictType.SystemDictType) {
   return requestClient.put('/system/dict/type', data);
 }
 

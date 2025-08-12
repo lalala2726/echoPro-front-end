@@ -41,7 +41,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemDictDataType.SystemDictData>(
+export function useColumns<T = SystemDictDataType.DictDataVo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
@@ -89,7 +89,7 @@ export function useColumns<T = SystemDictDataType.SystemDictData>(
       align: 'center',
       cellRender: {
         attrs: {
-          nameField: 'dict_label',
+          nameField: 'dictLabel',
           nameTitle: '字典值',
           onClick: onActionClick,
         },

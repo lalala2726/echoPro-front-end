@@ -11,7 +11,7 @@ import { useVbenForm } from '#/adapter/form';
 import { addDictData, updateDictData } from '#/api/system/dict/dictData';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictDataType.SystemDictData>();
+const formData = ref<SystemDictDataType.DictDataVo>();
 
 const getTitle = computed(() => {
   return formData.value?.id ? '修改字典值' : '新增字典值';
@@ -120,7 +120,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDictDataType.SystemDictData>();
+      const data = modalApi.getData<SystemDictDataType.DictDataVo>();
       if (data) {
         formData.value = data;
         formApi.setValues(data);

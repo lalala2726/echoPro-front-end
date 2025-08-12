@@ -1,25 +1,8 @@
-import type { BaseRequest, BaseType, PageResult } from '@vben/types';
+import type { BaseRequest, PageResult } from '@vben/types';
 
 import { requestClient } from '#/api/request';
 
 export namespace SystemDictDataType {
-  export interface SystemDictData extends BaseType {
-    /** ID */
-    id: number;
-    /** 字典类型 */
-    dictType: string;
-    /** 字典标签 */
-    dictLabel: string;
-    /** 字典值 */
-    dictValue: string;
-    /** 状态：1禁用，0启用 */
-    status?: 0 | 1;
-    /** 排序 */
-    sort?: number;
-    /** 描述 */
-    remark?: string;
-  }
-
   export interface DictDataQueryRequest extends BaseRequest {
     /** 主键ID */
     id?: number;
@@ -79,15 +62,15 @@ export namespace SystemDictDataType {
     /** 主键ID */
     id: number;
     /** 字典类型 */
-    dictType: string;
+    dictType?: string;
     /** 字典标签 */
-    dictLabel: string;
+    dictLabel?: string;
     /** 字典值 */
-    dictValue: string;
+    dictValue?: string;
     /** 排序 */
     sort?: number;
     /** 状态：1启用，0禁用 */
-    status: number;
+    status?: number;
     /** 备注 */
     remark?: string;
   }
