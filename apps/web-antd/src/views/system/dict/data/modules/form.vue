@@ -53,6 +53,14 @@ const formSchema = [
     },
   },
   {
+    component: 'Input',
+    fieldName: 'color',
+    label: '颜色',
+    componentProps: {
+      placeholder: '请输入颜色',
+    },
+  },
+  {
     component: 'InputNumber',
     fieldName: 'sort',
     label: '排序',

@@ -230,8 +230,7 @@ function onCreate() {
 
   formModalApi
     .setData({
-      dict_type: dictTypeInfo.value.dictType,
-      is_default: 0,
+      dictType: dictTypeInfo.value.dictType,
       status: 0,
       sort: 0,
     })

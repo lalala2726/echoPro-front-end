@@ -10,6 +10,8 @@ export namespace SystemDictDataType {
     dictLabel?: string;
     /** 字典值 */
     dictValue?: string;
+    /** 颜色 */
+    color?: string;
     /** 状态：1启用，0禁用 */
     status?: number;
     /** 开始时间 */
@@ -27,6 +29,8 @@ export namespace SystemDictDataType {
     dictLabel?: string;
     /** 字典值 */
     dictValue?: string;
+    /** 颜色 */
+    color?: string;
     /** 排序 */
     sort?: number;
     /** 状态：1启用，0禁用 */
@@ -50,6 +54,8 @@ export namespace SystemDictDataType {
     dictLabel: string;
     /** 字典值 */
     dictValue: string;
+    /** 颜色 */
+    color?: string;
     /** 排序 */
     sort?: number;
     /** 状态：1启用，0禁用 */
@@ -67,6 +73,8 @@ export namespace SystemDictDataType {
     dictLabel?: string;
     /** 字典值 */
     dictValue?: string;
+    /** 颜色 */
+    color?: string;
     /** 排序 */
     sort?: number;
     /** 状态：1启用，0禁用 */
