@@ -332,10 +332,10 @@ function onResetPasswordSuccess(username: string) {
             :width="36"
             :height="36"
             style="
-              border-radius: 50%;
-              object-fit: cover;
               display: block;
               margin: auto;
+              object-fit: cover;
+              border-radius: 50%;
             "
           />
         </template>

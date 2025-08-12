@@ -173,9 +173,9 @@ setupVbenVxeTable({
           [
             // 未读消息显示红点标识
             isRead === 0 &&
-            h('div', {
-              class: 'w-2 h-2 bg-red-500 rounded-full mr-2 flex-shrink-0',
-            }),
+              h('div', {
+                class: 'w-2 h-2 bg-red-500 rounded-full mr-2 flex-shrink-0',
+              }),
             h(
               'span',
               {
@@ -226,10 +226,10 @@ setupVbenVxeTable({
               return presets[opt]
                 ? { code: opt, ...presets[opt], ...defaultProps }
                 : {
-                  code: opt,
-                  text: $te(`common.${opt}`) ? $t(`common.${opt}`) : opt,
-                  ...defaultProps,
-                };
+                    code: opt,
+                    text: $te(`common.${opt}`) ? $t(`common.${opt}`) : opt,
+                    ...defaultProps,
+                  };
             } else {
               return { ...defaultProps, ...presets[opt.code], ...opt };
             }
@@ -252,10 +252,10 @@ setupVbenVxeTable({
               icon: undefined,
               onClick: listen
                 ? () =>
-                  attrs?.onClick?.({
-                    code: opt.code,
-                    row,
-                  })
+                    attrs?.onClick?.({
+                      code: opt.code,
+                      row,
+                    })
                 : undefined,
             },
             {
