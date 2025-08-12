@@ -9,7 +9,7 @@ import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { addNotice, noticeById, updateNotice } from '#/api/system/notice';
-import AiEditor from '#/components/editor/AiEditor.vue';
+import AiEditor from '#/components/Editor/AiEditor.vue';
 
 import { useFormSchema } from '../data';
 
@@ -131,7 +131,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         </label>
         <AiEditor
           v-model="noticeContent"
-          :height="400"
+          :height="1200"
           width="100%"
           placeholder="请输入公告内容..."
           content-format="html"
