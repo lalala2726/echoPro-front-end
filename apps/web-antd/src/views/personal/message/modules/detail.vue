@@ -4,14 +4,19 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { IconifyIcon } from '@vben/icons';
 
-import { Button, Card, message, Spin, Tag, Typography } from 'ant-design-vue';
+import {
+  Button,
+  Card,
+  message,
+  Skeleton,
+  Tag,
+  Typography,
+} from 'ant-design-vue';
 
 import {
   DashBoardMessageType,
   getMessageDetailById,
-  markMessageAsRead,
 } from '#/api/personal/message';
-import { useMessageStore } from '#/composables/useMessageStore';
 
 defineOptions({
   name: 'MessageDetail',
@@ -20,11 +25,9 @@ defineOptions({
 const route = useRoute();
 const router = useRouter();
 
-// 全局消息状态
-const { fetchUnreadCountFromList, triggerLayoutRefresh } = useMessageStore();
-
 // 响应式数据
 const loading = ref(false);
+const navigating = ref(false);
 const messageDetail = ref<DashBoardMessageType.UserMessageVo | null>(null);
 
 // 消息类型映射（枚举）
@@ -66,38 +69,62 @@ const MESSAGE_LEVELS: Record<
 };
 
 // 获取消息详情
-const fetchMessageDetail = async (id: number) => {
+const fetchMessageDetail = async (id: number, isNavigation = false) => {
   try {
-    loading.value = true;
-    const response = await getMessageDetailById(id);
-    messageDetail.value = response;
+    if (isNavigation) {
+      navigating.value = true;
+    } else {
+      loading.value = true;
+    }
 
-    // 如果消息未读，自动标记为已读
-    if (response.isRead === 0) {
-      await markMessageAsRead([id]);
-      if (messageDetail.value) {
-        messageDetail.value.isRead = 1;
-      }
-      // 更新全局未读数量并刷新布局
-      await fetchUnreadCountFromList();
-      triggerLayoutRefresh();
+    // 获取新的消息详情
+    const newMessageDetail = await getMessageDetailById(id);
+    messageDetail.value = newMessageDetail;
+
+    // 更新路由查询参数但不刷新页面，使用replace避免创建新标签页
+    if (isNavigation) {
+      await router.replace({
+        name: route.name,
+        query: { ...route.query, id: id.toString() },
+      });
     }
   } catch (error) {
     console.error('获取消息详情失败:', error);
     message.error('获取消息详情失败');
   } finally {
-    loading.value = false;
+    if (isNavigation) {
+      navigating.value = false;
+    } else {
+      loading.value = false;
+    }
   }
 };
 
 // 返回消息列表
 const handleGoBack = () => {
-  router.push('/message');
+  router.push('/personal/message');
+};
+
+// 导航到上一条消息
+const handlePreviousMessage = () => {
+  if (
+    messageDetail.value?.previousId &&
+    messageDetail.value.previousId !== -1
+  ) {
+    fetchMessageDetail(messageDetail.value.previousId, true);
+  }
+};
+
+// 导航到下一条消息
+const handleNextMessage = () => {
+  if (messageDetail.value?.nextId && messageDetail.value.nextId !== -1) {
+    fetchMessageDetail(messageDetail.value.nextId, true);
+  }
 };
 
 // 组件挂载时获取数据
 onMounted(() => {
-  const messageId = route.params.id as string;
+  const messageId = route.query.id as string;
   if (messageId) {
     fetchMessageDetail(Number(messageId));
   } else {
@@ -109,15 +136,61 @@ onMounted(() => {
 
 <template>
   <div class="message-detail dark:bg-background min-h-full bg-gray-50/30 p-4">
-    <!-- 页面头部 - 移除返回按钮 -->
-    <div class="mb-6">
-      <Typography.Title :level="3" class="!mb-0"> 消息详情 </Typography.Title>
+    <!-- 页面头部 -->
+    <div class="mb-6 flex items-center justify-between">
+      <div class="flex items-center">
+        <Button @click="handleGoBack" class="mr-4">
+          <IconifyIcon icon="mdi:arrow-left" class="mr-1" />
+          返回消息列表
+        </Button>
+      </div>
+
+      <!-- 消息导航按钮 -->
+      <div v-if="messageDetail && !loading" class="flex items-center space-x-2">
+        <Button
+          :disabled="
+            !messageDetail.previousId ||
+            messageDetail.previousId === -1 ||
+            navigating
+          "
+          @click="handlePreviousMessage"
+        >
+          <IconifyIcon icon="mdi:chevron-left" class="mr-1" />
+          上一条
+        </Button>
+        <Button
+          :disabled="
+            !messageDetail.nextId || messageDetail.nextId === -1 || navigating
+          "
+          @click="handleNextMessage"
+        >
+          下一条
+          <IconifyIcon icon="mdi:chevron-right" class="ml-1" />
+        </Button>
+      </div>
     </div>
 
-    <!-- 加载状态 -->
-    <div v-if="loading" class="flex justify-center py-12">
-      <Spin size="large" />
-    </div>
+    <!-- 骨架屏加载状态 -->
+    <Card
+      v-if="loading || navigating"
+      class="dark:bg-card dark:border-border border-0 shadow-sm"
+    >
+      <Skeleton active>
+        <template #title>
+          <div class="h-8 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+        </template>
+        <template #paragraph>
+          <div class="space-y-3">
+            <div class="h-4 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-5/6 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-4/6 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="mt-6 h-20 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+        </template>
+      </Skeleton>
+    </Card>
 
     <!-- 消息详情内容 -->
     <Card
@@ -137,10 +210,6 @@ onMounted(() => {
               <span class="flex items-center">
                 <IconifyIcon icon="mdi:account" class="mr-1" />
                 发送者：{{ messageDetail.senderName || '系统' }}
-              </span>
-              <span class="flex items-center">
-                <IconifyIcon icon="mdi:clock" class="mr-1" />
-                发送时间：{{ messageDetail.createTime }}
               </span>
             </div>
           </div>
@@ -173,10 +242,6 @@ onMounted(() => {
                 ]?.label
               }}
             </Tag>
-            <!-- 已读状态 -->
-            <Tag :color="messageDetail.isRead === 1 ? 'green' : 'blue'">
-              {{ messageDetail.isRead === 1 ? '已读' : '未读' }}
-            </Tag>
           </div>
         </div>
       </div>
@@ -190,19 +255,11 @@ onMounted(() => {
         ></div>
       </div>
 
-      <!-- 操作按钮 -->
-      <div
-        class="mt-8 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700"
-      >
-        <Button @click="handleGoBack" size="large">
-          <IconifyIcon icon="mdi:arrow-left" class="mr-1" />
-          返回消息列表
-        </Button>
-
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          <span v-if="messageDetail.updateTime">
-            最后更新：{{ messageDetail.updateTime }}
-          </span>
+      <!-- 消息时间信息 -->
+      <div class="mt-8 border-t border-gray-200 pt-6 dark:border-gray-700">
+        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+          <IconifyIcon icon="mdi:clock-outline" class="mr-1" />
+          发送时间：{{ messageDetail.sentTime || '未知' }}
         </div>
       </div>
     </Card>

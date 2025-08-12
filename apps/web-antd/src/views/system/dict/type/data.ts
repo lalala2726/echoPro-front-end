@@ -2,7 +2,7 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { SystemDictApi } from '#/api/system/dict/dictType';
+import type { SystemDictType } from '#/api/system/dict/dictType';
 
 import { useAccess } from '@vben/access';
 
@@ -91,7 +91,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SystemDictApi.SystemDictType>(
+export function useColumns<T = SystemDictType.DictTypeVo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {

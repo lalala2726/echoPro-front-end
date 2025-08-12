@@ -34,7 +34,11 @@ export namespace DashBoardMessageType {
     /** 发送者名称 */
     senderName?: string;
   }
-
+  /**
+   * 用户消息视图对象
+   *
+   * @author Chuang
+   */
   export interface UserMessageVo {
     /** 消息ID */
     id?: number;
@@ -46,20 +50,14 @@ export namespace DashBoardMessageType {
     type?: MessageType;
     /** 消息级别 */
     level?: MessageLevel;
-    /** 是否已读 */
-    isRead?: number;
-    /** 发送者ID */
-    senderId?: number;
-    /** 发送者名称 */
+    /** 发送者姓名 */
     senderName?: string;
-    /** 接收者ID */
-    receiverId?: number;
-    /** 接收者名称 */
-    receiverName?: string;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
+    /** 发送时间 */
+    sentTime?: string;
+    /** 上一条消息ID */
+    previousId?: number;
+    /** 下一条消息ID */
+    nextId?: number;
   }
 
   export interface UnreadCountResponse {
@@ -69,17 +67,6 @@ export namespace DashBoardMessageType {
     read: number;
     /** 未读数量 */
     unRead: number;
-  }
-
-  export enum MessageSendMethod {
-    /** 给所有用户发送消息 */
-    ALL = 'all',
-    /** 给指定部门发送消息 */
-    DEPT = 'dept',
-    /** 给指定角色发送消息 */
-    ROLE = 'role',
-    /** 给指定用户发送消息 */
-    USER = 'user',
   }
 
   export enum MessageType {
@@ -109,7 +96,7 @@ async function listUserMessageList(
   params: DashBoardMessageType.UserMessageListQueryRequest,
 ) {
   return requestClient.get<PageResult<DashBoardMessageType.UserMessageListVo>>(
-    '/dashboard/message/list',
+    '/personal/message/list',
     {
       params,
     },
@@ -122,7 +109,7 @@ async function listUserMessageList(
  */
 async function getMessageDetailById(id: number) {
   return requestClient.get<DashBoardMessageType.UserMessageVo>(
-    `/dashboard/message/${id}`,
+    `/personal/message/${id}`,
   );
 }
 
@@ -131,7 +118,7 @@ async function getMessageDetailById(id: number) {
  */
 async function getUnreadCount() {
   return requestClient.get<DashBoardMessageType.UnreadCountResponse>(
-    '/dashboard/message/count',
+    '/personal/message/count',
   );
 }
 
@@ -140,7 +127,7 @@ async function getUnreadCount() {
  * @param ids 消息ID列表
  */
 async function markMessageAsRead(ids: Array<number>) {
-  return requestClient.put(`/dashboard/message/read/${ids.join(',')}`);
+  return requestClient.put(`/personal/message/read/${ids.join(',')}`);
 }
 
 /**
@@ -148,7 +135,7 @@ async function markMessageAsRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function markMessageAsUnRead(ids: Array<number>) {
-  return requestClient.put(`/dashboard/message/unread/${ids.join(',')}`);
+  return requestClient.put(`/personal/message/unread/${ids.join(',')}`);
 }
 
 /**
@@ -156,7 +143,7 @@ async function markMessageAsUnRead(ids: Array<number>) {
  * @param ids 消息ID列表
  */
 async function deleteMessages(ids: Array<number>) {
-  return requestClient.delete(`/dashboard/message/${ids.join(',')}`);
+  return requestClient.delete(`/personal/message/${ids.join(',')}`);
 }
 
 export {

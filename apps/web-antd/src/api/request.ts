@@ -195,6 +195,14 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const errorMessage = responseData?.error ?? responseData?.message ?? '';
       // 如果没有错误信息，则会根据状态码进行提示
       message.error(errorMessage || msg);
+
+      // // 如果后端返回 HTTP 500，跳转到登录页面
+      // const status = error?.response?.status;
+      // if (status === 500) {
+      //   const authStore = useAuthStore();
+      //   // 跳转登录时不调用后端注销接口，避免进一步出错
+      //   authStore.logout(true, false).catch(() => { });
+      // }
     }),
   );
 

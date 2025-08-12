@@ -5,8 +5,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictApi as DictDataApi } from '#/api/system/dict/dictData';
-import type { SystemDictApi as DictTypeApi } from '#/api/system/dict/dictType';
+import type { SystemDictDataType } from '#/api/system/dict/dictData';
+import type { SystemDictType } from '#/api/system/dict/dictType';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -38,7 +38,7 @@ const router = useRouter();
 
 // 从路由参数获取字典类型ID
 const dictTypeId = Number(route.params.id);
-const dictTypeInfo = ref<DictTypeApi.SystemDictType | null>(null);
+const dictTypeInfo = ref<SystemDictType.DictTypeVo>();
 const isLoading = ref(false);
 
 // 页面标题计算
@@ -90,7 +90,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
             return { rows: [], total: 0 };
           }
           // 使用字典类型的dictType字段调用接口
-          return await getDictDataList(dictTypeInfo.value.dictType, {
+          return await getDictDataList(dictTypeInfo.value.dictType!, {
             pageNum: page?.currentPage,
             pageSize: page?.pageSize,
             ...formValues,
@@ -109,10 +109,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<DictDataApi.SystemDictData>,
+  } as VxeTableGridOptions<SystemDictDataType.DictDataQueryRequest>,
 });
 
-function onActionClick(e: OnActionClickParams<DictDataApi.SystemDictData>) {
+function onActionClick(e: OnActionClickParams<SystemDictDataType.DictDataVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -153,7 +153,7 @@ function confirm(content: string, title: string) {
  */
 async function onStatusChange(
   newStatus: number,
-  row: DictDataApi.SystemDictData,
+  row: SystemDictDataType.DictDataVo,
 ) {
   const status: Recordable<string> = {
     1: '禁用',
@@ -164,7 +164,15 @@ async function onStatusChange(
       `你要将${row.dictLabel}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateDictData({ ...row, status: newStatus as 0 | 1 });
+    await updateDictData({
+      id: row.id!,
+      dictType: row.dictType!,
+      dictLabel: row.dictLabel,
+      dictValue: row.dictValue,
+      sort: row.sort,
+      status: newStatus as 0 | 1,
+      remark: row.remark,
+    });
     return true;
   } catch {
     return false;
@@ -174,21 +182,21 @@ async function onStatusChange(
 /**
  * 编辑字典值
  */
-async function onEdit(row: DictDataApi.SystemDictData) {
-  const res = await getDictDataById(row.id);
+async function onEdit(row: SystemDictDataType.DictDataVo) {
+  const res = await getDictDataById(row.id!);
   formModalApi.setData(res).open();
 }
 
 /**
  * 删除字典值
  */
-function onDelete(row: DictDataApi.SystemDictData) {
+function onDelete(row: SystemDictDataType.DictDataVo) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictLabel} ...`,
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteDictData([row.id])
+  deleteDictData([row.id!])
     .then(() => {
       message.success({
         content: `删除 ${row.dictLabel} 成功`,
@@ -222,8 +230,7 @@ function onCreate() {
 
   formModalApi
     .setData({
-      dict_type: dictTypeInfo.value.dictType,
-      is_default: 0,
+      dictType: dictTypeInfo.value.dictType,
       status: 0,
       sort: 0,
     })

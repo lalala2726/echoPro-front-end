@@ -37,18 +37,52 @@ export class WebSocketServiceImpl implements WebSocketService {
   /**
    * 连接到 WebSocket 服务器
    */
-  public async connect(token?: string): Promise<void> {
+  public async connect(
+    token?: string,
+    customParams?: Record<string, string>,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         this.isManualDisconnect = false; // 重置手动断开标识
-        // 创建 SockJS 连接
-        const socket = new SockJS(this.config.url);
 
-        // 创建连接头
-        const connectHeaders: Record<string, string> = {};
+        // 构建 WebSocket URL，将认证信息作为查询参数
+        let wsUrl = this.config.url;
+        const urlParams = new URLSearchParams();
+
+        // 添加 token 参数（主要认证方式）
         if (token) {
-          connectHeaders.Authorization = token;
+          urlParams.append('token', encodeURIComponent(token));
         }
+
+        // 添加自定义参数
+        if (customParams) {
+          Object.entries(customParams).forEach(([key, value]) => {
+            if (key !== 'token') {
+              // 避免重复添加 token
+              urlParams.append(key, encodeURIComponent(value));
+            }
+          });
+        }
+
+        // 如果有参数，添加到 URL
+        if (urlParams.toString()) {
+          wsUrl += (wsUrl.includes('?') ? '&' : '?') + urlParams.toString();
+        }
+
+        // eslint-disable-next-line no-console
+        console.log('[WebSocket] 连接URL:', wsUrl);
+        // eslint-disable-next-line no-console
+        console.log('[WebSocket] URL参数传递token认证:', {
+          hasToken: !!token,
+          tokenPreview: token ? `${token.slice(0, 10)}...` : 'None',
+          customParamsCount: customParams ? Object.keys(customParams).length : 0,
+        });
+
+        // 创建 SockJS 连接
+        const socket = new SockJS(wsUrl);
+
+        // 创建 STOMP 连接头（协议层面，通常不需要认证信息）
+        const connectHeaders: Record<string, string> = {};
 
         // 创建 STOMP 客户端
         this.client = new Client({
@@ -56,9 +90,9 @@ export class WebSocketServiceImpl implements WebSocketService {
           connectHeaders,
           debug: this.config.debug
             ? (str: string) => {
-                // eslint-disable-next-line no-console
-                console.log('[WebSocket Debug]:', str);
-              }
+              // eslint-disable-next-line no-console
+              console.log('[WebSocket Debug]:', str);
+            }
             : undefined,
           reconnectDelay: this.config.reconnect?.interval || 3000,
           heartbeatIncoming: 4000,

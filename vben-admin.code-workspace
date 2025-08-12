@@ -113,6 +113,10 @@
       "path": "packages/effects/request",
     },
     {
+      "name": "@vben/websocket",
+      "path": "packages/effects/websocket",
+    },
+    {
       "name": "@vben/icons",
       "path": "packages/icons",
     },

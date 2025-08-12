@@ -19,7 +19,6 @@ import {
   markMessageAsRead,
   markMessageAsUnRead,
 } from '#/api/personal/message';
-import { useMessageStore } from '#/composables/useMessageStore';
 
 import { useColumns, useGridFormSchema } from './data';
 
@@ -29,9 +28,6 @@ defineOptions({
 
 const router = useRouter();
 const { hasAccessByCodes } = useAccess();
-
-// 全局消息状态
-const { fetchUnreadCountFromList, triggerLayoutRefresh } = useMessageStore();
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -122,7 +118,7 @@ function confirm(content: string, title: string) {
  * 查看消息详情
  */
 function onView(row: DashBoardMessageType.UserMessageListVo) {
-  router.push(`/message/detail/${row.id}`);
+  router.push(`/personal/message/detail?id=${row.id}`);
 }
 
 /**
@@ -136,9 +132,6 @@ async function onMarkRead(row: DashBoardMessageType.UserMessageListVo) {
       key: 'mark_read_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     message.error({
       content: `标记失败: ${error.message || '未知错误'}`,
@@ -163,9 +156,6 @@ async function onMarkUnread(row: DashBoardMessageType.UserMessageListVo) {
       key: 'mark_unread_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     message.error({
       content: `标记失败: ${error.message || '未知错误'}`,
@@ -191,9 +181,6 @@ async function onDelete(row: DashBoardMessageType.UserMessageListVo) {
       key: 'delete_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     if (error.message !== '已取消') {
       message.error({
@@ -249,9 +236,6 @@ async function onBatchMarkRead() {
       key: 'batch_mark_read_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     if (error.message !== '已取消') {
       message.error({
@@ -306,9 +290,6 @@ async function onBatchMarkUnread() {
       key: 'batch_mark_unread_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     if (error.message !== '已取消') {
       message.error({
@@ -352,9 +333,6 @@ async function onBatchDelete() {
       key: 'batch_delete_msg',
     });
     onRefresh();
-    // 更新全局未读数量并刷新布局
-    await fetchUnreadCountFromList();
-    triggerLayoutRefresh();
   } catch (error: any) {
     if (error.message !== '已取消') {
       message.error({

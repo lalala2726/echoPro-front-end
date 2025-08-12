@@ -23,31 +23,21 @@ export interface WebSocketService {
   client: Client | null;
   /** 连接状态 */
   isConnected: boolean;
+
   /** 连接到服务器 */
-  connect(token?: string): Promise<void>;
+  connect(token?: string, customParams?: Record<string, string>): Promise<void>;
+
   /** 断开连接 */
   disconnect(): void;
+
   /** 订阅主题 */
   subscribe(destination: string, callback: (message: any) => void): void;
+
   /** 取消订阅 */
   unsubscribe(destination: string): void;
+
   /** 发送消息 */
   send(destination: string, message: any): void;
-}
-
-export interface MessageNotification {
-  /** 消息ID */
-  id?: string;
-  /** 消息标题 */
-  title: string;
-  /** 消息内容 */
-  content: string;
-  /** 消息类型 */
-  type?: 'error' | 'info' | 'success' | 'warning';
-  /** 时间戳 */
-  timestamp?: string;
-  /** 发送者 */
-  sender?: string;
 }
 
 export interface WebSocketEvents {
@@ -58,5 +48,5 @@ export interface WebSocketEvents {
   /** 连接错误 */
   error: (error: any) => void;
   /** 收到消息 */
-  message: (message: MessageNotification) => void;
+  message: object;
 }

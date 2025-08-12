@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDictApi } from '#/api/system/dict/dictData';
+import type { SystemDictDataType } from '#/api/system/dict/dictData';
 
 import { computed, ref } from 'vue';
 
@@ -11,7 +11,7 @@ import { useVbenForm } from '#/adapter/form';
 import { addDictData, updateDictData } from '#/api/system/dict/dictData';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictApi.SystemDictData>();
+const formData = ref<SystemDictDataType.DictDataVo>();
 
 const getTitle = computed(() => {
   return formData.value?.id ? '修改字典值' : '新增字典值';
@@ -53,14 +53,11 @@ const formSchema = [
     },
   },
   {
-    component: 'Switch',
-    fieldName: 'isDefault',
-    label: '是否默认',
+    component: 'Input',
+    fieldName: 'color',
+    label: '颜色',
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
-      checkedValue: 1,
-      unCheckedValue: 0,
+      placeholder: '请输入颜色',
     },
   },
   {
@@ -120,7 +117,7 @@ const [Modal, modalApi] = useVbenModal({
           ? updateDictData({
               id: formData.value.id,
               ...data,
-            } as SystemDictApi.SystemDictData)
+            } as SystemDictDataType.DictDataUpdateRequest)
           : addDictData(data as any));
         await modalApi.close();
         emit('success');
@@ -131,7 +128,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDictApi.SystemDictData>();
+      const data = modalApi.getData<SystemDictDataType.DictDataVo>();
       if (data) {
         formData.value = data;
         formApi.setValues(data);

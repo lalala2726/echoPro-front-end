@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { profileType } from '#/api/core/profile';
+import type { profileType } from '#/api/personal/profile';
 
 import { computed, onMounted, ref } from 'vue';
 
@@ -13,7 +13,7 @@ import {
   getDeviceList,
   getSecurityLogList,
   updatePassword,
-} from '#/api/core/profile';
+} from '#/api/personal/profile';
 
 interface PasswordForm {
   oldPassword: string;

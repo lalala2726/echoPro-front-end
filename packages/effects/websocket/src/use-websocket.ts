@@ -27,7 +27,10 @@ export function useWebSocket(service: WebSocketServiceImpl) {
   };
 
   // 连接 WebSocket
-  const connect = async (token?: string) => {
+  const connect = async (
+    token?: string,
+    customParams?: Record<string, string>,
+  ) => {
     if (isConnecting.value || isConnected.value) {
       return;
     }
@@ -36,7 +39,7 @@ export function useWebSocket(service: WebSocketServiceImpl) {
       isConnecting.value = true;
       error.value = null;
 
-      await service.connect(token);
+      await service.connect(token, customParams);
       updateConnectionStatus();
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : '连接失败';
