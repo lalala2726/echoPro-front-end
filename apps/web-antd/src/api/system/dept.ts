@@ -33,11 +33,17 @@ async function getDeptList(params?: any) {
 }
 
 /**
- * 获取部门选项数据（树形结构）
+ * 获取部门选项数据
  */
 async function getDeptOptions() {
   return requestClient.get<Array<SystemDeptApi.DeptOption>>(
     '/system/dept/options',
+  );
+}
+
+async function getDeptTreeOptions() {
+  return requestClient.get<Array<SystemDeptApi.DeptOption>>(
+    '/system/dept/tree',
   );
 }
 
@@ -70,4 +76,11 @@ async function deleteDept(id: string) {
   return requestClient.delete(`/system/dept/${id}`);
 }
 
-export { addDept, deleteDept, getDeptList, getDeptOptions, updateDept };
+export {
+  addDept,
+  deleteDept,
+  getDeptList,
+  getDeptOptions,
+  getDeptTreeOptions,
+  updateDept,
+};

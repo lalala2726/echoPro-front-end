@@ -4,6 +4,8 @@ import type { SysUserType } from '#/api/system/user';
 
 import { useAccess } from '@vben/access';
 
+import { z } from '#/adapter/form';
+
 const { hasAccessByCodes } = useAccess();
 export function useFormSchema(): VbenFormSchema[] {
   return [
@@ -33,7 +35,7 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'Input',
       fieldName: 'password',
       label: '密码',
-      componentProps: { type: 'password' },
+      componentProps: { type: 'password', autocomplete: 'current-password' },
       dependencies: {
         triggerFields: ['userId'],
         show: (values) => !values.userId, // 只在新增时显示密码字段
@@ -41,7 +43,7 @@ export function useFormSchema(): VbenFormSchema[] {
       rules: 'required',
     },
     {
-      component: 'TreeSelect',
+      component: 'Select',
       fieldName: 'deptId',
       label: '所属部门',
       rules: 'required',
@@ -49,14 +51,50 @@ export function useFormSchema(): VbenFormSchema[] {
         placeholder: '请选择部门',
         allowClear: true,
         showSearch: true,
-        treeNodeFilterProp: 'title',
         class: 'w-full',
-        fieldNames: {
-          label: 'label',
-          value: 'value',
-          children: 'children',
-        },
+        options: [],
       },
+    },
+    {
+      component: 'Select',
+      fieldName: 'roleIds',
+      label: '角色',
+      rules: 'required',
+      componentProps: {
+        placeholder: '请选择角色',
+        mode: 'multiple',
+        allowClear: true,
+        showSearch: true,
+        class: 'w-full',
+        options: [],
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'postId',
+      label: '岗位',
+      componentProps: {
+        placeholder: '请选择岗位',
+        allowClear: true,
+        showSearch: true,
+        class: 'w-full',
+        options: [],
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'phone',
+      label: '手机号',
+      rules: z
+        .string()
+        .min(1, '请输入手机号')
+        .regex(/^[0-9\-+()\s]{6,20}$/, '请输入有效的手机号'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'email',
+      label: '邮箱',
+      rules: z.string().min(1, '请输入邮箱').email('请输入有效的邮箱'),
     },
     {
       component: 'RadioGroup',
@@ -71,18 +109,6 @@ export function useFormSchema(): VbenFormSchema[] {
       defaultValue: 1,
       fieldName: 'gender',
       label: '性别',
-    },
-    {
-      component: 'Input',
-      fieldName: 'phone',
-      label: '手机号',
-      rules: 'phone',
-    },
-    {
-      component: 'Input',
-      fieldName: 'email',
-      label: '邮箱',
-      rules: 'email',
     },
     {
       component: 'RadioGroup',
@@ -149,6 +175,19 @@ export function useColumns<T = SysUserType.SysUser>(
       type: 'checkbox',
       width: 120,
       fixed: 'left',
+    },
+    {
+      field: 'avatar',
+      cellRender: {
+        name: 'CellImage',
+        props: {
+          circle: true,
+          width: 36,
+          height: 36,
+        },
+      },
+      title: '头像',
+      width: 100,
     },
     {
       field: 'nickname',
