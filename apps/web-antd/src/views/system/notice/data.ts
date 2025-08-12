@@ -19,12 +19,8 @@ export function useColumns(
   return [
     {
       type: 'checkbox',
-      width: 50,
-    },
-    {
-      field: 'noticeTitle',
       title: '公告标题',
-      minWidth: 200,
+      align : 'left',
     },
     {
       cellRender: {
