@@ -3,7 +3,6 @@ import type { profileType } from '#/api/personal/profile';
 
 import { onMounted, ref } from 'vue';
 
-
 import { Smartphone } from '@vben/icons';
 
 import { message, Modal, Pagination } from 'ant-design-vue';
@@ -78,7 +77,8 @@ const handleLogoutDevice = async (sessionId: string, deviceInfo?: string) => {
 const handleLogoutAllDevices = () => {
   Modal.confirm({
     title: '确认注销所有设备',
-    content: '确定要注销所有设备吗？注销后所有设备将无法访问您的账户，您需要重新登录。',
+    content:
+      '确定要注销所有设备吗？注销后所有设备将无法访问您的账户，您需要重新登录。',
     okText: '确认注销',
     cancelText: '取消',
     okType: 'danger',
