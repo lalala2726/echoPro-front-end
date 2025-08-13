@@ -590,17 +590,14 @@ async function onExport() {
             执行
           </Button>
           <Dropdown>
-            <Button size="small" type="link">
-              更多
-              <ChevronDown class="ml-1 size-3" />
-            </Button>
+            <Button size="small" type="link"> 更多 </Button>
             <template #overlay>
               <Menu>
                 <MenuItem key="edit">
                   <Button
                     v-if="hasAccessByCodes(['tool:job:update'])"
                     size="small"
-                    type="text"
+                    type="link"
                     @click="onActionClick({ code: 'edit', row })"
                   >
                     编辑
@@ -608,9 +605,9 @@ async function onExport() {
                 </MenuItem>
                 <MenuItem key="log">
                   <Button
-                    v-if="hasAccessByCodes(['tool:job:log:list'])"
+                    v-if="hasAccessByCodes(['tool:job-log:list'])"
                     size="small"
-                    type="text"
+                    type="link"
                     @click="onActionClick({ code: 'log', row })"
                   >
                     日志
@@ -620,7 +617,7 @@ async function onExport() {
                   <Button
                     v-if="hasAccessByCodes(['tool:job:refresh'])"
                     size="small"
-                    type="text"
+                    type="link"
                     @click="onActionClick({ code: 'refresh', row })"
                   >
                     刷新
@@ -631,6 +628,7 @@ async function onExport() {
                     v-if="hasAccessByCodes(['tool:job:delete'])"
                     danger
                     size="small"
+                    type="link"
                     @click="onActionClick({ code: 'delete', row })"
                   >
                     删除

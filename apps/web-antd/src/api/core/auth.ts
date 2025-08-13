@@ -3,8 +3,16 @@ import { baseRequestClient, requestClient } from '#/api/request';
 export namespace AuthApi {
   /** 登录接口参数 */
   export interface LoginParams {
-    password?: string;
-    username?: string;
+    /** 密码 */
+    password: string;
+    /** 用户名 */
+    username: string;
+    /** 验证码唯一标识 */
+    uuid?: string;
+    /** 验证码 */
+    code?: string;
+    /** 设备类型 */
+    deviceType?: string;
   }
 
   /** 登录接口返回值 */

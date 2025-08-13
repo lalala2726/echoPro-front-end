@@ -71,11 +71,12 @@ export const useAuthStore = defineStore('auth', () => {
         // 登录成功后初始化 WebSocket 连接和实时消息订阅
         try {
           const { initWebSocket } = await import('#/realtime/connection');
-          const { registerAppSubscriptions } = await import('#/realtime/subscriptions');
+          const { registerAppSubscriptions } = await import(
+            '#/realtime/subscriptions'
+          );
 
           await initWebSocket();
           registerAppSubscriptions();
-          console.log('[Auth] WebSocket 连接和订阅成功');
         } catch (error) {
           console.warn('[Auth] WebSocket 连接失败:', error);
         }
@@ -113,12 +114,13 @@ export const useAuthStore = defineStore('auth', () => {
 
     // 清理 WebSocket 连接和订阅
     try {
-      const { cleanupAppSubscriptions } = await import('#/realtime/subscriptions');
+      const { cleanupAppSubscriptions } = await import(
+        '#/realtime/subscriptions'
+      );
       const { destroyWebSocket } = await import('#/realtime/connection');
 
       cleanupAppSubscriptions();
       destroyWebSocket();
-      console.log('[Auth] WebSocket 连接和订阅已清理');
     } catch (error) {
       console.warn('[Auth] WebSocket 清理失败:', error);
     }
@@ -132,8 +134,8 @@ export const useAuthStore = defineStore('auth', () => {
       path: LOGIN_PATH,
       query: redirect
         ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-        }
+            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          }
         : {},
     });
   }

@@ -1,15 +1,11 @@
 import { requestClient } from '#/api/request';
 
-export namespace CaptchaType {
-  export interface CaptchaRequest {
-    /** 手机号码 */
-    phone?: string;
-    /** 邮箱地址 */
-    email?: string;
-    /** 验证码 */
-    code?: string;
-    /** 普通验证码唯一标识 */
-    uid?: string;
+export namespace CommonCaptchaType {
+  export interface CaptchaImageVo {
+    /** 验证码唯一标识 */
+    uuid?: string;
+    /** 验证码图片Base64 */
+    imgBase64?: string;
   }
 }
 
@@ -34,28 +30,12 @@ async function sendEmailCaptcha(email: string) {
 }
 
 /**
- * 验证邮箱验证码
- * @param data 验证码数据
+ * 获取图片验证码
  */
-async function verifyEmailCaptcha(data: CaptchaType.CaptchaRequest) {
-  return requestClient.post<boolean>('/common/captcha/email/verify', {
-    data,
-  });
+async function getImageCaptcha() {
+  return requestClient.get<CommonCaptchaType.CaptchaImageVo>(
+    '/common/captcha/image',
+  );
 }
 
-/**
- * 验证手机验证码
- * @param data 验证码数据
- */
-async function verifyPhoneCaptcha(data: CaptchaType.CaptchaRequest) {
-  return requestClient.post<boolean>('/common/captcha/phone/verify', {
-    data,
-  });
-}
-
-export {
-  sendEmailCaptcha,
-  sendPhoneCaptcha,
-  verifyEmailCaptcha,
-  verifyPhoneCaptcha,
-};
+export { getImageCaptcha, sendEmailCaptcha, sendPhoneCaptcha };
