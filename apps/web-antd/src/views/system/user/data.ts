@@ -24,6 +24,9 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'username',
       label: '用户名',
       rules: 'required',
+      componentProps: (values) => ({
+        disabled: !!values?.userId,
+      }),
     },
     {
       component: 'Input',
