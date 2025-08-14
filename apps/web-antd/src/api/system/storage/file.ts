@@ -21,7 +21,7 @@ export namespace SystemStorageFileAPi {
 
   export interface StorageFileListVo {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 文件名 */
     originalName?: string;
     /** 文件类型，如 image/jpeg, application/pdf 等 */
@@ -51,7 +51,7 @@ export namespace SystemStorageFileAPi {
    */
   export interface StorageFileVo {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 原始文件名 */
     originalName?: string;
     /** 当前文件名 */
@@ -109,7 +109,7 @@ async function getStorageFileList(
  *
  * @author Chuang
  */
-async function getStorageFileById(id: number) {
+async function getStorageFileById(id: string) {
   return await requestClient.get<SystemStorageFileAPi.StorageFileVo>(
     `/system/storage/file/${id}`,
   );
@@ -120,7 +120,7 @@ async function getStorageFileById(id: number) {
  *
  * @author Chuang
  */
-async function deleteStorageFile(ids: Array<number>) {
+async function deleteStorageFile(ids: Array<string>) {
   return await requestClient.delete('/system/storage/file', {
     data: ids,
   });
@@ -144,7 +144,7 @@ async function listFileTrash(
  *
  * @author Chuang
  */
-async function deleteTrashFile(ids: Array<number>) {
+async function deleteTrashFile(ids: Array<string>) {
   return await requestClient.delete(
     `/system/storage/file/trash/${ids.join(',')}`,
   );

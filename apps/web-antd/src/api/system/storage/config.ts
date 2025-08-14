@@ -13,7 +13,7 @@ export namespace StorageConfigApi {
 
   export interface StorageConfigListVo extends BaseType {
     /** 主键ID */
-    id: number;
+    id: string;
     /** 参数名称 */
     storageName?: string;
     /** 参数键名 */
@@ -98,7 +98,7 @@ export namespace StorageConfigApi {
 
   export interface StorageConfigUpdateRequest {
     /** 文件配置ID */
-    id: number;
+    id: string;
     /** 存储配置名称 */
     storageName: string;
     /** 阿里云存储配置 */
@@ -135,7 +135,7 @@ export namespace StorageConfigApi {
 
   export interface StorageConfigUnifiedVo {
     /** 主键 */
-    id: number;
+    id: string;
     /** 参数名称 */
     storageName?: string;
     /** 参数键名 */
@@ -275,7 +275,7 @@ async function addAmazonS3StorageConfig(
  * 获取存储配置详情
  * @param id 存储配置ID
  */
-async function getStorageConfigById(id: number) {
+async function getStorageConfigById(id: string) {
   return await requestClient.get<StorageConfigApi.StorageConfigUnifiedVo>(
     `/system/storage/config/${id}`,
   );
@@ -295,7 +295,7 @@ async function updateStorageConfig(
  * 删除存储配置
  * @param ids 存储配置ID
  */
-async function deleteStorageConfig(ids: Array<number>) {
+async function deleteStorageConfig(ids: Array<string>) {
   return await requestClient.delete(`/system/storage/config/${ids.join(',')}`);
 }
 
@@ -303,7 +303,7 @@ async function deleteStorageConfig(ids: Array<number>) {
  * 设置默认存储配置
  * @param id 存储配置ID
  */
-async function updatePrimaryConfig(id: number) {
+async function updatePrimaryConfig(id: string) {
   return await requestClient.put(`/system/storage/config/primary/${id}`);
 }
 
@@ -319,7 +319,7 @@ async function refreshCache() {
  * @param storageKey 存储键名
  * @param id 存储配置ID（编辑时传入）
  */
-async function isStorageKeyExists(storageKey: string, id?: number) {
+async function isStorageKeyExists(storageKey: string, id?: string) {
   return await requestClient.get<boolean>('/system/storage/config/key-exists', {
     params: { storageKey, id },
   });

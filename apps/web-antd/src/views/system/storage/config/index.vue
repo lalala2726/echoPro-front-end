@@ -15,12 +15,12 @@ import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
+  cancelPrimary,
   deleteStorageConfig,
   exportStorageConfigList,
   getStorageConfigById,
   getStorageConfigList,
   refreshCache,
-  cancelPrimary,
   updatePrimaryConfig,
 } from '#/api/system/storage/config';
 

@@ -58,7 +58,7 @@ interface Props {
 
 // 加载状态管理
 const isDestroyed = ref(false);
-const downloadingIds = ref(new Set<number>());
+const downloadingIds = ref(new Set<string>());
 
 // 防抖下载函数
 const debouncedDownload = useDebounceFn(
@@ -154,7 +154,7 @@ async function onActionClick(
     }
     case 'download': {
       // 使用防抖下载功能
-      debouncedDownload(row);
+      await debouncedDownload(row);
       break;
     }
     default: {
@@ -184,7 +184,7 @@ async function handleBatchDelete() {
 
   const ids = selectedRows
     .map((row: SystemStorageFileAPi.StorageFileListVo) => row.id)
-    .filter(Boolean) as number[];
+    .filter(Boolean) as string[];
   if (ids.length === 0) {
     if (!isDestroyed.value) {
       message.warning('选中的文件中没有有效的ID');

@@ -1,14 +1,23 @@
 <script lang="ts" setup>
-import type {SystemStorageFileAPi} from '#/api/system/storage/file';
+import type { SystemStorageFileAPi } from '#/api/system/storage/file';
 
-import {computed, nextTick, ref} from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
-import {useVbenModal} from '@vben/common-ui';
-import {downloadFileFromUrl} from '@vben/utils';
+import { useVbenModal } from '@vben/common-ui';
+import { downloadFileFromUrl } from '@vben/utils';
 
-import {Button, Card, Col, Image, message, Row, Tag, Typography,} from 'ant-design-vue';
+import {
+  Button,
+  Card,
+  Col,
+  Image,
+  message,
+  Row,
+  Tag,
+  Typography,
+} from 'ant-design-vue';
 
-import {formatFileSize, isPreviewableImage} from '../data';
+import { formatFileSize, isPreviewableImage } from '../data';
 
 const { Text } = Typography;
 
