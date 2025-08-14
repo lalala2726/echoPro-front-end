@@ -1,5 +1,5 @@
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
-import type { JobManageType } from '#/api/tool/job/type/manageType';
+import type { SysJobListVo } from '#/api/tool/job/manage/types';
 
 import { useAccess } from '@vben/access';
 
@@ -7,15 +7,9 @@ import { useAccess } from '@vben/access';
  * 表格列配置
  */
 export function useColumns(
-  _onActionClick: (params: {
-    code: string;
-    row: JobManageType.SysJobListVo;
-  }) => void,
-  _onStatusChange?: (
-    newStatus: number,
-    row: JobManageType.SysJobListVo,
-  ) => Promise<boolean>,
-): VxeGridPropTypes.Columns<JobManageType.SysJobListVo> {
+  _onActionClick: (params: { code: string; row: SysJobListVo }) => void,
+  _onStatusChange?: (newStatus: number, row: SysJobListVo) => Promise<boolean>,
+): VxeGridPropTypes.Columns<SysJobListVo> {
   const { hasAccessByCodes } = useAccess();
   return [
     {
@@ -75,13 +69,13 @@ export function useColumns(
           {
             code: 'pause',
             text: '暂停',
-            visible: (row: JobManageType.SysJobListVo) =>
+            visible: (row: SysJobListVo) =>
               row.status === 0 && hasAccessByCodes(['tool:job:pause']),
           },
           {
             code: 'resume',
             text: '恢复任务',
-            visible: (row: JobManageType.SysJobListVo) =>
+            visible: (row: SysJobListVo) =>
               row.status === 1 && hasAccessByCodes(['tool:job:resume']),
           },
           {

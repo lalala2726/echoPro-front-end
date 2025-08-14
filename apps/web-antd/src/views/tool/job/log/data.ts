@@ -1,15 +1,12 @@
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
-import type { JobLogType } from '#/api/tool/job/type/logType';
+import type { SysJobLogListVo } from '#/api/tool/job/log/types';
 
 /**
  * 表格列配置
  */
 export function useColumns(
-  _onActionClick: (params: {
-    code: string;
-    row: JobLogType.SysJobLogListVo;
-  }) => void,
-): VxeGridPropTypes.Columns<JobLogType.SysJobLogListVo> {
+  _onActionClick: (params: { code: string; row: SysJobLogListVo }) => void,
+): VxeGridPropTypes.Columns<SysJobLogListVo> {
   return [
     {
       title: '日志ID',

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { JobLogType } from '#/api/tool/job/type/logType';
+import type { SysJobLogVo } from '#/api/tool/job/log/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -7,9 +7,9 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Card, Col, Row, Tag } from 'ant-design-vue';
 
-import { getJobLogInfo } from '#/api/tool/job/log';
+import { getJobLogInfo } from '#/api/tool/job/log/log';
 
-const detailData = ref<JobLogType.SysJobLogVo>();
+const detailData = ref<SysJobLogVo>();
 
 const getTitle = computed(() => {
   return '任务日志详情';
@@ -20,8 +20,7 @@ const getTitle = computed(() => {
  */
 async function loadJobLogData(jobLogId: number) {
   try {
-    const logDetail = await getJobLogInfo(jobLogId);
-    detailData.value = logDetail;
+    detailData.value = await getJobLogInfo(jobLogId);
   } catch (error) {
     console.error('获取任务日志详情失败:', error);
   }
@@ -41,7 +40,7 @@ const [Modal, modalApi] = useVbenModal({
 
       nextTick(async () => {
         try {
-          const data = modalApi.getData<JobLogType.SysJobLogVo>();
+          const data = modalApi.getData<SysJobLogVo>();
           if (data && data.jobLogId) {
             const jobLogId = data.jobLogId;
             if (!Number.isNaN(jobLogId)) {

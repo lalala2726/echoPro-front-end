@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { JobManageType } from '#/api/tool/job/type/manageType';
+import type { SysJobListVo } from '#/api/tool/job/manage/types';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -36,7 +36,7 @@ import {
   runJob,
   startJob,
   updateJob,
-} from '#/api/tool/job/manage';
+} from '#/api/tool/job/manage/manage';
 
 import {
   getScheduleTypeTag,
@@ -96,10 +96,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<JobManageType.SysJobListVo>,
+  } as VxeTableGridOptions<SysJobListVo>,
 });
 
-function onActionClick(e: OnActionClickParams<JobManageType.SysJobListVo>) {
+function onActionClick(e: OnActionClickParams<SysJobListVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -162,10 +162,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(
-  newStatus: number,
-  row: JobManageType.SysJobListVo,
-) {
+async function onStatusChange(newStatus: number, row: SysJobListVo) {
   const status: Recordable<string> = {
     0: '启用',
     1: '禁用',
@@ -191,7 +188,7 @@ async function onStatusChange(
 /**
  * 编辑任务
  */
-function onEdit(row: JobManageType.SysJobListVo) {
+function onEdit(row: SysJobListVo) {
   formDrawerApi.setData(row);
   formDrawerApi.open();
 }
@@ -199,7 +196,7 @@ function onEdit(row: JobManageType.SysJobListVo) {
 /**
  * 删除任务
  */
-async function onDelete(row: JobManageType.SysJobListVo) {
+async function onDelete(row: SysJobListVo) {
   try {
     await confirm(`确定要删除任务 ${row.jobName} 吗？`, '删除任务确认');
     message.loading({
@@ -226,7 +223,7 @@ async function onDelete(row: JobManageType.SysJobListVo) {
 /**
  * 启动任务
  */
-async function onStart(row: JobManageType.SysJobListVo) {
+async function onStart(row: SysJobListVo) {
   try {
     await confirm(`确定要启动任务 ${row.jobName} 吗？`, '启动任务');
     message.loading({
@@ -250,7 +247,7 @@ async function onStart(row: JobManageType.SysJobListVo) {
 /**
  * 暂停任务
  */
-async function onPause(row: JobManageType.SysJobListVo) {
+async function onPause(row: SysJobListVo) {
   try {
     await confirm(`确定要暂停任务 ${row.jobName} 吗？`, '暂停任务');
     message.loading({
@@ -274,7 +271,7 @@ async function onPause(row: JobManageType.SysJobListVo) {
 /**
  * 恢复任务
  */
-async function onResume(row: JobManageType.SysJobListVo) {
+async function onResume(row: SysJobListVo) {
   try {
     await confirm(`确定要恢复任务 ${row.jobName} 吗？`, '恢复任务');
     message.loading({
@@ -298,7 +295,7 @@ async function onResume(row: JobManageType.SysJobListVo) {
 /**
  * 立即执行任务
  */
-async function onRun(row: JobManageType.SysJobListVo) {
+async function onRun(row: SysJobListVo) {
   try {
     await confirm(`确定要立即执行任务 ${row.jobName} 吗？`, '立即执行');
     message.loading({
@@ -322,7 +319,7 @@ async function onRun(row: JobManageType.SysJobListVo) {
 /**
  * 刷新任务
  */
-async function onRefreshJob(row: JobManageType.SysJobListVo) {
+async function onRefreshJob(row: SysJobListVo) {
   try {
     await confirm(`确定要刷新任务 ${row.jobName} 吗？`, '刷新任务');
     message.loading({
@@ -346,7 +343,7 @@ async function onRefreshJob(row: JobManageType.SysJobListVo) {
 /**
  * 查看任务日志
  */
-function onViewLog(row: JobManageType.SysJobListVo) {
+function onViewLog(row: SysJobListVo) {
   // 跳转到任务日志页面，只传递任务ID参数
   router.push({
     path: '/tool/job/log',
@@ -388,9 +385,7 @@ async function onBatchDelete() {
       duration: 0,
       key: 'batch_action_msg',
     });
-    const jobIds = selectedRows.map(
-      (row: JobManageType.SysJobListVo) => row.jobId!,
-    );
+    const jobIds = selectedRows.map((row: SysJobListVo) => row.jobId!);
     await deleteJob(jobIds);
     message.success({
       content: '批量删除成功',
@@ -424,9 +419,7 @@ async function onBatchStart() {
       duration: 0,
       key: 'batch_action_msg',
     });
-    const jobIds = selectedRows.map(
-      (row: JobManageType.SysJobListVo) => row.jobId!,
-    );
+    const jobIds = selectedRows.map((row: SysJobListVo) => row.jobId!);
     await batchOperateJob({ jobIds, operation: 'start' });
     message.success({
       content: '批量启动成功',
@@ -460,9 +453,7 @@ async function onBatchPause() {
       duration: 0,
       key: 'batch_action_msg',
     });
-    const jobIds = selectedRows.map(
-      (row: JobManageType.SysJobListVo) => row.jobId!,
-    );
+    const jobIds = selectedRows.map((row: SysJobListVo) => row.jobId!);
     await batchOperateJob({ jobIds, operation: 'pause' });
     message.success({
       content: '批量暂停成功',

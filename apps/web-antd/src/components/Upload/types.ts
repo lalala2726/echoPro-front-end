@@ -70,11 +70,6 @@ export interface UploadEmits {
 }
 
 /**
- * 上传状态
- */
-export type UploadStatus = 'done' | 'error' | 'removed' | 'uploading';
-
-/**
  * 扩展的上传文件类型
  */
 export interface ExtendedUploadFile extends UploadFile {

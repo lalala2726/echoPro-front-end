@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { JobLogType } from '#/api/tool/job/type/logType';
+import type { SysJobLogListVo } from '#/api/tool/job/log/types';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -18,7 +18,7 @@ import {
   exportJobLogList,
   getJobLogInfo,
   logList,
-} from '#/api/tool/job/log';
+} from '#/api/tool/job/log/log';
 
 import { useColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -97,7 +97,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<JobLogType.SysJobLogListVo>,
+  } as VxeTableGridOptions<SysJobLogListVo>,
 });
 
 // 组件挂载时，如果有任务ID参数，设置表单默认值
@@ -112,7 +112,7 @@ async function onActionClick({
   row,
 }: {
   code: string;
-  row: JobLogType.SysJobLogListVo;
+  row: SysJobLogListVo;
 }) {
   switch (code) {
     case 'delete': {
@@ -158,7 +158,7 @@ function goBack() {
 async function onBatchDelete() {
   const selectedRows = (
     gridApi as any
-  ).getCheckboxRecords() as JobLogType.SysJobLogListVo[];
+  ).getCheckboxRecords() as SysJobLogListVo[];
 
   if (!selectedRows || selectedRows.length === 0) {
     message.warning('请选择要删除的日志记录');
@@ -171,7 +171,7 @@ async function onBatchDelete() {
     onOk: async () => {
       try {
         const logIds = selectedRows
-          .map((row: JobLogType.SysJobLogListVo) => row.jobLogId!)
+          .map((row: SysJobLogListVo) => row.jobLogId!)
           .filter((id) => id !== undefined);
         if (logIds.length === 0) {
           message.error('选中的记录中没有有效的日志ID');
