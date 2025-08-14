@@ -11,11 +11,11 @@ export namespace SysUserType {
    */
   export interface SysUser extends BaseType {
     /** 用户ID */
-    userId: number;
+    userId: string;
     /** 用户名 */
     username: string;
     /** 部门ID */
-    deptId: number;
+    deptId: string;
     /** 密码 */
     password: string;
     /** 昵称 */
@@ -55,7 +55,7 @@ export namespace SysUserType {
     /** 用户名 */
     username?: string;
     /** 部门ID */
-    deptId?: number;
+    deptId?: string;
     /** 昵称 */
     nickname?: string;
     /** 邮箱 */
@@ -80,7 +80,7 @@ export namespace SysUserType {
 
   export interface UserListVo {
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     username?: string;
     /** 昵称 */
@@ -123,7 +123,7 @@ export namespace SysUserType {
     /** 岗位ID */
     postId?: string;
     /** 角色ID */
-    roleIds: number[];
+    roleIds: string[];
     /** 手机号 */
     phone?: string;
     /** 昵称 */
@@ -140,7 +140,7 @@ export namespace SysUserType {
     /** 用户ID */
     userId: number;
     /** 角色ID列表 */
-    roleIds?: number[];
+    roleIds?: string[];
     /** 头像 */
     avatar?: string;
     /** 性别 0-未知 1-男 2-女 */
@@ -167,7 +167,7 @@ export namespace SysUserType {
 /**
  * 获取用户列表
  */
-async function getUserList(params?: SysUserType.UserListVo) {
+async function getUserList(params?: SysUserType.SysUserQueryRequest) {
   return requestClient.get<PageResult<SysUserType.UserListVo[]>>(
     '/system/user/list',
     { params },
@@ -178,7 +178,7 @@ async function getUserList(params?: SysUserType.UserListVo) {
  * 重置用户密码
  * @param data 用户数据
  */
-async function resetUserPassword(data: { password: string; userId: number }) {
+async function resetUserPassword(data: { password: string; userId: string }) {
   return requestClient.put('/system/user/resetPassword', data);
 }
 
@@ -186,7 +186,7 @@ async function resetUserPassword(data: { password: string; userId: number }) {
  * 获取用户详情
  * @param id 用户ID
  */
-async function getUserById(id: number) {
+async function getUserById(id: string) {
   return requestClient.get<SysUserType.SysUser>(`/system/user/${id}`);
 }
 
@@ -210,7 +210,7 @@ async function updateUser(data: SysUserType.SysUserUpdateRequest) {
  * 删除用户
  * @param ids 用户ID列表
  */
-async function deleteUser(ids: Array<number>) {
+async function deleteUser(ids: Array<string>) {
   return requestClient.delete(`/system/user/${ids.join(',')}`);
 }
 

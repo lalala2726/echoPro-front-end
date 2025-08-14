@@ -33,7 +33,7 @@ const sendMode = ref<SendMode>(SystemMessageManageType.MessageSendMethod.ALL);
 const formModel = ref<{
   content: string;
   level: SystemMessageManageType.MessageLevel;
-  receiveId: number[] | string[];
+  receiveId: string[];
   title: string;
   type: SystemMessageManageType.MessageType;
 }>({
@@ -108,7 +108,7 @@ function openSelector() {
 
 // 用户选择确认
 function handleUserConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   try {
@@ -371,7 +371,7 @@ async function doSendMessage() {
     <SelectorDrawer :key="`drawer-${sendMode}`">
       <template v-if="sendMode === 'user'">
         <UserSelect
-          v-model="formModel.receiveId as number[]"
+          v-model="formModel.receiveId as string[]"
           :multiple="true"
           placeholder="请选择用户"
           @confirm="handleUserConfirm"

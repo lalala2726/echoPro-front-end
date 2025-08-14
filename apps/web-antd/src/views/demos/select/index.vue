@@ -16,23 +16,23 @@ import RoleSelect from '#/components/Select/RoleSelect/index.vue';
 import UserSelect from '#/components/Select/UserSelect/index.vue';
 
 // 单选示例
-const singleSelectedUsers = ref<number[]>([]);
+const singleSelectedUsers = ref<string[]>([]);
 const singleSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
 // 多选示例
-const multipleSelectedUsers = ref<number[]>([]);
+const multipleSelectedUsers = ref<string[]>([]);
 const multipleSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
 // 限制数量的多选示例
-const limitedSelectedUsers = ref<number[]>([]);
+const limitedSelectedUsers = ref<string[]>([]);
 const limitedSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
 // 大量用户选择示例（测试溢出处理）
-const bulkSelectedUsers = ref<number[]>([]);
+const bulkSelectedUsers = ref<string[]>([]);
 const bulkSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
 // 模态框模式示例
-const modalSelectedUsers = ref<number[]>([]);
+const modalSelectedUsers = ref<string[]>([]);
 const modalSelectedUserData = ref<SysUserType.UserListVo[]>([]);
 
 // 角色选择示例
@@ -204,7 +204,7 @@ const [BulkPostDrawer, bulkPostDrawerApi] = useVbenDrawer({
 
 // 单选确认处理
 function handleSingleConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   singleSelectedUserData.value = data.users;
@@ -217,7 +217,7 @@ function handleSingleConfirm(data: {
 
 // 多选确认处理
 function handleMultipleConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   multipleSelectedUserData.value = data.users;
@@ -228,7 +228,7 @@ function handleMultipleConfirm(data: {
 
 // 限制数量多选确认处理
 function handleLimitedConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   limitedSelectedUserData.value = data.users;
@@ -239,7 +239,7 @@ function handleLimitedConfirm(data: {
 
 // 大量用户选择确认处理
 function handleBulkConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   bulkSelectedUserData.value = data.users;
@@ -250,7 +250,7 @@ function handleBulkConfirm(data: {
 
 // 模态框模式确认处理
 function handleModalConfirm(data: {
-  userIds: number[];
+  userIds: string[];
   users: SysUserType.UserListVo[];
 }) {
   modalSelectedUserData.value = data.users;

@@ -134,7 +134,10 @@ async function loadUserData(userId: number) {
       ...userDetail,
       deptId: deptIdValue === null ? undefined : String(deptIdValue),
       roleIds,
-      postId: postIdValue === null || postIdValue === undefined ? undefined : postIdValue,
+      postId:
+        postIdValue === null || postIdValue === undefined
+          ? undefined
+          : postIdValue,
     });
   } catch (error) {
     console.error('获取用户详情失败:', error);
@@ -148,7 +151,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
       drawerApi.lock();
       const data = await formApi.getValues();
       try {
-        // 出参类型转换：后端要求使用数字ID（除了岗位ID是string类型）
         const payload: any = {
           ...data,
           avatar: userAvatar.value || data.avatar,
@@ -159,9 +161,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
           roleIds: Array.isArray(data.roleIds)
             ? (data.roleIds as Array<number | string>).map(Number)
             : [],
-          // 岗位ID保持string类型，无需转换
           postId:
-            data.postId !== undefined && data.postId !== null && data.postId !== ''
+            data.postId !== undefined && data.postId !== null &&
+            data.postId !== ''
               ? data.postId
               : undefined,
         };
@@ -181,13 +183,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      // 设置Drawer的loading状态
       drawerApi.setState({ loading: true });
-
-      // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          // 并行加载基础数据
           await Promise.all([
             loadDeptOptions(),
             loadRoleOptions(),
@@ -196,11 +194,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
           const data = drawerApi.getData<SysUserType.SysUser>();
           if (data && data.userId) {
-            // 编辑模式：加载完整的用户详情
             formData.value = data;
             await loadUserData(data.userId);
           } else {
-            // 新增模式：重置表单
             formData.value = {};
             userAvatar.value = '';
             await formApi.resetForm();
@@ -208,12 +204,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
         } catch (error) {
           console.error('加载数据失败:', error);
         } finally {
-          // 关闭Drawer的loading状态
           drawerApi.setState({ loading: false });
         }
       });
     } else {
-      // 弹窗关闭时立即重置状态
       formData.value = {};
       userAvatar.value = '';
       drawerApi.setState({ loading: false });

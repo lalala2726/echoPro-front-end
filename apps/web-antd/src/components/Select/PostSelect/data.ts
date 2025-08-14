@@ -3,30 +3,31 @@ import type { VxeGridPropTypes } from '#/adapter/vxe-table';
 import type { SystemPostType } from '#/api/system/post';
 
 // 岗位表格列配置
-export const postColumns: VxeGridPropTypes.Columns<SystemPostType.PostListVo> = [
-  {
-    align: 'left',
-    title: '岗位名称',
-    type: 'checkbox',
-  },
-  {
-    title: '岗位编码',
-    field: 'postCode',
-    showOverflow: 'tooltip',
-  },
-  {
-    title: '状态',
-    field: 'status',
-    align: 'center',
-    slots: { default: 'status' },
-  },
-  {
-    title: '操作',
-    field: 'operation',
-    align: 'center',
-    slots: { default: 'action' },
-  },
-];
+export const postColumns: VxeGridPropTypes.Columns<SystemPostType.PostListVo> =
+  [
+    {
+      align: 'left',
+      title: '岗位名称',
+      type: 'checkbox',
+    },
+    {
+      title: '岗位编码',
+      field: 'postCode',
+      showOverflow: 'tooltip',
+    },
+    {
+      title: '状态',
+      field: 'status',
+      align: 'center',
+      slots: { default: 'status' },
+    },
+    {
+      title: '操作',
+      field: 'operation',
+      align: 'center',
+      slots: { default: 'action' },
+    },
+  ];
 
 /**
  * 岗位选择组件的搜索表单配置

@@ -17,17 +17,17 @@ interface Props {
   /** 最大选择数量 */
   maxCount?: number;
   /** 已选择的用户ID数组 */
-  modelValue?: number[];
+  modelValue?: string[];
   /** 占位符文本 */
   placeholder?: string;
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: number[]): void;
+  (e: 'update:modelValue', value: string[]): void;
   (e: 'change', users: SysUserType.UserListVo[]): void;
   (
     e: 'confirm',
-    data: { userIds: number[]; users: SysUserType.UserListVo[] },
+    data: { userIds: string[]; users: SysUserType.UserListVo[] },
   ): void;
   (e: 'cancel'): void;
 }
