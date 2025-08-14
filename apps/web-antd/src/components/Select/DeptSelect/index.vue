@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemDeptApi } from '#/api/system/dept/dept';
+import type { SystemDept } from '#/api/system/dept/types';
 
 import { computed, onMounted, ref } from 'vue';
 
@@ -23,11 +23,8 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: string[]): void;
-  (e: 'change', depts: SystemDeptApi.SystemDept[]): void;
-  (
-    e: 'confirm',
-    data: { deptIds: string[]; depts: SystemDeptApi.SystemDept[] },
-  ): void;
+  (e: 'change', depts: SystemDept[]): void;
+  (e: 'confirm', data: { deptIds: string[]; depts: SystemDept[] }): void;
   (e: 'cancel'): void;
 }
 
@@ -41,7 +38,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 
 // 选中的部门数据（跨展开层级累积）
-const selectedDepts = ref<SystemDeptApi.SystemDept[]>([]);
+const selectedDepts = ref<SystemDept[]>([]);
 
 // VxeGrid配置（树形结构，不分页）
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -86,8 +83,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
-        const allData = gridApi.grid.getTableData()
-          .fullData as SystemDeptApi.SystemDept[];
+        const allData = gridApi.grid.getTableData().fullData as SystemDept[];
         if (checked) {
           const next = allData;
           const max = props.maxCount ?? 1000;
@@ -124,8 +120,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function syncSelectionAfterToggle() {
   try {
-    const currentSelected =
-      gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
+    const currentSelected = gridApi.grid.getCheckboxRecords() as SystemDept[];
     // 树形不分页：直接限制与单选处理
     let next = currentSelected;
     if (!props.multiple && next.length > 1) {
@@ -155,8 +150,7 @@ function syncSelectionAfterToggle() {
 
 // 确认选择
 async function handleConfirm() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as SystemDept[];
 
   if (!props.multiple && selectedRows.length > 1) {
     message.warning('只能选择一个部门');
@@ -203,7 +197,7 @@ function clearSelection() {
 }
 
 // 移除单个部门
-function removeDept(dept: SystemDeptApi.SystemDept) {
+function removeDept(dept: SystemDept) {
   if (dept.deptId !== undefined && dept.deptId !== null) {
     selectedDepts.value = selectedDepts.value.filter(
       (r) => r.deptId !== dept.deptId,
@@ -225,11 +219,11 @@ onMounted(() => {
 });
 
 // 选择操作按钮：与勾选行为一致
-function selectRow(row: SystemDeptApi.SystemDept) {
+function selectRow(row: SystemDept) {
   try {
-    const isChecked = (
-      gridApi.grid.getCheckboxRecords() as SystemDeptApi.SystemDept[]
-    ).some((r) => r.deptId === row.deptId);
+    const isChecked = (gridApi.grid.getCheckboxRecords() as SystemDept[]).some(
+      (r) => r.deptId === row.deptId,
+    );
     gridApi.grid.setCheckboxRow(row, !isChecked);
     // 手动同步右侧已选与 v-model
     syncSelectionAfterToggle();
