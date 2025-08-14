@@ -37,7 +37,7 @@ const route = useRoute();
 const router = useRouter();
 
 // 从路由参数获取字典类型ID
-const dictTypeId = Number(route.params.id);
+const dictTypeId = route.params.id as string;
 const dictTypeInfo = ref<SystemDictType.DictTypeVo>();
 const isLoading = ref(false);
 

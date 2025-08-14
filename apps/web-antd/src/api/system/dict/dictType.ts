@@ -5,27 +5,22 @@ import { requestClient } from '#/api/request';
 export namespace SystemDictType {
   export interface DictTypeQueryRequest {
     /** 主键ID */
-    id?: number;
-
+    id?: string;
     /** 字典类型 */
     dictType?: string;
-
     /** 字典名称 */
     dictName?: string;
-
     /** 状态：0启用，1禁用 */
     status?: number;
-
     /** 开始时间 */
     startTime?: string;
-
     /** 结束时间 */
     endTime?: string;
   }
 
   export interface DictTypeVo {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 字典类型 */
     dictType?: string;
     /** 字典名称 */
@@ -46,7 +41,7 @@ export namespace SystemDictType {
 
   export interface DictTypeVo {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 字典类型 */
     dictType?: string;
     /** 字典名称 */
@@ -78,7 +73,7 @@ export namespace SystemDictType {
 
   export interface DictTypeUpdateRequest {
     /** 主键ID */
-    id: number;
+    id: string;
     /** 字典类型 */
     dictType: string;
     /** 字典名称 */
@@ -112,7 +107,7 @@ async function addDictType(data: SystemDictType.DictTypeAddRequest) {
  * 根据字典类型ID获取字典类型
  * @param id 字典类型ID
  */
-async function getDictTypeById(id: number) {
+async function getDictTypeById(id: string) {
   return requestClient.get<SystemDictType.DictTypeVo>(
     `/system/dict/type/${id}`,
   );
@@ -130,7 +125,7 @@ async function updateDictType(data: SystemDictType.DictTypeUpdateRequest) {
  * 删除字典
  * @param dictId 字典ID
  */
-async function deleteDictType(dictId: number) {
+async function deleteDictType(dictId: string) {
   return requestClient.delete(`/system/dict/type/${dictId}`);
 }
 

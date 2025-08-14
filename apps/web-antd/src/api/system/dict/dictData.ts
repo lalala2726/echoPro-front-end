@@ -5,7 +5,7 @@ import { requestClient } from '#/api/request';
 export namespace SystemDictDataType {
   export interface DictDataQueryRequest extends BaseRequest {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 字典标签 */
     dictLabel?: string;
     /** 字典值 */
@@ -22,7 +22,7 @@ export namespace SystemDictDataType {
 
   export interface DictDataVo {
     /** 主键ID */
-    id?: number;
+    id?: string;
     /** 字典类型 */
     dictType?: string;
     /** 字典标签 */
@@ -66,7 +66,7 @@ export namespace SystemDictDataType {
 
   export interface DictDataUpdateRequest {
     /** 主键ID */
-    id: number;
+    id: string;
     /** 字典类型 */
     dictType?: string;
     /** 字典标签 */
@@ -105,7 +105,7 @@ async function getDictDataList(
  * 根据字典值ID获取字典值
  * @param id 字典值ID
  */
-async function getDictDataById(id: number) {
+async function getDictDataById(id: string) {
   return requestClient.get<SystemDictDataType.DictDataVo>(
     `/system/dict/data/${id}`,
   );
@@ -131,7 +131,7 @@ async function addDictData(data: SystemDictDataType.DictDataAddRequest) {
  * 删除字典值
  * @param ids 字典值ID
  */
-async function deleteDictData(ids: number[]) {
+async function deleteDictData(ids: string[]) {
   return requestClient.delete(`/system/dict/data/${ids.join(',')}`);
 }
 
