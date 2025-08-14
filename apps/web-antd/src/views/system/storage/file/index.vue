@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { OnActionClickParams } from '#/adapter/vxe-table';
-import type { SystemStorageFileAPi } from '#/api/system/storage/file';
+import type { StorageFileListVo } from '#/api/system/storage/types';
 
 import { onBeforeUnmount, ref } from 'vue';
 
@@ -37,9 +37,7 @@ onBeforeUnmount(() => {
 /**
  * 处理操作按钮点击事件
  */
-async function onActionClick(
-  params: OnActionClickParams<SystemStorageFileAPi.StorageFileListVo>,
-) {
+async function onActionClick(params: OnActionClickParams<StorageFileListVo>) {
   if (isDestroyed.value) return;
 
   const { code, row } = params;

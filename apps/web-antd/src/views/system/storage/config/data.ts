@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { StorageConfigApi } from '#/api/system/storage/config';
+import type { StorageConfigListVo } from '#/api/system/storage/types';
 
 import { useAccess } from '@vben/access';
 
@@ -63,12 +63,12 @@ export function useSearchFormSchema(): VbenFormSchema[] {
  * 表格列配置
  */
 export function useColumns(
-  onActionClick: OnActionClickFn<StorageConfigApi.StorageConfigListVo>,
+  onActionClick: OnActionClickFn<StorageConfigListVo>,
   onPrimaryChange?: (
     checked: boolean,
-    row: StorageConfigApi.StorageConfigListVo,
+    row: StorageConfigListVo,
   ) => PromiseLike<boolean | undefined>,
-): VxeTableGridOptions<StorageConfigApi.StorageConfigListVo>['columns'] {
+): VxeTableGridOptions<StorageConfigListVo>['columns'] {
   const { hasAccessByCodes } = useAccess();
   return [
     {

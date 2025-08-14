@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemStorageFileAPi } from '#/api/system/storage/file';
+import type { StorageFileVo } from '#/api/system/storage/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -21,7 +21,7 @@ import { formatFileSize, isPreviewableImage } from '../data';
 
 const { Text } = Typography;
 
-const detailData = ref<SystemStorageFileAPi.StorageFileVo>();
+const detailData = ref<StorageFileVo>();
 
 const getTitle = computed(() => {
   return '文件详情';
@@ -160,7 +160,7 @@ const [Modal, modalApi] = useVbenModal({
 
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemStorageFileAPi.StorageFileVo>();
+          const data = modalApi.getData<StorageFileVo>();
           if (data) {
             detailData.value = data;
           }

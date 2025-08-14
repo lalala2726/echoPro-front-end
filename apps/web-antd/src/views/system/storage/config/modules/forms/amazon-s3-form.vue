@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '#/adapter/form';
-import type { StorageConfigApi } from '#/api/system/storage/config';
+import type {
+  AmazonS3ConfigSaveRequest,
+  StorageConfigUpdateRequest,
+} from '#/api/system/storage/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -200,7 +203,7 @@ async function onSubmit() {
     try {
       if (formData.value?.id) {
         // 更新模式
-        const updateData: StorageConfigApi.StorageConfigUpdateRequest = {
+        const updateData: StorageConfigUpdateRequest = {
           id: formData.value.id,
           storageName: formValues.storageName,
           amazonS3: {
@@ -218,7 +221,7 @@ async function onSubmit() {
         await updateStorageConfig(updateData);
       } else {
         // 创建模式
-        const createData: StorageConfigApi.AmazonS3ConfigSaveRequest = {
+        const createData: AmazonS3ConfigSaveRequest = {
           storageName: formValues.storageName,
           storageKey: formValues.storageKey,
           endpoint: formValues.endpoint,
