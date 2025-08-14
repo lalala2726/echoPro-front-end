@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemSessionTypes } from '#/api/system/online/session';
+import type { SessionListVo } from '#/api/system/online/types';
 
 import { ref } from 'vue';
 
@@ -61,7 +61,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemSessionTypes.SessionListVo>,
+  } as VxeTableGridOptions<SessionListVo>,
 });
 
 async function onActionClick({
@@ -69,7 +69,7 @@ async function onActionClick({
   row,
 }: {
   code: string;
-  row: SystemSessionTypes.SessionListVo;
+  row: SessionListVo;
 }) {
   switch (code) {
     case 'delete': {
@@ -80,7 +80,7 @@ async function onActionClick({
           try {
             await deleteSession(row.accessTokenId);
             message.success('删除成功');
-            gridApi.reload();
+            await gridApi.reload();
           } catch {
             message.error('删除失败');
           }

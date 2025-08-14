@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemSessionTypes } from '#/api/system/online/session';
+import type { SessionListVo } from '#/api/system/online/types';
 
 import { useAccess } from '@vben/access';
 
@@ -58,7 +58,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 /**
  * 表格列配置
  */
-export function useColumns<T = SystemSessionTypes.SessionListVo>(
+export function useColumns<T = SessionListVo>(
   _onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   const { hasAccessByCodes } = useAccess();

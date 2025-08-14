@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MonitorDeviceApi } from '#/api/system/online/device';
+import type { DeviceList } from '#/api/system/online/types';
 
 import { ref } from 'vue';
 
@@ -61,13 +61,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<MonitorDeviceApi.deviceList>,
+  } as VxeTableGridOptions<DeviceList>,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<MonitorDeviceApi.deviceList>) {
+function onActionClick({ code, row }: OnActionClickParams<DeviceList>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -82,7 +79,7 @@ function onActionClick({
 /**
  * 删除设备
  */
-function onDelete(row: MonitorDeviceApi.deviceList) {
+function onDelete(row: DeviceList) {
   Modal.confirm({
     title: '确认删除',
     content: `确定要强制下线设备 "${row.deviceName}" 吗？`,

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemSessionTypes } from '#/api/system/online/session';
+import type { OnlineLoginUser } from '#/api/system/online/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,14 +8,14 @@ import { useVbenModal } from '@vben/common-ui';
 import { Card, Col, Row, Tag } from 'ant-design-vue';
 
 interface Props {
-  formData?: SystemSessionTypes.OnlineLoginUser;
+  formData?: OnlineLoginUser;
 }
 
 withDefaults(defineProps<Props>(), {
   formData: undefined,
 });
 
-const detailData = ref<SystemSessionTypes.OnlineLoginUser>();
+const detailData = ref<OnlineLoginUser>();
 
 const getTitle = computed(() => {
   return '在线会话详情';
@@ -37,7 +37,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemSessionTypes.OnlineLoginUser>();
+          const data = modalApi.getData<OnlineLoginUser>();
           if (data) {
             detailData.value = data;
           }
@@ -75,7 +75,7 @@ function getOnlineStatusTag() {
 }
 
 // 设置详情数据和加载状态
-function setDetailData(data: SystemSessionTypes.OnlineLoginUser) {
+function setDetailData(data: OnlineLoginUser) {
   detailData.value = data;
 }
 
