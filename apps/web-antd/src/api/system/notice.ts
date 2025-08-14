@@ -15,7 +15,7 @@ export namespace SystemNoticeType {
 
   export interface SysNoticeListVo {
     /** 公告ID */
-    id?: number;
+    id?: string;
     /** 公告标题 */
     noticeTitle?: string;
     /** 公告类型（1通知 2公告） */
@@ -35,7 +35,7 @@ export namespace SystemNoticeType {
    */
   export interface SysNoticeVo {
     /** 公告ID */
-    id?: number;
+    id?: string;
     /** 公告标题 */
     noticeTitle?: string;
     /** 公告内容 */
@@ -70,7 +70,7 @@ async function noticeList(params?: SystemNoticeType.SysNoticeQueryRequest) {
  * 获取公告详情
  * @param id 公告ID
  */
-async function noticeById(id: number) {
+async function noticeById(id: string) {
   return requestClient.get<SystemNoticeType.SysNoticeVo>(
     `/system/notice/${id}`,
   );
@@ -96,7 +96,7 @@ async function updateNotice(data: SystemNoticeType.SysNoticeVo) {
  * 删除公告
  * @param ids 公告ID
  */
-async function deleteNotice(ids: Array<number>) {
+async function deleteNotice(ids: Array<string>) {
   return requestClient.delete(`/system/notice/${ids.join(',')}`);
 }
 

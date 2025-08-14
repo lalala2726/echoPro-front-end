@@ -36,7 +36,7 @@ function resetForm() {
 /**
  * 加载公告详情数据
  */
-async function loadNoticeData(noticeId: number) {
+async function loadNoticeData(noticeId: string) {
   try {
     const noticeDetail = await noticeById(noticeId);
     formData.value = noticeDetail;

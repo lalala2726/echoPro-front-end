@@ -200,7 +200,7 @@ function onBatchDelete() {
         .map((row: SystemNoticeType.SysNoticeVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       if (ids.length === 0) {
         message.error('选中的公告中没有有效的ID');
