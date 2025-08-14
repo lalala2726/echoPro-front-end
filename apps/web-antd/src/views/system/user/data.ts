@@ -209,6 +209,15 @@ export function useColumns<T = SysUserType.SysUser>(
       },
     },
     {
+      field: 'postName',
+      title: '岗位',
+      width: 120,
+      formatter: ({ row }) => {
+        // 显示岗位名称，如果没有则显示 '--'
+        return row.postName || '--';
+      },
+    },
+    {
       cellRender: {
         name: 'CellTag',
         options: [

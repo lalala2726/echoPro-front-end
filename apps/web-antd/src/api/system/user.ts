@@ -30,6 +30,8 @@ export namespace SysUserType {
     email: string;
     /** 状态 */
     status: number;
+    /** 岗位ID */
+    postId?: number;
     /** 部门名称（可能从API返回） */
     deptName?: string;
     /** 部门对象 */
@@ -103,6 +105,8 @@ export namespace SysUserType {
     remark?: string;
     /** 部门名称 */
     deptName?: string;
+    /** 岗位名称 */
+    postName?: string;
   }
 
   export interface SysUserAddRequest {
@@ -116,6 +120,8 @@ export namespace SysUserType {
     gender?: number;
     /** 部门ID */
     deptId?: number;
+    /** 岗位ID */
+    postId?: number;
     /** 角色ID */
     roleIds: number[];
     /** 手机号 */
@@ -141,6 +147,8 @@ export namespace SysUserType {
     gender?: number;
     /** 所属部门ID */
     deptId?: number;
+    /** 岗位ID */
+    postId?: number;
     /** 手机号码 */
     phone?: string;
     /** 登录密码 */

@@ -128,11 +128,14 @@ async function loadUserData(userId: number) {
     const deptIdValue =
       (userDetail as any).deptId ?? userDetail.sysDept?.deptId;
     const postIdValue = (userDetail as any).postId;
+    
+    // 确保岗位ID转换为字符串，因为Select组件的value需要与options中的value类型一致
+    // 后端返回的岗位选项格式是 [{"value": "6","label": "产品经理"}]，value是字符串
     await formApi.setValues({
       ...userDetail,
       deptId: deptIdValue === null ? undefined : String(deptIdValue),
       roleIds,
-      postId: postIdValue === null ? undefined : Number(postIdValue),
+      postId: postIdValue === null || postIdValue === undefined ? undefined : String(postIdValue),
     });
   } catch (error) {
     console.error('获取用户详情失败:', error);
@@ -158,7 +161,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
             ? (data.roleIds as Array<number | string>).map(Number)
             : [],
           postId:
-            data.postId !== undefined && data.postId !== null
+            data.postId !== undefined && data.postId !== null && data.postId !== ''
               ? Number(data.postId)
               : undefined,
         };
