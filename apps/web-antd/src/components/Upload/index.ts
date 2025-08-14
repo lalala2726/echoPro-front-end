@@ -1,4 +1,4 @@
-export * from './types/types';
+export * from './types';
 export { default as Upload } from './Upload.vue';
 export { default as UploadAvatar } from './UploadAvatar.vue';
 export { default as UploadButton } from './UploadButton.vue';

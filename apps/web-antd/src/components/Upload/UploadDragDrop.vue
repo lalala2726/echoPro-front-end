@@ -7,7 +7,7 @@ import type {
   FileUploadResponse,
   ImageUploadResponse,
   UploadEmits,
-} from './types/types';
+} from './types';
 
 import { ref } from 'vue';
 
@@ -54,12 +54,12 @@ async function customRequest(options: any) {
 
     // 文件大小检查
     if (file.size > 0 && file.size > props.maxSize * 1024 * 1024) {
-      throw new Error(`文件大小不能超过 ${props.maxSize}MB`);
+      message.error(`文件大小不能超过 ${props.maxSize}MB`);
     }
 
     // 文件类型检查
     if (props.accept.length > 0 && !props.accept.includes(file.type)) {
-      throw new Error('文件类型不支持');
+      message.error('文件类型不支持');
     }
 
     onProgress?.({ percent: 50 });

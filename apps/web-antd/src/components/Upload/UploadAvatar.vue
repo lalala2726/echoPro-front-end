@@ -5,7 +5,7 @@ import type {
   BaseUploadProps,
   ImageUploadResponse,
   UploadEmits,
-} from './types/types';
+} from './types';
 
 import { computed, ref } from 'vue';
 import { VueCropper } from 'vue-cropper';
