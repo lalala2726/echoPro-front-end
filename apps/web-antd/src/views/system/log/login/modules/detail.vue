@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemLoginLogApi } from '#/api/system/log/login';
+import type { SysLoginLog, SysLoginLogListVo } from '#/api/system/log/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -9,7 +9,7 @@ import { Card, Col, Row, Tag } from 'ant-design-vue';
 
 import { getLoginLogById } from '#/api/system/log/login';
 
-const detailData = ref<SystemLoginLogApi.SysLoginLog>();
+const detailData = ref<SysLoginLog>();
 
 const getTitle = computed(() => {
   return '登录日志详情';
@@ -42,7 +42,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemLoginLogApi.SysLoginLogListVo>();
+          const data = modalApi.getData<SysLoginLogListVo>();
           if (data && data.id) {
             const logId = data.id;
             if (!logId) {

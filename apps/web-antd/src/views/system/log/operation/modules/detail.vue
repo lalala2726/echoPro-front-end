@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { SystemOperationLogApi } from '#/api/system/log/operation';
+import type {
+  SysOperationLog,
+  SysOperationLogListVo,
+} from '#/api/system/log/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -9,7 +12,7 @@ import { Card, Col, message, Row, Tag } from 'ant-design-vue';
 
 import { getOperationById } from '#/api/system/log/operation';
 
-const detailData = ref<SystemOperationLogApi.SysOperationLog>();
+const detailData = ref<SysOperationLog>();
 
 const getTitle = computed(() => {
   return '操作日志详情';
@@ -44,8 +47,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data =
-            modalApi.getData<SystemOperationLogApi.SysOperationLogListVo>();
+          const data = modalApi.getData<SysOperationLogListVo>();
           if (data && data.id) {
             const logId = data.id;
             if (!Number.isNaN(logId)) {
