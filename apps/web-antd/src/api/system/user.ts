@@ -1,6 +1,6 @@
 import type { BaseType, PageResult, Recordable } from '@vben/types';
 
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/system/dept/dept';
 
 import { exportFile } from '#/api/download';
 import { requestClient } from '#/api/request';

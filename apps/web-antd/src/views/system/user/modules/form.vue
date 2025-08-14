@@ -8,7 +8,7 @@ import { computed, nextTick, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
-import { getDeptOptions } from '#/api/system/dept';
+import { getDeptOptions } from '#/api/system/dept/dept';
 import { getOptions as getPostOptions } from '#/api/system/post';
 import { getRoleOption } from '#/api/system/role';
 import { addUser, getUserById, updateUser } from '#/api/system/user';
@@ -128,7 +128,7 @@ async function loadUserData(userId: number) {
     const deptIdValue =
       (userDetail as any).deptId ?? userDetail.sysDept?.deptId;
     const postIdValue = (userDetail as any).postId;
-    
+
     // 岗位ID已经是string类型，无需转换
     await formApi.setValues({
       ...userDetail,
@@ -162,7 +162,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
             ? (data.roleIds as Array<number | string>).map(Number)
             : [],
           postId:
-            data.postId !== undefined && data.postId !== null &&
+            data.postId !== undefined &&
+            data.postId !== null &&
             data.postId !== ''
               ? data.postId
               : undefined,

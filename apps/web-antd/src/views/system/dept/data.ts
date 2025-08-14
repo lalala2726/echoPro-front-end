@@ -2,12 +2,12 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDept } from '#/api/system/dept/types';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getDeptOptions } from '#/api/system/dept';
+import { getDeptOptions } from '#/api/system/dept/dept';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -133,8 +133,8 @@ export function useSchema(): VbenFormSchema[] {
  * @param onActionClick 表格操作按钮点击事件
  */
 export function useColumns(
-  onActionClick?: OnActionClickFn<SystemDeptApi.SystemDept>,
-): VxeTableGridOptions<SystemDeptApi.SystemDept>['columns'] {
+  onActionClick?: OnActionClickFn<SystemDept>,
+): VxeTableGridOptions<SystemDept>['columns'] {
   return [
     {
       align: 'left',
@@ -162,7 +162,7 @@ export function useColumns(
       field: 'manager',
       title: '负责人',
       width: 120,
-      formatter: ({ row }: { row: SystemDeptApi.SystemDept }) => {
+      formatter: ({ row }: { row: SystemDept }) => {
         return row.manager || '--';
       },
     },
@@ -175,7 +175,7 @@ export function useColumns(
       field: 'description',
       title: '描述',
       minWidth: 150,
-      formatter: ({ row }: { row: SystemDeptApi.SystemDept }) => {
+      formatter: ({ row }: { row: SystemDept }) => {
         return row.description || '--';
       },
     },
@@ -203,7 +203,7 @@ export function useColumns(
             code: 'delete',
             text: '删除',
             show: () => hasAccessByCodes(['system:dept:delete']),
-            disabled: (row: SystemDeptApi.SystemDept) => {
+            disabled: (row: SystemDept) => {
               return !!(row.children && row.children.length > 0);
             },
           },

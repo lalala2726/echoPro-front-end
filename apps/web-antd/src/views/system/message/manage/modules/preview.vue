@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemMessageManageType } from '#/api/system/messageManage';
+import type { SysMessageVo } from '#/api/system/messageManage/types';
 
 import { computed } from 'vue';
 
@@ -7,7 +7,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Typography } from 'ant-design-vue';
 
-const messageData = defineModel<SystemMessageManageType.SysMessageVo>();
+const messageData = defineModel<SysMessageVo>();
 
 const getTitle = computed(() => {
   return `预览消息 - ${messageData.value?.title || ''}`;
@@ -15,8 +15,7 @@ const getTitle = computed(() => {
 const [Modal, modalApi] = useVbenModal({
   onOpenChange(isOpen) {
     if (isOpen) {
-      messageData.value =
-        modalApi.getData<SystemMessageManageType.SysMessageVo>();
+      messageData.value = modalApi.getData<SysMessageVo>();
     }
   },
 });

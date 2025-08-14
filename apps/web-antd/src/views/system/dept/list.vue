@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDept } from '#/api/system/dept/types';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
@@ -12,7 +12,7 @@ import { IconifyIcon, Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteDept, getDeptList } from '#/api/system/dept';
+import { deleteDept, getDeptList } from '#/api/system/dept/dept';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -62,10 +62,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemDeptApi.SystemDept>) {
+function onActionClick({ code, row }: OnActionClickParams<SystemDept>) {
   switch (code) {
     case 'append': {
       onAppend(row);
@@ -85,14 +82,14 @@ function onActionClick({
 /**
  * 编辑部门
  */
-function onEdit(row: SystemDeptApi.SystemDept) {
+function onEdit(row: SystemDept) {
   formModalApi.setData(row).open();
 }
 
 /**
  * 添加下级部门
  */
-function onAppend(row: SystemDeptApi.SystemDept) {
+function onAppend(row: SystemDept) {
   formModalApi.setData({ parentId: row.deptId }).open();
 }
 
@@ -106,7 +103,7 @@ function onCreate() {
 /**
  * 删除部门
  */
-function onDelete(row: SystemDeptApi.SystemDept) {
+function onDelete(row: SystemDept) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.deptName} ...`,
     duration: 0,

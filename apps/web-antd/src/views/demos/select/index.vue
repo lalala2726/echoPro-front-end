@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/system/dept/dept';
 import type { SystemPostType } from '#/api/system/post';
 import type { SystemRoleApi } from '#/api/system/role';
 import type { SysUserType } from '#/api/system/user';
@@ -414,22 +414,6 @@ function clearAllSelections() {
 
 // 获取选择结果
 function getSelectionResults() {
-  const results = {
-    single: {
-      userIds: singleSelectedUsers.value,
-      users: singleSelectedUserData.value,
-    },
-    multiple: {
-      userIds: multipleSelectedUsers.value,
-      users: multipleSelectedUserData.value,
-    },
-    limited: {
-      userIds: limitedSelectedUsers.value,
-      users: limitedSelectedUserData.value,
-    },
-  };
-
-  console.log('所有选择结果:', results);
   message.info('选择结果已输出到控制台');
 }
 </script>

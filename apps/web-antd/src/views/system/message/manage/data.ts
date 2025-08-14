@@ -1,19 +1,21 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
+import type { SysMessageListVo } from '#/api/system/messageManage/types';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { SystemMessageManageType } from '#/api/system/messageManage';
+import {
+  MessageLevel,
+  MessageSendMethod,
+  MessageType,
+} from '#/api/system/messageManage/types';
 
 /**
  * 表格列配置
  */
 export function useColumns(
-  onActionClick: (params: {
-    code: string;
-    row: SystemMessageManageType.SysMessageListVo;
-  }) => void,
+  onActionClick: (params: { code: string; row: SysMessageListVo }) => void,
 ): VxeGridPropTypes.Columns {
   const { hasAccessByCodes } = useAccess();
   return [
@@ -33,17 +35,17 @@ export function useColumns(
         options: [
           {
             label: '系统消息',
-            value: SystemMessageManageType.MessageType.SYSTEM,
+            value: MessageType.SYSTEM,
             color: 'blue',
           },
           {
             label: '通知消息',
-            value: SystemMessageManageType.MessageType.NOTICE,
+            value: MessageType.NOTICE,
             color: 'success',
           },
           {
             label: '公告消息',
-            value: SystemMessageManageType.MessageType.ANNOUNCEMENT,
+            value: MessageType.ANNOUNCEMENT,
             color: 'warning',
           },
         ],
@@ -58,17 +60,17 @@ export function useColumns(
         options: [
           {
             label: '普通',
-            value: SystemMessageManageType.MessageLevel.NORMAL,
+            value: MessageLevel.NORMAL,
             color: 'default',
           },
           {
             label: '重要',
-            value: SystemMessageManageType.MessageLevel.IMPORTANT,
+            value: MessageLevel.IMPORTANT,
             color: 'warning',
           },
           {
             label: '紧急',
-            value: SystemMessageManageType.MessageLevel.URGENT,
+            value: MessageLevel.URGENT,
             color: 'error',
           },
         ],
@@ -88,17 +90,17 @@ export function useColumns(
         options: [
           {
             label: '指定用户',
-            value: SystemMessageManageType.MessageSendMethod.USER,
+            value: MessageSendMethod.USER,
             color: 'blue',
           },
           {
             label: '全部用户',
-            value: SystemMessageManageType.MessageSendMethod.ALL,
+            value: MessageSendMethod.ALL,
             color: 'success',
           },
           {
             label: '角色用户',
-            value: SystemMessageManageType.MessageSendMethod.ROLE,
+            value: MessageSendMethod.ROLE,
             color: 'warning',
           },
         ],
@@ -166,15 +168,15 @@ export function useGridFormSchema(): VbenFormSchema[] {
         options: [
           {
             label: '系统消息',
-            value: SystemMessageManageType.MessageType.SYSTEM,
+            value: MessageType.SYSTEM,
           },
           {
             label: '通知消息',
-            value: SystemMessageManageType.MessageType.NOTICE,
+            value: MessageType.NOTICE,
           },
           {
             label: '公告消息',
-            value: SystemMessageManageType.MessageType.ANNOUNCEMENT,
+            value: MessageType.ANNOUNCEMENT,
           },
         ],
         placeholder: '请选择消息类型',
@@ -187,12 +189,12 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         options: [
-          { label: '普通', value: SystemMessageManageType.MessageLevel.NORMAL },
+          { label: '普通', value: MessageLevel.NORMAL },
           {
             label: '重要',
-            value: SystemMessageManageType.MessageLevel.IMPORTANT,
+            value: MessageLevel.IMPORTANT,
           },
-          { label: '紧急', value: SystemMessageManageType.MessageLevel.URGENT },
+          { label: '紧急', value: MessageLevel.URGENT },
         ],
         placeholder: '请选择消息级别',
       },
@@ -211,15 +213,15 @@ export function useGridFormSchema(): VbenFormSchema[] {
         options: [
           {
             label: '指定用户',
-            value: SystemMessageManageType.MessageSendMethod.USER,
+            value: MessageSendMethod.USER,
           },
           {
             label: '全部用户',
-            value: SystemMessageManageType.MessageSendMethod.ALL,
+            value: MessageSendMethod.ALL,
           },
           {
             label: '角色用户',
-            value: SystemMessageManageType.MessageSendMethod.ROLE,
+            value: MessageSendMethod.ROLE,
           },
         ],
         placeholder: '请选择目标类型',
@@ -250,15 +252,15 @@ export function useFormSchema(): VbenFormSchema[] {
         options: [
           {
             label: '系统消息',
-            value: SystemMessageManageType.MessageType.SYSTEM,
+            value: MessageType.SYSTEM,
           },
           {
             label: '通知消息',
-            value: SystemMessageManageType.MessageType.NOTICE,
+            value: MessageType.NOTICE,
           },
           {
             label: '公告消息',
-            value: SystemMessageManageType.MessageType.ANNOUNCEMENT,
+            value: MessageType.ANNOUNCEMENT,
           },
         ],
       },
@@ -271,12 +273,12 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'RadioGroup',
       componentProps: {
         options: [
-          { label: '普通', value: SystemMessageManageType.MessageLevel.NORMAL },
+          { label: '普通', value: MessageLevel.NORMAL },
           {
             label: '重要',
-            value: SystemMessageManageType.MessageLevel.IMPORTANT,
+            value: MessageLevel.IMPORTANT,
           },
-          { label: '紧急', value: SystemMessageManageType.MessageLevel.URGENT },
+          { label: '紧急', value: MessageLevel.URGENT },
         ],
       },
       defaultValue: '1',

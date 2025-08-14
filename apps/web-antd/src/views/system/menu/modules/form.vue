@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '#/adapter/form';
-import type { SysMenu } from '#/api/system/menu';
+import type { SysMenu } from '#/api/system/menu/types';
 
 import { computed, h, ref } from 'vue';
 
@@ -15,9 +15,9 @@ import {
   getMenuTree,
   isMenuNameExists,
   isMenuPathExists,
-  SystemMenuApi,
   updateMenu,
-} from '#/api/system/menu';
+} from '#/api/system/menu/menu';
+import { BadgeVariants } from '#/api/system/menu/types';
 import { componentKeys } from '#/router/routes';
 
 import { getMenuTypeOptions } from '../data';
@@ -272,7 +272,7 @@ const schema: VbenFormSchema[] = [
     componentProps: {
       allowClear: true,
       class: 'w-full',
-      options: SystemMenuApi.BadgeVariants.map((v) => ({
+      options: BadgeVariants.map((v) => ({
         label: v,
         value: v,
       })),
