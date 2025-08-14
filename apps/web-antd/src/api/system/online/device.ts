@@ -6,7 +6,7 @@ import { requestClient } from '#/api/request';
 export namespace MonitorDeviceApi {
   export interface deviceList {
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     username?: string;
     /** 刷新令牌会话ID */

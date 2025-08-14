@@ -6,7 +6,7 @@ import { requestClient } from '#/api/request';
 export namespace SystemSessionTypes {
   export interface SessionListVo {
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 会话ID */
     accessTokenId: string;
     /** 用户名 */
@@ -27,7 +27,7 @@ export namespace SystemSessionTypes {
     /** 会话ID */
     accessTokenId: string;
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 登录IP */
     ip?: string;
     /** 登录地点 */
