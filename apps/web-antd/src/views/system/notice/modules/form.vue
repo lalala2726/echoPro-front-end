@@ -8,7 +8,7 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addNotice, noticeById, updateNotice } from '#/api/system/notice/notice';
+import { addNotice, noticeById, updateNotice } from '#/api/system/notice';
 import AiEditor from '#/components/Editor/AiEditor.vue';
 
 import { useFormSchema } from '../data';

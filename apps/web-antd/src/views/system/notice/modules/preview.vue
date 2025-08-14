@@ -51,8 +51,10 @@ const [Modal, modalApi] = useVbenModal({
       <!-- 公告内容 -->
       <div class="mb-6">
         <div class="mb-2 text-sm font-medium text-gray-700">公告内容</div>
-        <div class="min-h-[300px] rounded-md border border-gray-200 bg-white p-4" v-html="noticeData?.noticeContent">
-        </div>
+        <div
+          class="min-h-[300px] rounded-md border border-gray-200 bg-white p-4"
+          v-html="noticeData?.noticeContent"
+        ></div>
       </div>
     </div>
   </Modal>

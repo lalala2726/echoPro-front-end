@@ -19,7 +19,7 @@ import {
   exportNoticeList,
   noticeById,
   noticeList,
-} from '#/api/system/notice/notice';
+} from '#/api/system/notice';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
