@@ -109,18 +109,6 @@ export function useColumns<T = DashBoardMessageType.UserMessageListVo>(
       cellRender: {
         name: 'CellTag',
         options: [
-          { color: 'green', label: '已读', value: 1 },
-          { color: 'blue', label: '未读', value: 0 },
-        ],
-      },
-      field: 'isRead',
-      title: '已读状态',
-      width: 100,
-    },
-    {
-      cellRender: {
-        name: 'CellTag',
-        options: [
           { color: 'blue', label: '系统消息', value: 'system' },
           { color: 'green', label: '通知消息', value: 'notice' },
           { color: 'orange', label: '公告消息', value: 'announcement' },
@@ -156,6 +144,18 @@ export function useColumns<T = DashBoardMessageType.UserMessageListVo>(
           ? `${plainText.slice(0, 50)}...`
           : plainText;
       },
+    },
+    {
+      cellRender: {
+        name: 'CellTag',
+        options: [
+          { color: 'green', label: '已读', value: 1 },
+          { color: 'blue', label: '未读', value: 0 },
+        ],
+      },
+      field: 'isRead',
+      title: '已读状态',
+      width: 100,
     },
     {
       field: 'createTime',
