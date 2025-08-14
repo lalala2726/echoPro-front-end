@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { SystemDeptApi } from '#/api/system/dept';
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostType } from '#/api/system/post';
 import type { SystemRoleApi } from '#/api/system/role';
 import type { SysUserType } from '#/api/system/user';
 
@@ -71,20 +71,20 @@ const bulkSelectedDeptData = ref<SystemDeptApi.SystemDept[]>([]);
 
 // 岗位选择示例
 // 单选岗位示例
-const singleSelectedPosts = ref<number[]>([]);
-const singleSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+const singleSelectedPosts = ref<string[]>([]);
+const singleSelectedPostData = ref<SystemPostType.PostListVo[]>([]);
 
 // 多选岗位示例
-const multipleSelectedPosts = ref<number[]>([]);
-const multipleSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+const multipleSelectedPosts = ref<string[]>([]);
+const multipleSelectedPostData = ref<SystemPostType.PostListVo[]>([]);
 
 // 限制数量的多选岗位示例
-const limitedSelectedPosts = ref<number[]>([]);
-const limitedSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+const limitedSelectedPosts = ref<string[]>([]);
+const limitedSelectedPostData = ref<SystemPostType.PostListVo[]>([]);
 
 // 大量岗位选择示例
-const bulkSelectedPosts = ref<number[]>([]);
-const bulkSelectedPostData = ref<SystemPostApi.SysPost[]>([]);
+const bulkSelectedPosts = ref<string[]>([]);
+const bulkSelectedPostData = ref<SystemPostType.PostListVo[]>([]);
 
 // 模态框角色示例
 const modalSelectedRoles = ref<string[]>([]);
@@ -359,8 +359,8 @@ function handleBulkDeptConfirm(data: {
 // 岗位选择确认处理函数
 // 单选岗位确认处理
 function handleSinglePostConfirm(data: {
-  postIds: number[];
-  posts: SystemPostApi.SysPost[];
+  postIds: string[];
+  posts: SystemPostType.PostListVo[];
 }) {
   singleSelectedPostData.value = data.posts;
   message.success(`已确认选择岗位: ${data.posts[0]?.postName || '未知岗位'}`);
@@ -369,8 +369,8 @@ function handleSinglePostConfirm(data: {
 
 // 多选岗位确认处理
 function handleMultiplePostConfirm(data: {
-  postIds: number[];
-  posts: SystemPostApi.SysPost[];
+  postIds: string[];
+  posts: SystemPostType.PostListVo[];
 }) {
   multipleSelectedPostData.value = data.posts;
   message.success(`已确认选择 ${data.posts.length} 个岗位`);
@@ -379,8 +379,8 @@ function handleMultiplePostConfirm(data: {
 
 // 限制数量多选岗位确认处理
 function handleLimitedPostConfirm(data: {
-  postIds: number[];
-  posts: SystemPostApi.SysPost[];
+  postIds: string[];
+  posts: SystemPostType.PostListVo[];
 }) {
   limitedSelectedPostData.value = data.posts;
   message.success(`已确认选择 ${data.posts.length} 个岗位（限制最多3个）`);
@@ -389,8 +389,8 @@ function handleLimitedPostConfirm(data: {
 
 // 大量岗位选择确认处理
 function handleBulkPostConfirm(data: {
-  postIds: number[];
-  posts: SystemPostApi.SysPost[];
+  postIds: string[];
+  posts: SystemPostType.PostListVo[];
 }) {
   bulkSelectedPostData.value = data.posts;
   message.success(`已确认选择 ${data.posts.length} 个岗位（支持大量选择）`);

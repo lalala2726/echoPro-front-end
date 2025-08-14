@@ -31,7 +31,7 @@ export namespace SysUserType {
     /** 状态 */
     status: number;
     /** 岗位ID */
-    postId?: number;
+    postId?: string;
     /** 部门名称（可能从API返回） */
     deptName?: string;
     /** 部门对象 */
@@ -121,7 +121,7 @@ export namespace SysUserType {
     /** 部门ID */
     deptId?: number;
     /** 岗位ID */
-    postId?: number;
+    postId?: string;
     /** 角色ID */
     roleIds: number[];
     /** 手机号 */
@@ -148,7 +148,7 @@ export namespace SysUserType {
     /** 所属部门ID */
     deptId?: number;
     /** 岗位ID */
-    postId?: number;
+    postId?: string;
     /** 手机号码 */
     phone?: string;
     /** 登录密码 */

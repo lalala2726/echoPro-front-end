@@ -1,8 +1,9 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
+import type { SystemPostType } from '#/api/system/post';
 
 // 岗位表格列配置
-export const postColumns: VxeGridPropTypes.Columns = [
+export const postColumns: VxeGridPropTypes.Columns<SystemPostType.PostListVo> = [
   {
     align: 'left',
     title: '岗位名称',

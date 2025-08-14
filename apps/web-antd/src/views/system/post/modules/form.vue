@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostType } from '#/api/system/post';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -13,7 +13,7 @@ import { addPost, getPostById, updatePost } from '#/api/system/post';
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemPostApi.SysPost>>();
+const formData = ref<Partial<SystemPostType.PostVo>>();
 const getTitle = computed(() => {
   return formData.value?.id ? '修改岗位' : '新增岗位';
 });
@@ -32,7 +32,7 @@ function resetForm() {
 /**
  * 加载岗位详情数据
  */
-async function loadPostData(postId: number) {
+async function loadPostData(postId: string) {
   try {
     const postDetail = await getPostById(postId);
     formData.value = postDetail;
@@ -52,9 +52,9 @@ const [Modal, modalApi] = useVbenModal({
         await (formData.value?.id
           ? updatePost({
               ...data,
-              id: formData.value.id,
-            } as SystemPostApi.SysPost)
-          : addPost(data as SystemPostApi.SysPost));
+              id: formData.value.id!,
+            } as SystemPostType.PostUpdateRequest)
+          : addPost(data as SystemPostType.SysPostAddRequest));
         await modalApi.close();
         emit('success');
       } finally {
@@ -70,7 +70,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemPostApi.SysPost>();
+          const data = modalApi.getData<SystemPostType.PostVo>();
 
           if (data && data.id) {
             // 编辑模式：加载完整的岗位详情

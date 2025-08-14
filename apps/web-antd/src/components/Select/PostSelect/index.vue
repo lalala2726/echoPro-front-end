@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostType } from '#/api/system/post';
 
 import { computed, onMounted, ref } from 'vue';
 
@@ -16,17 +16,17 @@ interface Props {
   /** 最大选择数量 */
   maxCount?: number;
   /** 已选择的岗位ID数组 */
-  modelValue?: number[];
+  modelValue?: string[];
   /** 占位符文本 */
   placeholder?: string;
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: number[]): void;
-  (e: 'change', posts: SystemPostApi.SysPost[]): void;
+  (e: 'update:modelValue', value: string[]): void;
+  (e: 'change', posts: SystemPostType.PostListVo[]): void;
   (
     e: 'confirm',
-    data: { postIds: number[]; posts: SystemPostApi.SysPost[] },
+    data: { postIds: string[]; posts: SystemPostType.PostListVo[] },
   ): void;
   (e: 'cancel'): void;
 }
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 
 // 选中的岗位数据（跨页累积）
-const selectedPosts = ref<SystemPostApi.SysPost[]>([]);
+const selectedPosts = ref<SystemPostType.PostListVo[]>([]);
 
 // VxeGrid配置
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -96,7 +96,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
         const currentPageData = gridApi.grid.getTableData()
-          .fullData as SystemPostApi.SysPost[];
+          .fullData as SystemPostType.PostListVo[];
         if (checked) {
           const pageIds = new Set(currentPageData.map((r) => r.id!));
           const other = selectedPosts.value.filter((r) => !pageIds.has(r.id!));
@@ -128,7 +128,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
         }
         const ids = selectedPosts.value
           .map((r) => r.id!)
-          .filter((id): id is number => id !== undefined);
+          .filter((id): id is string => id !== undefined);
         emit('update:modelValue', ids);
       } catch (error) {
         console.error('处理岗位全选变化失败:', error);
@@ -140,9 +140,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
 function syncSelectionAfterToggle() {
   try {
     const currentPageRecords =
-      gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
+      gridApi.grid.getCheckboxRecords() as SystemPostType.PostListVo[];
     const currentPageData = gridApi.grid.getTableData()
-      .fullData as SystemPostApi.SysPost[];
+      .fullData as SystemPostType.PostListVo[];
 
     const currentIds = new Set(currentPageData.map((r) => r.id!));
     const otherPagesSelected = selectedPosts.value.filter(
@@ -167,7 +167,7 @@ function syncSelectionAfterToggle() {
     selectedPosts.value = next;
     const ids = next
       .map((r) => r.id!)
-      .filter((id): id is number => id !== undefined);
+      .filter((id): id is string => id !== undefined);
     emit('update:modelValue', ids);
   } catch (error) {
     console.error('处理岗位勾选变化失败:', error);
@@ -177,7 +177,7 @@ function syncSelectionAfterToggle() {
 // 确认选择
 async function handleConfirm() {
   const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
+    gridApi.grid.getCheckboxRecords() as SystemPostType.PostListVo[];
 
   if (!props.multiple && selectedRows.length > 1) {
     message.warning('只能选择一个岗位');
@@ -196,7 +196,7 @@ async function handleConfirm() {
 
   const postIds = selectedRows
     .map((row) => row.id!)
-    .filter((id): id is number => id !== undefined);
+    .filter((id): id is string => id !== undefined);
   selectedPosts.value = selectedRows;
 
   emit('update:modelValue', postIds);
@@ -224,7 +224,7 @@ function clearSelection() {
 }
 
 // 移除单个岗位
-function removePost(post: SystemPostApi.SysPost) {
+function removePost(post: SystemPostType.PostListVo) {
   if (post.id !== undefined) {
     selectedPosts.value = selectedPosts.value.filter((r) => r.id !== post.id);
     try {
@@ -232,7 +232,7 @@ function removePost(post: SystemPostApi.SysPost) {
     } catch {}
     const postIds = selectedPosts.value
       .map((u) => u.id!)
-      .filter((id): id is number => id !== undefined);
+      .filter((id): id is string => id !== undefined);
     emit('update:modelValue', postIds);
   }
 }
@@ -249,10 +249,10 @@ const selectedCount = computed(() => selectedPosts.value.length);
 const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
 
 // 选择操作按钮：与勾选行为一致
-function selectRow(row: SystemPostApi.SysPost) {
+function selectRow(row: SystemPostType.PostListVo) {
   try {
     const isChecked = (
-      gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[]
+      gridApi.grid.getCheckboxRecords() as SystemPostType.PostListVo[]
     ).some((r) => r.id === row.id);
     gridApi.grid.setCheckboxRow(row, !isChecked);
     // 手动同步右侧已选与 v-model
@@ -344,12 +344,6 @@ function selectRow(row: SystemPostApi.SysPost) {
                 </div>
                 <div class="mt-1 truncate text-xs text-gray-500">
                   {{ post.postCode }}
-                </div>
-                <div
-                  v-if="post.remark"
-                  class="mt-1 truncate text-xs text-gray-400"
-                >
-                  {{ post.remark }}
                 </div>
               </div>
 

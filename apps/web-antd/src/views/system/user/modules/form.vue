@@ -27,7 +27,7 @@ const formData = ref<Partial<SysUserType.SysUser>>();
 const userAvatar = ref<string>('');
 const deptOptions = ref<DeptOption[]>([]);
 const roleOptions = ref<Option[]>([]);
-const postOptions = ref<Option<number>[]>([]);
+const postOptions = ref<Option<string>[]>([]);
 
 const getTitle = computed(() => {
   return formData.value?.userId ? '修改用户' : '新增用户';
@@ -129,13 +129,12 @@ async function loadUserData(userId: number) {
       (userDetail as any).deptId ?? userDetail.sysDept?.deptId;
     const postIdValue = (userDetail as any).postId;
     
-    // 确保岗位ID转换为字符串，因为Select组件的value需要与options中的value类型一致
-    // 后端返回的岗位选项格式是 [{"value": "6","label": "产品经理"}]，value是字符串
+    // 岗位ID已经是string类型，无需转换
     await formApi.setValues({
       ...userDetail,
       deptId: deptIdValue === null ? undefined : String(deptIdValue),
       roleIds,
-      postId: postIdValue === null || postIdValue === undefined ? undefined : String(postIdValue),
+      postId: postIdValue === null || postIdValue === undefined ? undefined : postIdValue,
     });
   } catch (error) {
     console.error('获取用户详情失败:', error);
@@ -149,7 +148,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       drawerApi.lock();
       const data = await formApi.getValues();
       try {
-        // 出参类型转换：后端要求使用数字ID
+        // 出参类型转换：后端要求使用数字ID（除了岗位ID是string类型）
         const payload: any = {
           ...data,
           avatar: userAvatar.value || data.avatar,
@@ -160,9 +159,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
           roleIds: Array.isArray(data.roleIds)
             ? (data.roleIds as Array<number | string>).map(Number)
             : [],
+          // 岗位ID保持string类型，无需转换
           postId:
             data.postId !== undefined && data.postId !== null && data.postId !== ''
-              ? Number(data.postId)
+              ? data.postId
               : undefined,
         };
 

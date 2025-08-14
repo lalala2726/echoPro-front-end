@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostType } from '#/api/system/post';
 
 import { ref } from 'vue';
 
@@ -73,13 +73,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemPostApi.SysPost>,
+  } as VxeTableGridOptions<SystemPostType.PostListVo>,
 });
 
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemPostApi.SysPost>) {
+}: OnActionClickParams<SystemPostType.PostListVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -98,7 +98,10 @@ function onActionClick({
 /**
  * 状态切换
  */
-async function onStatusChange(checked: boolean, row: SystemPostApi.SysPost) {
+async function onStatusChange(
+  checked: boolean,
+  row: SystemPostType.PostListVo,
+) {
   const status = checked ? 0 : 1;
   const statusText = status === 0 ? '启用' : '停用';
 
@@ -109,7 +112,13 @@ async function onStatusChange(checked: boolean, row: SystemPostApi.SysPost) {
   });
 
   try {
-    await updatePost({ ...row, status });
+    await updatePost({
+      id: row.id!,
+      postCode: row.postCode,
+      postName: row.postName,
+      sort: row.sort,
+      status,
+    } as SystemPostType.PostUpdateRequest);
     message.success({
       content: `${row.postName} ${statusText}成功`,
       key: 'status_change_msg',
@@ -124,15 +133,15 @@ async function onStatusChange(checked: boolean, row: SystemPostApi.SysPost) {
 /**
  * 编辑岗位
  */
-function onEdit(row: SystemPostApi.SysPost) {
-  formModalApi.setData(row);
+function onEdit(row: SystemPostType.PostListVo) {
+  formModalApi.setData(row as unknown as SystemPostType.PostVo);
   formModalApi.open();
 }
 
 /**
  * 删除岗位
  */
-function onDelete(row: SystemPostApi.SysPost) {
+function onDelete(row: SystemPostType.PostListVo) {
   Modal.confirm({
     title: '确认删除',
     content: `确定要删除岗位 "${row.postName}" 吗？`,
@@ -176,7 +185,7 @@ function onCreate() {
  */
 function onBatchDelete() {
   const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemPostApi.SysPost[];
+    gridApi.grid.getCheckboxRecords() as SystemPostType.PostListVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的岗位');
     return;
@@ -190,10 +199,12 @@ function onBatchDelete() {
     okType: 'danger',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemPostApi.SysPost) => {
+        .map((row: SystemPostType.PostListVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter(
+          (id: any) => id !== undefined && id !== null && id !== '',
+        ) as string[];
 
       if (ids.length === 0) {
         message.error('选中的岗位中没有有效的ID');
