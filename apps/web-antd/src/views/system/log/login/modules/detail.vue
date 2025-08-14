@@ -45,7 +45,7 @@ const [Modal, modalApi] = useVbenModal({
           const data = modalApi.getData<SysLoginLogListVo>();
           if (data && data.id) {
             const logId = data.id;
-            if (!logId) {
+            if (logId) {
               await loadLoginLogData(logId);
             }
           }
@@ -83,50 +83,42 @@ function getStatusTag(status?: number) {
       <Card title="基本信息" size="small" class="mb-4">
         <Row :gutter="[16, 16]">
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >日志ID:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.id || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">日志ID:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.id || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >用户名:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.username || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">用户名:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.username || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录状态:
-              </span>
-              <span class="flex-1">
-                <Tag :color="getStatusTag(detailData.status).color">
-                  {{ getStatusTag(detailData.status).text }}
-                </Tag>
-              </span>
-            </div>
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">登录状态:
+            </span>
+            <span class="flex-1">
+              <Tag :color="getStatusTag(detailData.status).color">
+                {{ getStatusTag(detailData.status).text }}
+              </Tag>
+            </span>
+          </div>
           </Col>
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录时间:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.loginTime || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">登录时间:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.loginTime || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
         </Row>
       </Card>
@@ -134,26 +126,22 @@ function getStatusTag(status?: number) {
       <Card title="网络信息" size="small" class="mb-4">
         <Row :gutter="[16, 16]">
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >IP地址:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.ip || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">IP地址:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.ip || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >登录地区:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.region || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">登录地区:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.region || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
         </Row>
       </Card>
@@ -161,26 +149,22 @@ function getStatusTag(status?: number) {
       <Card title="设备信息" size="small" class="mb-4">
         <Row :gutter="[16, 16]">
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >浏览器:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.browser || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">浏览器:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.browser || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
           <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >操作系统:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.os || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">操作系统:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.os || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
         </Row>
       </Card>
@@ -188,15 +172,13 @@ function getStatusTag(status?: number) {
       <Card title="其他信息" size="small">
         <Row :gutter="[16, 16]">
           <Col :span="24">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >创建者:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.createBy || '--'
+          <div class="flex items-center">
+            <span class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300">创建者:
+            </span>
+            <span class="flex-1 font-medium">{{
+              detailData.createBy || '--'
               }}</span>
-            </div>
+          </div>
           </Col>
         </Row>
       </Card>
