@@ -36,9 +36,7 @@ async function getStorageFileById(id: string) {
  * @author Chuang
  */
 async function deleteStorageFile(ids: Array<string>) {
-  return await requestClient.delete('/system/storage/file', {
-    data: ids,
-  });
+  return await requestClient.delete(`/system/storage/file/${ids.join(',')}`);
 }
 
 /**
