@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { StorageConfigApi } from '#/api/system/storage/config';
+import type { StorageConfigUnifiedVo } from '#/api/system/storage/types';
 
 import { ref } from 'vue';
 
@@ -47,7 +47,7 @@ function handleStorageTypeSelected(storageType: string) {
 }
 
 // 直接打开编辑表单（根据数据中的存储类型）
-function openEditForm(data: StorageConfigApi.StorageConfigUnifiedVo) {
+function openEditForm(data: StorageConfigUnifiedVo) {
   const storageType = data.storageType;
   switch (storageType) {
     case 'aliyun_oss': {

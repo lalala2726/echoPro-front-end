@@ -1,17 +1,21 @@
 <script lang="ts" setup>
 import type { Option } from '@vben/types';
 
-import type { SysUserType } from '#/api/system/user';
+import type {
+  SysUser,
+  SysUserAddRequest,
+  SysUserUpdateRequest,
+} from '#/api/system/user/types';
 
 import { computed, nextTick, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
-import { getDeptOptions } from '#/api/system/dept';
-import { getOptions as getPostOptions } from '#/api/system/post';
-import { getRoleOption } from '#/api/system/role';
-import { addUser, getUserById, updateUser } from '#/api/system/user';
+import { getDeptOptions } from '#/api/system/dept/dept';
+import { getOptions as getPostOptions } from '#/api/system/post/post';
+import { getRoleOption } from '#/api/system/role/role';
+import { addUser, getUserById, updateUser } from '#/api/system/user/user';
 import { UploadAvatar } from '#/components/Upload';
 
 import { useFormSchema } from '../data';
@@ -23,11 +27,11 @@ interface DeptOption {
 }
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SysUserType.SysUser>>();
+const formData = ref<Partial<SysUser>>();
 const userAvatar = ref<string>('');
 const deptOptions = ref<DeptOption[]>([]);
 const roleOptions = ref<Option[]>([]);
-const postOptions = ref<Option<number>[]>([]);
+const postOptions = ref<Option<string>[]>([]);
 
 const getTitle = computed(() => {
   return formData.value?.userId ? '修改用户' : '新增用户';
@@ -51,7 +55,7 @@ async function loadDeptOptions() {
     deptOptions.value = result || [];
 
     // 更新表单中部门选择器的选项
-    await formApi.updateSchema([
+    formApi.updateSchema([
       {
         fieldName: 'deptId',
         componentProps: {
@@ -110,9 +114,9 @@ async function loadPostOptions() {
 /**
  * 加载用户详情数据
  */
-async function loadUserData(userId: number) {
+async function loadUserData(userId: number | string) {
   try {
-    const userDetail = await getUserById(userId);
+    const userDetail = await getUserById(String(userId));
     formData.value = userDetail;
     userAvatar.value = userDetail.avatar || '';
 
@@ -128,11 +132,16 @@ async function loadUserData(userId: number) {
     const deptIdValue =
       (userDetail as any).deptId ?? userDetail.sysDept?.deptId;
     const postIdValue = (userDetail as any).postId;
+
+    // 岗位ID已经是string类型，无需转换
     await formApi.setValues({
       ...userDetail,
       deptId: deptIdValue === null ? undefined : String(deptIdValue),
       roleIds,
-      postId: postIdValue === null ? undefined : Number(postIdValue),
+      postId:
+        postIdValue === null || postIdValue === undefined
+          ? undefined
+          : postIdValue,
     });
   } catch (error) {
     console.error('获取用户详情失败:', error);
@@ -146,7 +155,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
       drawerApi.lock();
       const data = await formApi.getValues();
       try {
-        // 出参类型转换：后端要求使用数字ID
         const payload: any = {
           ...data,
           avatar: userAvatar.value || data.avatar,
@@ -158,17 +166,19 @@ const [Drawer, drawerApi] = useVbenDrawer({
             ? (data.roleIds as Array<number | string>).map(Number)
             : [],
           postId:
-            data.postId !== undefined && data.postId !== null
-              ? Number(data.postId)
+            data.postId !== undefined &&
+            data.postId !== null &&
+            data.postId !== ''
+              ? data.postId
               : undefined,
         };
 
         await (formData.value?.userId
           ? updateUser({
               ...payload,
-              userId: formData.value.userId,
-            } as unknown as SysUserType.SysUserUpdateRequest)
-          : addUser(payload as unknown as SysUserType.SysUserAddRequest));
+              userId: Number(formData.value.userId),
+            } as unknown as SysUserUpdateRequest)
+          : addUser(payload as unknown as SysUserAddRequest));
         await drawerApi.close();
         emit('success');
       } finally {
@@ -178,26 +188,20 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      // 设置Drawer的loading状态
       drawerApi.setState({ loading: true });
-
-      // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          // 并行加载基础数据
           await Promise.all([
             loadDeptOptions(),
             loadRoleOptions(),
             loadPostOptions(),
           ]);
 
-          const data = drawerApi.getData<SysUserType.SysUser>();
+          const data = drawerApi.getData<SysUser>();
           if (data && data.userId) {
-            // 编辑模式：加载完整的用户详情
             formData.value = data;
             await loadUserData(data.userId);
           } else {
-            // 新增模式：重置表单
             formData.value = {};
             userAvatar.value = '';
             await formApi.resetForm();
@@ -205,12 +209,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
         } catch (error) {
           console.error('加载数据失败:', error);
         } finally {
-          // 关闭Drawer的loading状态
           drawerApi.setState({ loading: false });
         }
       });
     } else {
-      // 弹窗关闭时立即重置状态
       formData.value = {};
       userAvatar.value = '';
       drawerApi.setState({ loading: false });

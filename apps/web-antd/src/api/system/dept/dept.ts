@@ -1,0 +1,59 @@
+import type { PageResult } from '@vben/types';
+
+import type { DeptOption, SystemDept } from './types';
+
+import { requestClient } from '#/api/request';
+
+/**
+ * 获取部门列表数据
+ */
+async function getDeptList(params?: any) {
+  return requestClient.get<PageResult<SystemDept>>('/system/dept/list', {
+    params,
+  });
+}
+
+/**
+ * 获取部门选项数据
+ */
+async function getDeptOptions() {
+  return requestClient.get<Array<DeptOption>>('/system/dept/options');
+}
+
+async function getDeptTreeOptions() {
+  return requestClient.get<Array<DeptOption>>('/system/dept/tree');
+}
+
+/**
+ * 创建部门
+ * @param data 部门数据
+ */
+async function addDept(data: Omit<SystemDept, 'children' | 'id'>) {
+  return requestClient.post('/system/dept', data);
+}
+
+/**
+ * 更新部门
+ *
+ * @param data 部门数据
+ */
+async function updateDept(data: Omit<SystemDept, 'children' | 'id'>) {
+  return requestClient.put(`/system/dept`, data);
+}
+
+/**
+ * 删除部门
+ * @param id 部门 ID
+ */
+async function deleteDept(id: string) {
+  return requestClient.delete(`/system/dept/${id}`);
+}
+
+export {
+  addDept,
+  deleteDept,
+  getDeptList,
+  getDeptOptions,
+  getDeptTreeOptions,
+  updateDept,
+};

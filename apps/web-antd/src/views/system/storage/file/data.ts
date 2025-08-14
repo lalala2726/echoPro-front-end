@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemStorageFileAPi } from '#/api/system/storage/file';
+import type { StorageFileListVo } from '#/api/system/storage/types';
 
 import { useAccess } from '@vben/access';
 
@@ -87,9 +87,9 @@ export function useGridFormSchema(): VbenFormSchema[] {
  * 表格列配置
  */
 export function useColumns(
-  onActionClick?: OnActionClickFn<SystemStorageFileAPi.StorageFileListVo>,
+  onActionClick?: OnActionClickFn<StorageFileListVo>,
   isTrashMode = false,
-): VxeTableGridOptions<SystemStorageFileAPi.StorageFileListVo>['columns'] {
+): VxeTableGridOptions<StorageFileListVo>['columns'] {
   const { hasAccessByCodes } = useAccess();
   return [
     {

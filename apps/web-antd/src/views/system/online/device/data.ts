@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MonitorDeviceApi } from '#/api/system/online/device';
+import type { DeviceList } from '#/api/system/online/types';
 
 import { useAccess } from '@vben/access';
 
@@ -58,7 +58,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 /**
  * 表格列配置
  */
-export function useColumns<T = MonitorDeviceApi.deviceList>(
+export function useColumns<T = DeviceList>(
   _onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   const { hasAccessByCodes } = useAccess();

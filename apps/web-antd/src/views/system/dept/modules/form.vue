@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDept } from '#/api/system/dept/types';
 
 import { computed, ref } from 'vue';
 
@@ -8,12 +8,12 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addDept, updateDept } from '#/api/system/dept';
+import { addDept, updateDept } from '#/api/system/dept/dept';
 
 import { useSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDeptApi.SystemDept>();
+const formData = ref<SystemDept>();
 const getTitle = computed(() => {
   return formData.value?.deptId ? '修改部门' : '新增部门';
 });
@@ -46,7 +46,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDeptApi.SystemDept>();
+      const data = modalApi.getData<SystemDept>();
       if (data) {
         // 处理根节点的parentId
         const processedData = { ...data };

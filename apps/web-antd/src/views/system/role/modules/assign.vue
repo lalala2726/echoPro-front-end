@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TreeProps } from 'ant-design-vue';
 
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRole } from '#/api/system/role/types';
 
 import { reactive, ref } from 'vue';
 
@@ -13,7 +13,7 @@ import { Button, Empty, message, Space, Spin, Tag, Tree } from 'ant-design-vue';
 import {
   getPermissionByRoleId,
   updateRolePermission as updateRolePermissionApi,
-} from '#/api/system/role';
+} from '#/api/system/role/role';
 
 interface MenuTreeNode {
   id: string;
@@ -26,7 +26,7 @@ interface MenuTreeNode {
 
 const emit = defineEmits(['success']);
 const loading = ref<boolean>(false);
-const roleData = ref<SystemRoleApi.SystemRole>();
+const roleData = ref<SystemRole>();
 const treeData = ref<MenuTreeNode[]>([]);
 const checkedKeys = ref<string[]>([]);
 const expandedKeys = ref<string[]>([]);
@@ -43,7 +43,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   class: 'w-[30%]',
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<SystemRoleApi.SystemRole>();
+      const data = drawerApi.getData<SystemRole>();
       roleData.value = data;
       roleInfo.roleName = data.roleName || '';
       roleInfo.roleKey = data.roleKey || '';
@@ -227,17 +227,14 @@ function handleClose() {
             <span class="mr-2 text-sm text-gray-600 dark:text-gray-300">
               角色名称：
             </span>
-            <span
-              class="text-sm font-medium text-gray-900 dark:text-gray-100"
-              >{{ roleInfo.roleName }}
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ roleInfo.roleName }}
             </span>
           </div>
           <div class="flex items-center">
             <span class="mr-2 text-sm text-gray-600 dark:text-gray-300">
               权限标识：
             </span>
-            <span class="text-sm font-medium text-gray-900 dark:text-gray-100"
-              >{{ roleInfo.roleKey }}
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ roleInfo.roleKey }}
             </span>
           </div>
         </div>

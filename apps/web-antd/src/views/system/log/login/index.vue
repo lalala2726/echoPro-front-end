@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemLoginLogApi } from '#/api/system/log/login';
+import type { SysLoginLogListVo } from '#/api/system/log/types';
 
 import { ref } from 'vue';
 
@@ -71,13 +71,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemLoginLogApi.SysLoginLogListVo>,
+  } as VxeTableGridOptions<SysLoginLogListVo>,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemLoginLogApi.SysLoginLogListVo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysLoginLogListVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -96,7 +93,7 @@ function onActionClick({
 /**
  * 查看详情
  */
-function onDetail(row: SystemLoginLogApi.SysLoginLogListVo) {
+function onDetail(row: SysLoginLogListVo) {
   detailModalApi.setData(row);
   detailModalApi.open();
 }
@@ -104,7 +101,7 @@ function onDetail(row: SystemLoginLogApi.SysLoginLogListVo) {
 /**
  * 删除登录日志
  */
-function onDelete(row: SystemLoginLogApi.SysLoginLogListVo) {
+function onDelete(row: SysLoginLogListVo) {
   const hideLoading = message.loading({
     content: `正在删除登录日志...`,
     duration: 0,
@@ -131,8 +128,7 @@ function onRefresh() {
  * 批量删除登录日志
  */
 function onBatchDelete() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemLoginLogApi.SysLoginLogListVo[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as SysLoginLogListVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的登录日志');
     return;
@@ -145,11 +141,10 @@ function onBatchDelete() {
     cancelText: '取消',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemLoginLogApi.SysLoginLogListVo) => {
-          const id = row.id;
-          return id;
+        .map((row: SysLoginLogListVo) => {
+          return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       const hideLoading = message.loading({
         content: `正在删除 ${selectedRows.length} 条登录日志...`,

@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+import type {
+  MessageRequest,
+  SysMessageUpdateRequest,
+  SysMessageVo,
+  SysSendMessageRequest,
+} from '#/api/system/messageManage/types';
+
 import { computed, nextTick, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -9,15 +16,15 @@ import { useVbenForm } from '#/adapter/form';
 import {
   getMessageById,
   sendMessage,
-  SystemMessageManageType,
   updateMessage,
-} from '#/api/system/messageManage';
+} from '#/api/system/messageManage/messageManage';
+import { MessageSendMethod } from '#/api/system/messageManage/types';
 import AiEditor from '#/components/Editor/AiEditor.vue';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemMessageManageType.SysMessageVo>>();
+const formData = ref<Partial<SysMessageVo>>();
 const messageContent = ref<string>('');
 
 const getTitle = computed(() => {
@@ -39,7 +46,7 @@ function resetForm() {
 /**
  * 加载消息详情数据
  */
-async function loadMessageData(messageId: number) {
+async function loadMessageData(messageId: string) {
   try {
     const messageDetail = await getMessageById(messageId);
     formData.value = messageDetail;
@@ -71,14 +78,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
         await (formData.value?.id
           ? updateMessage({
-              ...(submitData as unknown as SystemMessageManageType.SysMessageUpdateRequest),
+              ...(submitData as unknown as SysMessageUpdateRequest),
               id: formData.value.id!,
             })
           : sendMessage({
-              receiveType: SystemMessageManageType.MessageSendMethod.ALL,
+              receiveType: MessageSendMethod.ALL,
               receiveId: [],
-              message: submitData as SystemMessageManageType.MessageRequest,
-            } as SystemMessageManageType.SysSendMessageRequest));
+              message: submitData as MessageRequest,
+            } as SysSendMessageRequest));
 
         await drawerApi.close();
         emit('success');
@@ -97,8 +104,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data =
-            drawerApi.getData<SystemMessageManageType.SysMessageVo>();
+          const data = drawerApi.getData<SysMessageVo>();
 
           if (data && data.id) {
             // 编辑模式：加载完整的消息详情

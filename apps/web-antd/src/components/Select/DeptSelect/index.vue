@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/system/dept/dept';
 
 import { computed, onMounted, ref } from 'vue';
 
 import { Button, Empty, message, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDeptList } from '#/api/system/dept';
+import { getDeptList } from '#/api/system/dept/dept';
 
 import { deptColumns, deptStatusMap, useDeptSelectFormSchema } from './data';
 
@@ -305,9 +305,9 @@ const selectedCount = computed(() => selectedDepts.value.length);
             <div class="flex items-center space-x-3">
               <div class="flex items-center space-x-3">
                 <div class="h-2.5 w-2.5 rounded-full bg-blue-500"></div>
-                <span class="text-lg font-semibold text-gray-900"
-                  >已选择部门</span
-                >
+                <span class="text-lg font-semibold text-gray-900">
+                  已选择部门
+                </span>
                 <span
                   class="rounded-full border border-gray-200 bg-white px-2 py-1 text-sm text-gray-500"
                 >

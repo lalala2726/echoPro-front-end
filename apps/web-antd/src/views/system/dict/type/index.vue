@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictType } from '#/api/system/dict/dictType';
+import type { DictTypeQueryRequest, DictTypeVo } from '#/api/system/dict/types';
 
 import { useRouter } from 'vue-router';
 
@@ -72,10 +72,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemDictType.DictTypeQueryRequest>,
+  } as VxeTableGridOptions<DictTypeQueryRequest>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemDictType.DictTypeVo>) {
+function onActionClick(e: OnActionClickParams<DictTypeVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -118,10 +118,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(
-  newStatus: number,
-  row: SystemDictType.DictTypeVo,
-) {
+async function onStatusChange(newStatus: number, row: DictTypeVo) {
   const status: Recordable<string> = {
     1: '禁用',
     0: '启用',
@@ -147,7 +144,7 @@ async function onStatusChange(
 /**
  * 编辑字典
  */
-async function onEdit(row: SystemDictType.DictTypeVo) {
+async function onEdit(row: DictTypeVo) {
   const res = await getDictTypeById(row.id!);
   formModalApi.setData(res).open();
 }
@@ -155,7 +152,7 @@ async function onEdit(row: SystemDictType.DictTypeVo) {
 /**
  * 查看字典值
  */
-function onViewDict(row: SystemDictType.DictTypeVo) {
+function onViewDict(row: DictTypeVo) {
   router.push({
     path: `/system/dict/data/${row.id}`,
   });
@@ -164,7 +161,7 @@ function onViewDict(row: SystemDictType.DictTypeVo) {
 /**
  * 删除字典
  */
-function onDelete(row: SystemDictType.DictTypeVo) {
+function onDelete(row: DictTypeVo) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictName} ...`,
     duration: 0,

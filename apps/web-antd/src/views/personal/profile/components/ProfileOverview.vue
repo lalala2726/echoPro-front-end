@@ -5,7 +5,7 @@ import type { profileType } from '#/api/personal/profile';
 import type {
   FileUploadResponse,
   ImageUploadResponse,
-} from '#/components/Upload/types/types';
+} from '#/components/Upload/types';
 
 import { onMounted, ref } from 'vue';
 

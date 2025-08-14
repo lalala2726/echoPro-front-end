@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { JobManageType } from '#/api/tool/job/type/manageType';
+import type { SysJobListVo } from '#/api/tool/job/manage/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,10 +8,10 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addJob, getJobInfo, updateJob } from '#/api/tool/job/manage';
+import { addJob, getJobInfo, updateJob } from '#/api/tool/job/manage/manage';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<JobManageType.SysJobListVo>>();
+const formData = ref<Partial<SysJobListVo>>();
 const isEdit = computed(() => !!formData.value?.jobId);
 
 const getTitle = computed(() => {
@@ -321,7 +321,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       drawerApi.setState({ loading: true });
       nextTick(async () => {
         try {
-          const data = drawerApi.getData<JobManageType.SysJobListVo>();
+          const data = drawerApi.getData<SysJobListVo>();
           if (data && data.jobId) {
             // 编辑模式：从后端获取最新数据
             const jobInfo = await getJobInfo(data.jobId);

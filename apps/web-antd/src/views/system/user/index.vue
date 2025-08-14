@@ -5,7 +5,11 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SysUserType } from '#/api/system/user';
+import type {
+  SysUser,
+  SysUserUpdateRequest,
+  UserListVo,
+} from '#/api/system/user/types';
 
 import { ref } from 'vue';
 
@@ -21,7 +25,7 @@ import {
   exportUserList,
   getUserList,
   updateUser,
-} from '#/api/system/user';
+} from '#/api/system/user/user';
 
 import { useColumns, useGridFormSchema } from './data';
 import Dept from './modules/dept.vue';
@@ -83,10 +87,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SysUserType.SysUser>,
+  } as VxeTableGridOptions<UserListVo>,
 });
 
-function onActionClick(e: OnActionClickParams<SysUserType.SysUser>) {
+function onActionClick(e: OnActionClickParams<UserListVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -129,7 +133,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
+async function onStatusChange(newStatus: number, row: UserListVo) {
   const status: Recordable<string> = {
     1: '禁用',
     0: '启用',
@@ -139,7 +143,10 @@ async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
       `你要将${row.username}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await updateUser({ userId: row.userId, status: newStatus as 0 | 1 });
+    await updateUser({
+      userId: Number(row.userId),
+      status: newStatus as 0 | 1,
+    } as SysUserUpdateRequest);
     return true;
   } catch {
     return false;
@@ -149,15 +156,19 @@ async function onStatusChange(newStatus: number, row: SysUserType.SysUser) {
 /**
  * 编辑用户
  */
-function onEdit(row: SysUserType.SysUser) {
-  formDrawerApi.setData(row);
+function onEdit(row: UserListVo) {
+  formDrawerApi.setData(row as SysUser);
   formDrawerApi.open();
 }
 
 /**
  * 删除用户
  */
-function onDelete(row: SysUserType.SysUser) {
+function onDelete(row: UserListVo) {
+  if (!row.userId) {
+    message.error('无效的用户ID');
+    return;
+  }
   const hideLoading = message.loading({
     content: `正在删除 ${row.username} ...`,
     duration: 0,
@@ -259,9 +270,9 @@ async function onBatchDelete() {
       '批量删除确认',
     );
 
-    const userIds = selectRecords.map(
-      (record: SysUserType.SysUser) => record.userId,
-    );
+    const userIds = selectRecords
+      .map((record: UserListVo) => record.userId)
+      .filter((id): id is string => id !== undefined);
     message.loading({
       content: '正在批量删除用户...',
       duration: 0,
@@ -286,8 +297,8 @@ async function onBatchDelete() {
 /**
  * 重置用户密码
  */
-function onResetPassword(row: SysUserType.SysUser) {
-  resetPasswordModalApi.setData(row);
+function onResetPassword(row: UserListVo) {
+  resetPasswordModalApi.setData(row as SysUser);
   resetPasswordModalApi.open();
 }
 

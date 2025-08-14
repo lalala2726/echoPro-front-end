@@ -5,8 +5,11 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictDataType } from '#/api/system/dict/dictData';
-import type { SystemDictType } from '#/api/system/dict/dictType';
+import type {
+  DictDataQueryRequest,
+  DictDataVo,
+  DictTypeVo,
+} from '#/api/system/dict/types';
 
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -37,8 +40,8 @@ const route = useRoute();
 const router = useRouter();
 
 // 从路由参数获取字典类型ID
-const dictTypeId = Number(route.params.id);
-const dictTypeInfo = ref<SystemDictType.DictTypeVo>();
+const dictTypeId = route.params.id as string;
+const dictTypeInfo = ref<DictTypeVo>();
 const isLoading = ref(false);
 
 // 页面标题计算
@@ -109,10 +112,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemDictDataType.DictDataQueryRequest>,
+  } as VxeTableGridOptions<DictDataQueryRequest>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemDictDataType.DictDataVo>) {
+function onActionClick(e: OnActionClickParams<DictDataVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -151,10 +154,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(
-  newStatus: number,
-  row: SystemDictDataType.DictDataVo,
-) {
+async function onStatusChange(newStatus: number, row: DictDataVo) {
   const status: Recordable<string> = {
     1: '禁用',
     0: '启用',
@@ -182,7 +182,7 @@ async function onStatusChange(
 /**
  * 编辑字典值
  */
-async function onEdit(row: SystemDictDataType.DictDataVo) {
+async function onEdit(row: DictDataVo) {
   const res = await getDictDataById(row.id!);
   formModalApi.setData(res).open();
 }
@@ -190,7 +190,7 @@ async function onEdit(row: SystemDictDataType.DictDataVo) {
 /**
  * 删除字典值
  */
-function onDelete(row: SystemDictDataType.DictDataVo) {
+function onDelete(row: DictDataVo) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.dictLabel} ...`,
     duration: 0,

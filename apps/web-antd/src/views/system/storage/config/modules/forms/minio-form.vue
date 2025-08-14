@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '#/adapter/form';
-import type { StorageConfigApi } from '#/api/system/storage/config';
+import type {
+  MinioConfigSaveRequest,
+  StorageConfigUnifiedVo,
+  StorageConfigUpdateRequest,
+} from '#/api/system/storage/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -124,8 +128,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       // 使用 nextTick 确保数据已经设置
       nextTick(() => {
-        const data =
-          drawerApi.getData<StorageConfigApi.StorageConfigUnifiedVo>();
+        const data = drawerApi.getData<StorageConfigUnifiedVo>();
 
         if (data && data.id) {
           // 编辑模式：有ID说明是编辑
@@ -189,7 +192,7 @@ async function onSubmit() {
     try {
       if (formData.value?.id) {
         // 更新模式
-        const updateData: StorageConfigApi.StorageConfigUpdateRequest = {
+        const updateData: StorageConfigUpdateRequest = {
           id: formData.value.id,
           storageName: formValues.storageName,
           minio: {
@@ -206,7 +209,7 @@ async function onSubmit() {
         await updateStorageConfig(updateData);
       } else {
         // 创建模式
-        const createData: StorageConfigApi.MinioConfigSaveRequest = {
+        const createData: MinioConfigSaveRequest = {
           storageName: formValues.storageName,
           storageKey: formValues.storageKey,
           endpoint: formValues.endpoint,

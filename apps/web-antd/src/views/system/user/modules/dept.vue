@@ -6,7 +6,7 @@ import { onMounted, ref, watch } from 'vue';
 
 import { Tree } from 'ant-design-vue';
 
-import { getDeptTreeOptions } from '#/api/system/dept';
+import { getDeptTreeOptions } from '#/api/system/dept/dept';
 
 // 定义组件Props
 interface Props {

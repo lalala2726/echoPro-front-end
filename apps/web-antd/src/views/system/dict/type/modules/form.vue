@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { SystemDictType } from '#/api/system/dict/dictType';
+import type {
+  DictTypeAddRequest,
+  DictTypeUpdateRequest,
+  DictTypeVo,
+} from '#/api/system/dict/types';
 
 import { computed, ref } from 'vue';
 
@@ -13,7 +17,7 @@ import { addDictType, updateDictType } from '#/api/system/dict/dictType';
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictType.DictTypeVo>();
+const formData = ref<DictTypeVo>();
 const getTitle = computed(() => {
   return formData.value?.id ? '修改字典' : '新增字典';
 });
@@ -40,8 +44,8 @@ const [Modal, modalApi] = useVbenModal({
           ? updateDictType({
               id: formData.value.id,
               ...data,
-            } as SystemDictType.DictTypeUpdateRequest)
-          : addDictType(data as SystemDictType.DictTypeAddRequest));
+            } as DictTypeUpdateRequest)
+          : addDictType(data as DictTypeAddRequest));
         await modalApi.close();
         emit('success');
       } finally {
@@ -51,7 +55,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   onOpenChange(isOpen) {
     if (isOpen) {
-      const data = modalApi.getData<SystemDictType.DictTypeVo>();
+      const data = modalApi.getData<DictTypeVo>();
       if (data) {
         formData.value = data;
         formApi.setValues(data);

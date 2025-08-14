@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemNoticeType } from '#/api/system/notice';
+import type { SysNoticeVo } from '#/api/system/notice/types';
 
 import { computed, ref } from 'vue';
 
@@ -7,7 +7,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Tag } from 'ant-design-vue';
 
-const noticeData = ref<SystemNoticeType.SysNoticeVo>();
+const noticeData = ref<SysNoticeVo>();
 
 const getTitle = computed(() => {
   return '预览公告';
@@ -26,9 +26,7 @@ const getNoticeTypeColor = computed(() => {
 const [Modal, modalApi] = useVbenModal({
   showConfirmButton: false,
   onOpenChange(isOpen) {
-    noticeData.value = isOpen
-      ? modalApi.getData<SystemNoticeType.SysNoticeVo>()
-      : undefined;
+    noticeData.value = isOpen ? modalApi.getData<SysNoticeVo>() : undefined;
   },
 });
 </script>

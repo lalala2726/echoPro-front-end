@@ -3,13 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemMessageManageType } from '#/api/system/messageManage';
+import type { SysMessageListVo } from '#/api/system/messageManage/types';
 
 import { computed, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
-// import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
@@ -19,7 +18,7 @@ import {
   exportMessage,
   getMessageById,
   getMessageList,
-} from '#/api/system/messageManage';
+} from '#/api/system/messageManage/messageManage';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -79,7 +78,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemMessageManageType.SysMessageListVo>,
+  } as VxeTableGridOptions<SysMessageListVo>,
 });
 
 // 是否有选中行（用于禁用/启用批量删除按钮）
@@ -97,10 +96,7 @@ const hasSelection = computed<boolean>(() => {
   return false;
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemMessageManageType.SysMessageListVo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysMessageListVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -123,7 +119,7 @@ function onActionClick({
 /**
  * 编辑消息
  */
-function onEdit(row: SystemMessageManageType.SysMessageListVo) {
+function onEdit(row: SysMessageListVo) {
   formDrawerApi.setData(row);
   formDrawerApi.open();
 }
@@ -131,7 +127,7 @@ function onEdit(row: SystemMessageManageType.SysMessageListVo) {
 /**
  * 预览消息
  */
-async function onPreview(row: SystemMessageManageType.SysMessageListVo) {
+async function onPreview(row: SysMessageListVo) {
   try {
     message.loading({
       content: '正在加载消息详情...',
@@ -154,7 +150,7 @@ async function onPreview(row: SystemMessageManageType.SysMessageListVo) {
 /**
  * 删除消息
  */
-function onDelete(row: SystemMessageManageType.SysMessageListVo) {
+function onDelete(row: SysMessageListVo) {
   Modal.confirm({
     title: '确认删除',
     content: `确定要删除消息 "${row.title}" 吗？`,
@@ -191,8 +187,7 @@ function onRefresh() {
  * 批量删除消息
  */
 function onBatchDelete() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemMessageManageType.SysMessageListVo[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as SysMessageListVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的消息');
     return;
@@ -206,10 +201,10 @@ function onBatchDelete() {
     okType: 'danger',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemMessageManageType.SysMessageListVo) => {
+        .map((row: SysMessageListVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       if (ids.length === 0) {
         message.error('选中的消息中没有有效的ID');

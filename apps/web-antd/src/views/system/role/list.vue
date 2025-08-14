@@ -5,7 +5,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRole } from '#/api/system/role/types';
 
 import { ref } from 'vue';
 
@@ -21,7 +21,7 @@ import {
   exportRoleList,
   getRoleList,
   updateRole,
-} from '#/api/system/role';
+} from '#/api/system/role/role';
 
 import { useColumns, useGridFormSchema } from './data';
 import Assign from './modules/assign.vue';
@@ -72,10 +72,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemRoleApi.SystemRole>,
+  } as VxeTableGridOptions<SystemRole>,
 });
 
-function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
+function onActionClick(e: OnActionClickParams<SystemRole>) {
   switch (e.code) {
     case 'assign': {
       onAssign(e.row);
@@ -92,7 +92,7 @@ function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
   }
 }
 
-function onAssign(row: SystemRoleApi.SystemRole) {
+function onAssign(row: SystemRole) {
   formDrawerApi.setData(row).open();
 }
 
@@ -122,10 +122,7 @@ function confirm(content: string, title: string) {
  * @param row 行数据
  * @returns 返回false则中止改变，返回其他值（undefined、true）则允许改变
  */
-async function onStatusChange(
-  newStatus: number,
-  row: SystemRoleApi.SystemRole,
-) {
+async function onStatusChange(newStatus: number, row: SystemRole) {
   const status: Recordable<string> = {
     1: '禁用',
     0: '启用',
@@ -145,14 +142,14 @@ async function onStatusChange(
 /**
  * 编辑角色
  */
-function onEdit(row: SystemRoleApi.SystemRole) {
+function onEdit(row: SystemRole) {
   formModalApi.setData(row).open();
 }
 
 /**
  * 删除角色
  */
-function onDelete(row: SystemRoleApi.SystemRole) {
+function onDelete(row: SystemRole) {
   const hideLoading = message.loading({
     content: `正在删除 ${row.roleName} ...`,
     duration: 0,

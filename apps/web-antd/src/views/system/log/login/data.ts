@@ -2,7 +2,7 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { VxeGridPropTypes } from '@vben/plugins/vxe-table';
 
 import type { OnActionClickParams } from '#/adapter/vxe-table';
-import type { SystemLoginLogApi } from '#/api/system/log/login';
+import type { SysLoginLogListVo } from '#/api/system/log/types';
 
 import { useAccess } from '@vben/access';
 
@@ -60,10 +60,8 @@ export function useGridFormSchema(): VbenFormSchema[] {
  * 获取表格列配置
  */
 export function useColumns(
-  onActionClick?: (
-    params: OnActionClickParams<SystemLoginLogApi.SysLoginLogListVo>,
-  ) => void,
-): VxeGridPropTypes.Columns<SystemLoginLogApi.SysLoginLogListVo> {
+  onActionClick?: (params: OnActionClickParams<SysLoginLogListVo>) => void,
+): VxeGridPropTypes.Columns<SysLoginLogListVo> {
   const { hasAccessByCodes } = useAccess();
   return [
     {

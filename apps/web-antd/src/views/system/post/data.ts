@@ -2,7 +2,7 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { VxeGridPropTypes } from '@vben/plugins/vxe-table';
 
 import type { OnActionClickParams } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/system/post';
+import type { PostListVo } from '#/api/system/post/types';
 
 import { useAccess } from '@vben/access';
 import { z } from '@vben/common-ui';
@@ -126,12 +126,9 @@ export function useGridFormSchema(): VbenFormSchema[] {
  * 获取表格列配置
  */
 export function useColumns(
-  onActionClick?: (params: OnActionClickParams<SystemPostApi.SysPost>) => void,
-  onStatusChange?: (
-    checked: boolean,
-    row: SystemPostApi.SysPost,
-  ) => Promise<void>,
-): VxeGridPropTypes.Columns<SystemPostApi.SysPost> {
+  onActionClick?: (params: OnActionClickParams<PostListVo>) => void,
+  onStatusChange?: (checked: boolean, row: PostListVo) => Promise<void>,
+): VxeGridPropTypes.Columns<PostListVo> {
   return [
     {
       title: '岗位名称',

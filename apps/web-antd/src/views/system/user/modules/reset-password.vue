@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import type { SysUserType } from '#/api/system/user';
+import type { SysUser } from '#/api/system/user/types';
 
 import { computed, ref } from 'vue';
 
 import { useVbenModal, z } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
-import { resetUserPassword } from '#/api/system/user';
+import { resetUserPassword } from '#/api/system/user/user';
 
 const emit = defineEmits(['success']);
-const userData = ref<Partial<SysUserType.SysUser>>();
+const userData = ref<Partial<SysUser>>();
 
 const getTitle = computed(() => {
   return `重置密码 - ${userData.value?.username || ''}`;
@@ -64,7 +64,7 @@ const [Modal, modalApi] = useVbenModal({
   },
   async onOpenChange(isOpen: boolean) {
     if (isOpen) {
-      const data = modalApi.getData<SysUserType.SysUser>();
+      const data = modalApi.getData<SysUser>();
       if (data) {
         userData.value = data;
         // 设置表单默认值

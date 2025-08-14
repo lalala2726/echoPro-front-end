@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemOperationLogApi } from '#/api/system/log/operation';
+import type { SysOperationLogListVo } from '#/api/system/log/types';
 
 import { ref } from 'vue';
 
@@ -71,13 +71,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemOperationLogApi.SysOperationLogListVo>,
+  } as VxeTableGridOptions<SysOperationLogListVo>,
 });
 
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemOperationLogApi.SysOperationLogListVo>) {
+}: OnActionClickParams<SysOperationLogListVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -96,7 +96,7 @@ function onActionClick({
 /**
  * 查看详情
  */
-function onDetail(row: SystemOperationLogApi.SysOperationLogListVo) {
+function onDetail(row: SysOperationLogListVo) {
   detailModalApi.setData(row);
   detailModalApi.open();
 }
@@ -104,7 +104,7 @@ function onDetail(row: SystemOperationLogApi.SysOperationLogListVo) {
 /**
  * 删除操作日志
  */
-function onDelete(row: SystemOperationLogApi.SysOperationLogListVo) {
+function onDelete(row: SysOperationLogListVo) {
   const hideLoading = message.loading({
     content: `正在删除操作日志...`,
     duration: 0,
@@ -132,7 +132,7 @@ function onRefresh() {
  */
 function onBatchDelete() {
   const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemOperationLogApi.SysOperationLogListVo[];
+    gridApi.grid.getCheckboxRecords() as SysOperationLogListVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的操作日志');
     return;
@@ -145,10 +145,10 @@ function onBatchDelete() {
     cancelText: '取消',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemOperationLogApi.SysOperationLogListVo) => {
+        .map((row: SysOperationLogListVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       const hideLoading = message.loading({
         content: `正在删除 ${selectedRows.length} 条操作日志...`,
@@ -216,7 +216,7 @@ async function onExport() {
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-    await exportOperationList('操作日志列表', formValues);
+    await exportOperationList(formValues);
 
     message.success({
       content: '操作日志列表导出成功',

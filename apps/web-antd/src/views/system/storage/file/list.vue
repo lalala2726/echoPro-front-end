@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemStorageFileAPi } from '#/api/system/storage/file';
+import type { StorageFileListVo } from '#/api/system/storage/types';
 
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -35,13 +35,11 @@ const props = withDefaults(defineProps<Props>(), {
 // 定义事件
 const emit = defineEmits<{
   /** 操作按钮点击事件 */
-  actionClick: [
-    params: OnActionClickParams<SystemStorageFileAPi.StorageFileListVo>,
-  ];
+  actionClick: [params: OnActionClickParams<StorageFileListVo>];
   /** 行点击事件 */
-  rowClick: [row: SystemStorageFileAPi.StorageFileListVo];
+  rowClick: [row: StorageFileListVo];
   /** 选中行变化事件 */
-  selectionChange: [rows: SystemStorageFileAPi.StorageFileListVo[]];
+  selectionChange: [rows: StorageFileListVo[]];
 }>();
 
 // 定义组件属性
@@ -58,51 +56,48 @@ interface Props {
 
 // 加载状态管理
 const isDestroyed = ref(false);
-const downloadingIds = ref(new Set<number>());
+const downloadingIds = ref(new Set<string>());
 
 // 防抖下载函数
-const debouncedDownload = useDebounceFn(
-  async (row: SystemStorageFileAPi.StorageFileListVo) => {
-    if (isDestroyed.value || !row.id) return;
+const debouncedDownload = useDebounceFn(async (row: StorageFileListVo) => {
+  if (isDestroyed.value || !row.id) return;
 
-    // 检查是否正在下载
-    if (downloadingIds.value.has(row.id)) {
-      message.warning('文件正在下载中，请勿重复点击');
-      return;
+  // 检查是否正在下载
+  if (downloadingIds.value.has(row.id)) {
+    message.warning('文件正在下载中，请勿重复点击');
+    return;
+  }
+
+  try {
+    downloadingIds.value.add(row.id);
+    message.info('正在下载');
+
+    // 根据文件类型选择下载方式
+    const isImage = row.contentType?.startsWith('image') ?? false;
+    await (isImage
+      ? downloadFileFromImageUrl({
+          fileName: row.originalName,
+          source: row.originalFileUrl,
+        })
+      : downloadFileFromUrl({
+          fileName: row.originalName,
+          source: row.originalFileUrl,
+        }));
+
+    if (!isDestroyed.value) {
+      message.success('文件下载成功');
     }
-
-    try {
-      downloadingIds.value.add(row.id);
-      message.info('正在下载');
-
-      // 根据文件类型选择下载方式
-      const isImage = row.contentType?.startsWith('image') ?? false;
-      await (isImage
-        ? downloadFileFromImageUrl({
-            fileName: row.originalName,
-            source: row.originalFileUrl,
-          })
-        : downloadFileFromUrl({
-            fileName: row.originalName,
-            source: row.originalFileUrl,
-          }));
-
-      if (!isDestroyed.value) {
-        message.success('文件下载成功');
-      }
-    } catch (error) {
-      console.error('下载文件失败:', error);
-      if (!isDestroyed.value) {
-        message.error('下载失败');
-      }
-    } finally {
-      if (row.id) {
-        downloadingIds.value.delete(row.id);
-      }
+  } catch (error) {
+    console.error('下载文件失败:', error);
+    if (!isDestroyed.value) {
+      message.error('下载失败');
     }
-  },
-  1000,
-); // 1秒防抖
+  } finally {
+    if (row.id) {
+      downloadingIds.value.delete(row.id);
+    }
+  }
+}, 1000); // 1秒防抖
 
 // 组件卸载前设置标记
 onBeforeUnmount(() => {
@@ -113,9 +108,7 @@ onBeforeUnmount(() => {
 /**
  * 处理操作按钮点击事件
  */
-async function onActionClick(
-  params: OnActionClickParams<SystemStorageFileAPi.StorageFileListVo>,
-) {
+async function onActionClick(params: OnActionClickParams<StorageFileListVo>) {
   if (isDestroyed.value) return;
 
   const { code, row } = params;
@@ -154,7 +147,7 @@ async function onActionClick(
     }
     case 'download': {
       // 使用防抖下载功能
-      debouncedDownload(row);
+      await debouncedDownload(row);
       break;
     }
     default: {
@@ -173,8 +166,7 @@ async function onActionClick(
 async function handleBatchDelete() {
   if (isDestroyed.value) return;
 
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemStorageFileAPi.StorageFileListVo[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as StorageFileListVo[];
   if (selectedRows.length === 0) {
     if (!isDestroyed.value) {
       message.warning('请选择要删除的文件');
@@ -183,8 +175,8 @@ async function handleBatchDelete() {
   }
 
   const ids = selectedRows
-    .map((row: SystemStorageFileAPi.StorageFileListVo) => row.id)
-    .filter(Boolean) as number[];
+    .map((row: StorageFileListVo) => row.id)
+    .filter(Boolean) as string[];
   if (ids.length === 0) {
     if (!isDestroyed.value) {
       message.warning('选中的文件中没有有效的ID');
@@ -283,19 +275,19 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemStorageFileAPi.StorageFileListVo>,
+  } as VxeTableGridOptions<StorageFileListVo>,
   gridEvents: {
     checkboxChange: () => {
       if (isDestroyed.value) return;
       try {
         const selectedRows =
-          gridApi.grid.getCheckboxRecords() as SystemStorageFileAPi.StorageFileListVo[];
+          gridApi.grid.getCheckboxRecords() as StorageFileListVo[];
         emit('selectionChange', selectedRows);
       } catch (error) {
         console.warn('选中状态变化事件处理失败:', error);
       }
     },
-    cellClick: ({ row }: { row: SystemStorageFileAPi.StorageFileListVo }) => {
+    cellClick: ({ row }: { row: StorageFileListVo }) => {
       if (isDestroyed.value) return;
       try {
         emit('rowClick', row);
@@ -342,7 +334,7 @@ defineExpose({
   getSelectedRows: () => {
     if (isDestroyed.value) return [];
     try {
-      return gridApi.grid.getCheckboxRecords() as SystemStorageFileAPi.StorageFileListVo[];
+      return gridApi.grid.getCheckboxRecords() as StorageFileListVo[];
     } catch (error) {
       console.warn('获取选中行失败:', error);
       return [];

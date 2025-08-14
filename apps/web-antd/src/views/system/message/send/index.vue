@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
-import type { SystemRoleApi } from '#/api/system/role';
-import type { SysUserType } from '#/api/system/user';
+import type { SystemDept } from '#/api/system/dept/types';
+import type { SysSendMessageRequest } from '#/api/system/messageManage/types';
+import type { SystemRole } from '#/api/system/role/types';
+import type { UserListVo } from '#/api/system/user/types';
 
 import { computed, ref, watch } from 'vue';
 
@@ -18,29 +19,31 @@ import {
   Segmented,
 } from 'ant-design-vue';
 
+import { sendMessage } from '#/api/system/messageManage/messageManage';
 import {
-  sendMessage,
-  SystemMessageManageType,
-} from '#/api/system/messageManage';
+  MessageLevel,
+  MessageSendMethod,
+  MessageType,
+} from '#/api/system/messageManage/types';
 import AiEditor from '#/components/Editor/AiEditor.vue';
 import { RoleSelect, UserSelect } from '#/components/Select';
 import DeptSelect from '#/components/Select/DeptSelect/index.vue';
 
-type SendMode = SystemMessageManageType.MessageSendMethod;
+type SendMode = MessageSendMethod;
 
-const sendMode = ref<SendMode>(SystemMessageManageType.MessageSendMethod.ALL);
+const sendMode = ref<SendMode>(MessageSendMethod.ALL);
 
 const formModel = ref<{
   content: string;
-  level: SystemMessageManageType.MessageLevel;
-  receiveId: number[] | string[];
+  level: MessageLevel;
+  receiveId: string[];
   title: string;
-  type: SystemMessageManageType.MessageType;
+  type: MessageType;
 }>({
   receiveId: [],
   title: '',
-  type: SystemMessageManageType.MessageType.SYSTEM,
-  level: SystemMessageManageType.MessageLevel.NORMAL,
+  type: MessageType.SYSTEM,
+  level: MessageLevel.NORMAL,
   content: '',
 });
 
@@ -107,10 +110,7 @@ function openSelector() {
 }
 
 // 用户选择确认
-function handleUserConfirm(data: {
-  userIds: number[];
-  users: SysUserType.UserListVo[];
-}) {
+function handleUserConfirm(data: { userIds: string[]; users: UserListVo[] }) {
   try {
     if (data.users && Array.isArray(data.users)) {
       formModel.value.receiveId = data.userIds || [];
@@ -127,10 +127,7 @@ function handleUserConfirm(data: {
 }
 
 // 角色选择确认
-function handleRoleConfirm(data: {
-  roleIds: string[];
-  roles: SystemRoleApi.SystemRole[];
-}) {
+function handleRoleConfirm(data: { roleIds: string[]; roles: SystemRole[] }) {
   try {
     if (data.roles && Array.isArray(data.roles)) {
       formModel.value.receiveId = data.roleIds || [];
@@ -147,10 +144,7 @@ function handleRoleConfirm(data: {
 }
 
 // 部门选择确认
-function handleDeptConfirm(data: {
-  deptIds: string[];
-  depts: SystemDeptApi.SystemDept[];
-}) {
+function handleDeptConfirm(data: { deptIds: string[]; depts: SystemDept[] }) {
   try {
     if (data.depts && Array.isArray(data.depts)) {
       formModel.value.receiveId = data.deptIds || [];
@@ -177,7 +171,7 @@ function onSubmit() {
     return;
   }
   if (
-    sendMode.value !== SystemMessageManageType.MessageSendMethod.ALL &&
+    sendMode.value !== MessageSendMethod.ALL &&
     (formModel.value.receiveId?.length ?? 0) === 0
   ) {
     message.warning('请至少选择一个接收对象');
@@ -201,10 +195,10 @@ async function doSendMessage() {
   isSubmitting.value = true;
   const hide = message.loading({ content: '正在发送...', duration: 0 });
   try {
-    const payload: SystemMessageManageType.SysSendMessageRequest = {
+    const payload: SysSendMessageRequest = {
       receiveType: sendMode.value,
       receiveId:
-        sendMode.value === SystemMessageManageType.MessageSendMethod.ALL
+        sendMode.value === MessageSendMethod.ALL
           ? []
           : (formModel.value.receiveId as any[]),
       message: {
@@ -222,11 +216,11 @@ async function doSendMessage() {
     formModel.value = {
       receiveId: [],
       title: '',
-      type: SystemMessageManageType.MessageType.SYSTEM,
-      level: SystemMessageManageType.MessageLevel.NORMAL,
+      type: MessageType.SYSTEM,
+      level: MessageLevel.NORMAL,
       content: '',
     };
-    sendMode.value = SystemMessageManageType.MessageSendMethod.ALL;
+    sendMode.value = MessageSendMethod.ALL;
     selectedDisplayOptions.value = [];
   } catch (error) {
     console.error(error);
@@ -250,19 +244,19 @@ async function doSendMessage() {
               :options="[
                 {
                   label: '全部用户',
-                  value: SystemMessageManageType.MessageSendMethod.ALL,
+                  value: MessageSendMethod.ALL,
                 },
                 {
                   label: '按用户',
-                  value: SystemMessageManageType.MessageSendMethod.USER,
+                  value: MessageSendMethod.USER,
                 },
                 {
                   label: '按角色',
-                  value: SystemMessageManageType.MessageSendMethod.ROLE,
+                  value: MessageSendMethod.ROLE,
                 },
                 {
                   label: '按部门',
-                  value: SystemMessageManageType.MessageSendMethod.DEPT,
+                  value: MessageSendMethod.DEPT,
                 },
               ]"
             />
@@ -270,7 +264,7 @@ async function doSendMessage() {
 
           <!-- 接收对象选择 -->
           <Form.Item
-            v-if="sendMode !== SystemMessageManageType.MessageSendMethod.ALL"
+            v-if="sendMode !== MessageSendMethod.ALL"
             :key="`${sendMode}-receiver`"
           >
             <template #label>
@@ -319,30 +313,18 @@ async function doSendMessage() {
           <!-- 消息类型 -->
           <Form.Item label="消息类型" required>
             <Radio.Group v-model:value="formModel.type">
-              <Radio :value="SystemMessageManageType.MessageType.SYSTEM">
-                系统消息
-              </Radio>
-              <Radio :value="SystemMessageManageType.MessageType.NOTICE">
-                通知消息
-              </Radio>
-              <Radio :value="SystemMessageManageType.MessageType.ANNOUNCEMENT">
-                公告消息
-              </Radio>
+              <Radio :value="MessageType.SYSTEM"> 系统消息 </Radio>
+              <Radio :value="MessageType.NOTICE"> 通知消息 </Radio>
+              <Radio :value="MessageType.ANNOUNCEMENT"> 公告消息 </Radio>
             </Radio.Group>
           </Form.Item>
 
           <!-- 消息级别 -->
           <Form.Item label="消息级别" required>
             <Radio.Group v-model:value="formModel.level">
-              <Radio :value="SystemMessageManageType.MessageLevel.NORMAL">
-                普通
-              </Radio>
-              <Radio :value="SystemMessageManageType.MessageLevel.IMPORTANT">
-                重要
-              </Radio>
-              <Radio :value="SystemMessageManageType.MessageLevel.URGENT">
-                紧急
-              </Radio>
+              <Radio :value="MessageLevel.NORMAL"> 普通 </Radio>
+              <Radio :value="MessageLevel.IMPORTANT"> 重要 </Radio>
+              <Radio :value="MessageLevel.URGENT"> 紧急 </Radio>
             </Radio.Group>
           </Form.Item>
 
@@ -371,7 +353,7 @@ async function doSendMessage() {
     <SelectorDrawer :key="`drawer-${sendMode}`">
       <template v-if="sendMode === 'user'">
         <UserSelect
-          v-model="formModel.receiveId as number[]"
+          v-model="formModel.receiveId as string[]"
           :multiple="true"
           placeholder="请选择用户"
           @confirm="handleUserConfirm"

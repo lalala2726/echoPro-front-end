@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SysUserType } from '#/api/system/user';
+import type { UserListVo } from '#/api/system/user/types';
 
 import { useAccess } from '@vben/access';
 
@@ -167,7 +167,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
   ];
 }
 
-export function useColumns<T = SysUserType.SysUser>(
+export function useColumns<T = UserListVo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
@@ -206,6 +206,15 @@ export function useColumns<T = SysUserType.SysUser>(
         return (
           row.sysDept?.deptName || row.deptName || row.dept?.deptName || '--'
         );
+      },
+    },
+    {
+      field: 'postName',
+      title: '岗位',
+      width: 120,
+      formatter: ({ row }) => {
+        // 显示岗位名称，如果没有则显示 '--'
+        return row.postName || '--';
       },
     },
     {

@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { StorageConfigApi } from '#/api/system/storage/config';
+import type { StorageConfigListVo } from '#/api/system/storage/types';
 
 import { ref } from 'vue';
 
@@ -15,12 +15,12 @@ import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
+  cancelPrimary,
   deleteStorageConfig,
   exportStorageConfigList,
   getStorageConfigById,
   getStorageConfigList,
   refreshCache,
-  cancelPrimary,
   updatePrimaryConfig,
 } from '#/api/system/storage/config';
 
@@ -77,7 +77,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     // 添加空状态配置
     emptyText: '暂无数据',
     showOverflow: true,
-  } as VxeTableGridOptions<StorageConfigApi.StorageConfigListVo>,
+  } as VxeTableGridOptions<StorageConfigListVo>,
 });
 
 // 组件引用
@@ -86,10 +86,7 @@ const storageFormRef = ref();
 /**
  * 主配置切换处理
  */
-async function onPrimaryChange(
-  checked: boolean,
-  row: StorageConfigApi.StorageConfigListVo,
-) {
+async function onPrimaryChange(checked: boolean, row: StorageConfigListVo) {
   if (!checked) {
     // 不允许取消主配置
     message.warning('不能取消主配置状态');
@@ -119,9 +116,7 @@ async function onPrimaryChange(
 /**
  * 操作按钮点击事件
  */
-function onActionClick(
-  e: OnActionClickParams<StorageConfigApi.StorageConfigListVo>,
-) {
+function onActionClick(e: OnActionClickParams<StorageConfigListVo>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -141,7 +136,7 @@ function onActionClick(
 /**
  * 编辑存储配置
  */
-async function onEdit(row: StorageConfigApi.StorageConfigListVo) {
+async function onEdit(row: StorageConfigListVo) {
   // 直接打开对应的表单（编辑模式）
   const res = await getStorageConfigById(row.id);
   storageFormRef.value?.openEditForm(res);
@@ -150,7 +145,7 @@ async function onEdit(row: StorageConfigApi.StorageConfigListVo) {
 /**
  * 删除存储配置
  */
-async function onDelete(row: StorageConfigApi.StorageConfigListVo) {
+async function onDelete(row: StorageConfigListVo) {
   try {
     const result = await prompt<string>({
       content: `确定要删除存储配置 "${row.storageName}" 吗？请输入存储键名来确认删除：`,
@@ -194,7 +189,7 @@ async function onDelete(row: StorageConfigApi.StorageConfigListVo) {
 /**
  * 设置为主配置
  */
-function onSetPrimary(row: StorageConfigApi.StorageConfigListVo) {
+function onSetPrimary(row: StorageConfigListVo) {
   Modal.confirm({
     title: '确认设置',
     content: `确定要将 "${row.storageName}" 设置为主配置吗？`,
