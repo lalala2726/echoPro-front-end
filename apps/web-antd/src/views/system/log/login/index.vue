@@ -146,10 +146,9 @@ function onBatchDelete() {
     onOk: () => {
       const ids = selectedRows
         .map((row: SystemLoginLogApi.SysLoginLogListVo) => {
-          const id = row.id;
-          return id;
+          return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       const hideLoading = message.loading({
         content: `正在删除 ${selectedRows.length} 条登录日志...`,

@@ -6,9 +6,9 @@ import { requestClient } from '#/api/request';
 export namespace SystemOperationLogApi {
   export interface SysOperationLog {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     userName?: string;
     /** 请求方式 */
@@ -46,9 +46,9 @@ export namespace SystemOperationLogApi {
    */
   export interface SysOperationLogListVo {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     userName?: string;
     /** 操作状态 (0成功1失败2未知) */
@@ -77,9 +77,9 @@ export namespace SystemOperationLogApi {
 
   export interface SysOperationLogQueryRequest {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户ID */
-    userId?: number;
+    userId?: string;
     /** 用户名 */
     userName?: string;
     /** 请求方式 */
@@ -111,7 +111,7 @@ async function getOperationLogList(
  * 获取操作日志详情
  * @param id 主键
  */
-async function getOperationById(id: number) {
+async function getOperationById(id: string) {
   return requestClient.get<SystemOperationLogApi.SysOperationLog>(
     `/system/log/operation/${id}`,
   );
@@ -121,7 +121,7 @@ async function getOperationById(id: number) {
  * 删除操作日志
  * @param ids 主键数组
  */
-async function deleteOperationLog(ids: Array<number>) {
+async function deleteOperationLog(ids: Array<string>) {
   return requestClient.delete(`/system/log/operation/${ids.join(',')}`);
 }
 
@@ -134,15 +134,10 @@ async function cleanOperationLog() {
 
 /**
  * 导出操作日志列表
- * @param fileName 文件名
  * @param params 查询参数
  */
-async function exportOperationList(
-  fileName?: string,
-  params?: Recordable<any>,
-) {
+async function exportOperationList(params?: Recordable<any>) {
   return exportFile('/system/log/operation/export', {
-    fileName: fileName || '操作日志列表',
     params,
   });
 }

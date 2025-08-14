@@ -148,7 +148,7 @@ function onBatchDelete() {
         .map((row: SystemOperationLogApi.SysOperationLogListVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       const hideLoading = message.loading({
         content: `正在删除 ${selectedRows.length} 条操作日志...`,
@@ -216,7 +216,7 @@ async function onExport() {
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-    await exportOperationList('操作日志列表', formValues);
+    await exportOperationList(formValues);
 
     message.success({
       content: '操作日志列表导出成功',

@@ -18,7 +18,7 @@ const getTitle = computed(() => {
 /**
  * 加载操作日志详情数据
  */
-async function loadOperationLogData(logId: number) {
+async function loadOperationLogData(logId: string) {
   try {
     detailData.value = await getOperationById(logId);
   } catch (error) {

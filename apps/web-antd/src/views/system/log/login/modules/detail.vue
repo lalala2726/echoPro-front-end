@@ -18,7 +18,7 @@ const getTitle = computed(() => {
 /**
  * 加载登录日志详情数据
  */
-async function loadLoginLogData(logId: number) {
+async function loadLoginLogData(logId: string) {
   try {
     detailData.value = await getLoginLogById(logId);
   } catch (error) {
@@ -45,7 +45,7 @@ const [Modal, modalApi] = useVbenModal({
           const data = modalApi.getData<SystemLoginLogApi.SysLoginLogListVo>();
           if (data && data.id) {
             const logId = data.id;
-            if (!Number.isNaN(logId)) {
+            if (!logId) {
               await loadLoginLogData(logId);
             }
           }

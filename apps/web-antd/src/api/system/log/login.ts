@@ -6,7 +6,7 @@ import { requestClient } from '#/api/request';
 export namespace SystemLoginLogApi {
   export interface SysLoginLog {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户名 */
     username?: string;
     /** 账号状态 */
@@ -27,7 +27,7 @@ export namespace SystemLoginLogApi {
 
   export interface SysLoginLogListVo {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户名 */
     username?: string;
     /** 账号状态 */
@@ -48,7 +48,7 @@ export namespace SystemLoginLogApi {
 
   export interface SysLoginLogQueryRequest {
     /** 主键 */
-    id?: number;
+    id?: string;
     /** 用户名 */
     username?: string;
     /** 账号状态 */
@@ -83,7 +83,7 @@ async function getLoginLogList(
  * 获取登录日志详情
  * @param id 主键
  */
-async function getLoginLogById(id: number) {
+async function getLoginLogById(id: string) {
   return requestClient.get<SystemLoginLogApi.SysLoginLog>(
     `/system/log/login/${id}`,
   );
@@ -93,7 +93,7 @@ async function getLoginLogById(id: number) {
  * 删除登录日志
  * @param ids 主键数组
  */
-async function deleteLoginLog(ids: Array<number>) {
+async function deleteLoginLog(ids: Array<string>) {
   return requestClient.delete(`/system/log/login/${ids.join(',')}`);
 }
 
