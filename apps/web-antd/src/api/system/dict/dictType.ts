@@ -1,105 +1,28 @@
 import type { PageResult } from '@vben/types';
 
+import type {
+  DictTypeAddRequest,
+  DictTypeQueryRequest,
+  DictTypeUpdateRequest,
+  DictTypeVo,
+} from './types';
+
 import { requestClient } from '#/api/request';
-
-export namespace SystemDictType {
-  export interface DictTypeQueryRequest {
-    /** 主键ID */
-    id?: string;
-    /** 字典类型 */
-    dictType?: string;
-    /** 字典名称 */
-    dictName?: string;
-    /** 状态：0启用，1禁用 */
-    status?: number;
-    /** 开始时间 */
-    startTime?: string;
-    /** 结束时间 */
-    endTime?: string;
-  }
-
-  export interface DictTypeVo {
-    /** 主键ID */
-    id?: string;
-    /** 字典类型 */
-    dictType?: string;
-    /** 字典名称 */
-    dictName?: string;
-    /** 状态：0启用，1禁用 */
-    status?: number;
-    /** 备注 */
-    remark?: string;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
-    /** 创建人 */
-    createBy?: string;
-    /** 更新人 */
-    updateBy?: string;
-  }
-
-  export interface DictTypeVo {
-    /** 主键ID */
-    id?: string;
-    /** 字典类型 */
-    dictType?: string;
-    /** 字典名称 */
-    dictName?: string;
-    /** 状态：0启用，1禁用 */
-    status?: number;
-    /** 备注 */
-    remark?: string;
-    /** 创建时间 */
-    createTime?: string;
-    /** 更新时间 */
-    updateTime?: string;
-    /** 创建人 */
-    createBy?: string;
-    /** 更新人 */
-    updateBy?: string;
-  }
-
-  export interface DictTypeAddRequest {
-    /** 字典类型 */
-    dictType: string;
-    /** 字典名称 */
-    dictName: string;
-    /** 状态：0启用，1禁用 */
-    status: number;
-    /** 备注 */
-    remark?: string;
-  }
-
-  export interface DictTypeUpdateRequest {
-    /** 主键ID */
-    id: string;
-    /** 字典类型 */
-    dictType: string;
-    /** 字典名称 */
-    dictName: string;
-    /** 状态：0启用，1禁用 */
-    status: number;
-    /** 备注 */
-    remark?: string;
-  }
-}
 
 /**
  * 获取字典类型列表数据
  */
-async function getDictTypeList(params: SystemDictType.DictTypeQueryRequest) {
-  return requestClient.get<PageResult<SystemDictType.DictTypeVo[]>>(
-    '/system/dict/type/list',
-    { params },
-  );
+async function getDictTypeList(params: DictTypeQueryRequest) {
+  return requestClient.get<PageResult<DictTypeVo[]>>('/system/dict/type/list', {
+    params,
+  });
 }
 
 /**
  * 创建字典
  * @param data 字典数据
  */
-async function addDictType(data: SystemDictType.DictTypeAddRequest) {
+async function addDictType(data: DictTypeAddRequest) {
   return requestClient.post('/system/dict/type', data);
 }
 
@@ -108,16 +31,14 @@ async function addDictType(data: SystemDictType.DictTypeAddRequest) {
  * @param id 字典类型ID
  */
 async function getDictTypeById(id: string) {
-  return requestClient.get<SystemDictType.DictTypeVo>(
-    `/system/dict/type/${id}`,
-  );
+  return requestClient.get<DictTypeVo>(`/system/dict/type/${id}`);
 }
 
 /**
  * 更新字典
  * @param data 字典数据
  */
-async function updateDictType(data: SystemDictType.DictTypeUpdateRequest) {
+async function updateDictType(data: DictTypeUpdateRequest) {
   return requestClient.put('/system/dict/type', data);
 }
 
