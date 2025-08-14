@@ -98,7 +98,7 @@ export namespace SystemMenuApi {
 
 export interface SysMenu {
   /** ID */
-  id?: number | string;
+  id?: string;
   /** 名称 */
   name: string;
   /** 路径 */

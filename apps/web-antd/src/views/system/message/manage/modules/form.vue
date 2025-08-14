@@ -39,7 +39,7 @@ function resetForm() {
 /**
  * 加载消息详情数据
  */
-async function loadMessageData(messageId: number) {
+async function loadMessageData(messageId: string) {
   try {
     const messageDetail = await getMessageById(messageId);
     formData.value = messageDetail;

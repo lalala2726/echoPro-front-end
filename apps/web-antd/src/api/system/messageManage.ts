@@ -23,7 +23,7 @@ export namespace SystemMessageManageType {
 
   export interface SysMessageListVo {
     /** 消息ID */
-    id?: number;
+    id?: string;
     /** 消息标题 */
     title?: string;
     /** 消息内容 */
@@ -62,7 +62,7 @@ export namespace SystemMessageManageType {
 
   export interface SysMessageVo {
     /** 消息ID */
-    id?: number;
+    id?: string;
     /** 消息标题 */
     title?: string;
     /** 消息内容 */
@@ -83,7 +83,7 @@ export namespace SystemMessageManageType {
 
   export interface SysMessageUpdateRequest {
     /** 消息ID */
-    id: number;
+    id: string;
     /** 消息标题 */
     title: string;
     /** 消息内容 */
@@ -160,7 +160,7 @@ async function updateMessage(
  * 删除消息
  * @param ids 消息ID数组
  */
-async function deleteMessage(ids: Array<number>) {
+async function deleteMessage(ids: Array<string>) {
   return requestClient.delete(`/system/manage/message/${ids.join(',')}`);
 }
 
@@ -168,7 +168,7 @@ async function deleteMessage(ids: Array<number>) {
  * 获取消息详情
  * @param id 消息ID
  */
-async function getMessageById(id: number) {
+async function getMessageById(id: string) {
   return requestClient.get(`/system/message/manage/${id}`);
 }
 

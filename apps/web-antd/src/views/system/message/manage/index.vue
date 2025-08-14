@@ -9,7 +9,6 @@ import { computed, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
-// import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
@@ -209,7 +208,7 @@ function onBatchDelete() {
         .map((row: SystemMessageManageType.SysMessageListVo) => {
           return row.id;
         })
-        .filter((id: any) => !Number.isNaN(id) && id !== undefined) as number[];
+        .filter((id: any) => !id && id !== undefined) as string[];
 
       if (ids.length === 0) {
         message.error('选中的消息中没有有效的ID');
