@@ -71,7 +71,9 @@ async function viteExtraAppConfigPlugin({
 }
 
 async function getConfigSource() {
-  const config = await loadEnv();
+  // 注入所有以 VITE_ 开头的变量，确保生产环境下也能获取到
+  // VITE_BACKEND_URL、VITE_WEBSOCKET_PATH 等非 VITE_GLOB_ 前缀变量
+  const config = await loadEnv('VITE_');
   const windowVariable = `window.${VBEN_ADMIN_PRO_APP_CONF}`;
   // 确保变量不会被修改
   let source = `${windowVariable}=${JSON.stringify(config)};`;

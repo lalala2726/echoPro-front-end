@@ -89,12 +89,12 @@ export class WebSocketServiceImpl implements WebSocketService {
         this.client = new Client({
           webSocketFactory: () => socket,
           connectHeaders,
-          debug: this.config.debug
-            ? (str: string) => {
-                // eslint-disable-next-line no-console
-                console.log('[WebSocket Debug]:', str);
-              }
-            : undefined,
+          debug: (str: string) => {
+            if (this.config.debug) {
+              // eslint-disable-next-line no-console
+              console.log('[WebSocket Debug]:', str);
+            }
+          },
           reconnectDelay: this.config.reconnect?.interval || 3000,
           heartbeatIncoming: 10_000,
           heartbeatOutgoing: 10_000,

@@ -15,11 +15,11 @@ export function useAppConfig(
     ? window._VBEN_ADMIN_PRO_APP_CONF_
     : (env as VbenAdminProAppConfigRaw);
 
-  const { VITE_GLOB_API_URL, VITE_BACKEND_URL, VITE_WEBSOCKET_PATH } = config;
+  const { VITE_GLOB_API_URL, VITE_GLOB_API_PATH, VITE_WEBSOCKET_PATH } = config;
 
   return {
     apiURL: VITE_GLOB_API_URL,
-    backendURL: VITE_BACKEND_URL,
+    apiPath: VITE_GLOB_API_PATH,
     websocketPath: VITE_WEBSOCKET_PATH,
   };
 }

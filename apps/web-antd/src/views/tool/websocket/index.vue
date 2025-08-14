@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MessageNotification } from '@vben/websocket';
+import type { MessageNotification } from '../../../realtime/types/message';
 
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
@@ -27,7 +27,11 @@ const { TextArea } = Input;
 
 // 获取环境配置
 const appConfig = useAppConfig(import.meta.env, import.meta.env.PROD);
-const wsUrl = `${appConfig.backendURL || 'http://localhost:8080'}${appConfig.websocketPath || '/ws'}`;
+const apiPrefix =
+  appConfig.apiPath && appConfig.apiPath.trim().length > 0
+    ? appConfig.apiPath
+    : '';
+const wsUrl = `${appConfig.apiURL}${apiPrefix}${appConfig.websocketPath || '/ws'}`;
 
 // 创建独立的测试用 WebSocket 服务实例（不影响全局）
 const service = createWebSocketService({
