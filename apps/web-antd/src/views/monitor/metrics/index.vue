@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { MonitorTypes } from '#/api/monitor/types/metrics';
 
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
@@ -18,6 +18,12 @@ import SystemMetrics from './modules/system-metrics.vue';
 const loading = ref(false);
 const activeTab = ref('overview');
 const config = ref<MonitorTypes.MonitorConfigDTO>({});
+const componentKey = ref(0);
+
+// 监听activeTab变化，强制重新创建组件实例
+watch(activeTab, () => {
+  componentKey.value++;
+});
 
 // 获取监控配置
 const fetchConfig = async () => {
@@ -86,7 +92,10 @@ onMounted(() => {
 
       <Tabs v-model:active-key="activeTab" type="card" class="monitoring-tabs">
         <Tabs.TabPane key="overview" tab="监控概览">
-          <OverviewDashboard />
+          <OverviewDashboard
+            v-if="activeTab === 'overview'"
+            :key="`overview-${componentKey}`"
+          />
         </Tabs.TabPane>
 
         <Tabs.TabPane
@@ -94,11 +103,14 @@ onMounted(() => {
           key="system"
           tab="系统监控"
         >
-          <SystemMetrics />
+          <SystemMetrics
+            v-if="activeTab === 'system'"
+            :key="`system-${componentKey}`"
+          />
         </Tabs.TabPane>
 
         <Tabs.TabPane v-if="isFeatureEnabled('jvm')" key="jvm" tab="JVM监控">
-          <JvmMetrics />
+          <JvmMetrics v-if="activeTab === 'jvm'" :key="`jvm-${componentKey}`" />
         </Tabs.TabPane>
 
         <Tabs.TabPane
@@ -106,7 +118,10 @@ onMounted(() => {
           key="redis"
           tab="Redis监控"
         >
-          <RedisMetrics />
+          <RedisMetrics
+            v-if="activeTab === 'redis'"
+            :key="`redis-${componentKey}`"
+          />
         </Tabs.TabPane>
 
         <Tabs.TabPane
@@ -114,7 +129,10 @@ onMounted(() => {
           key="spring"
           tab="Spring监控"
         >
-          <SpringMetrics />
+          <SpringMetrics
+            v-if="activeTab === 'spring'"
+            :key="`spring-${componentKey}`"
+          />
         </Tabs.TabPane>
       </Tabs>
     </div>
