@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRole } from '#/api/system/role/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,12 +8,12 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createRole, getRoleById, updateRole } from '#/api/system/role';
+import { createRole, getRoleById, updateRole } from '#/api/system/role/role';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemRoleApi.SystemRole>>();
+const formData = ref<Partial<SystemRole>>();
 const getTitle = computed(() => {
   return formData.value?.id ? '修改角色' : '新增角色';
 });
@@ -67,7 +67,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemRoleApi.SystemRole>();
+          const data = modalApi.getData<SystemRole>();
           if (data && data.id) {
             // 编辑模式：加载完整的角色详情
             formData.value = data;

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SysUserType } from '#/api/system/user';
+import type { UserListVo } from '#/api/system/user/types';
 
 import { computed, onMounted, ref } from 'vue';
 
 import { Button, Empty, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getUserList } from '#/api/system/user';
+import { getUserList } from '#/api/system/user/user';
 
 import { useUserSelectColumns, useUserSelectFormSchema } from './data';
 
@@ -24,10 +24,10 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: string[]): void;
-  (e: 'change', users: SysUserType.UserListVo[]): void;
+  (e: 'change', users: UserListVo[]): void;
   (
     e: 'confirm',
-    data: { userIds: string[]; users: SysUserType.UserListVo[] },
+    data: { userIds: string[]; users: UserListVo[] },
   ): void;
   (e: 'cancel'): void;
 }
@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 
 // 选中的用户数据
-const selectedUsers = ref<SysUserType.UserListVo[]>([]);
+const selectedUsers = ref<UserListVo[]>([]);
 
 // VxeGrid配置
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -100,14 +100,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: false,
     },
-  } as VxeTableGridOptions<SysUserType.UserListVo>,
+  } as VxeTableGridOptions<UserListVo>,
   // 勾选事件：选择即同步并回调
   gridEvents: {
     // 全选/取消全选事件 - 处理数量限制
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
         const currentPageData = gridApi.grid.getTableData()
-          .fullData as SysUserType.UserListVo[];
+          .fullData as UserListVo[];
 
         if (checked) {
           // 尝试全选当前页
@@ -181,10 +181,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
 // 同步勾选后的右侧与 v-model
 function syncSelectionAfterToggle() {
   try {
-    const currentPageRecords =
-      gridApi.grid.getCheckboxRecords() as SysUserType.UserListVo[];
-    const currentPageData = gridApi.grid.getTableData()
-      .fullData as SysUserType.UserListVo[];
+    const currentPageRecords = gridApi.grid.getCheckboxRecords() as UserListVo[];
+    const currentPageData = gridApi.grid.getTableData().fullData as UserListVo[];
 
     // 获取当前页面的所有用户ID
     const currentPageUserIds = new Set(
@@ -233,8 +231,7 @@ function syncSelectionAfterToggle() {
 // 同步当前页面的复选框状态
 function syncCurrentPageCheckboxState() {
   try {
-    const currentPageData = gridApi.grid.getTableData()
-      .fullData as SysUserType.UserListVo[];
+    const currentPageData = gridApi.grid.getTableData().fullData as UserListVo[];
     const selectedUserIds = new Set(
       selectedUsers.value.map((user) => user.userId!),
     );
@@ -313,7 +310,7 @@ async function handleConfirm() {
   }
 
   const userIds = selectedRows
-    .map((row) => row.userId!)
+    .map((row: UserListVo) => row.userId!)
     .filter((id) => id !== undefined);
   selectedUsers.value = selectedRows;
 
@@ -355,13 +352,13 @@ function clearSelection() {
 }
 
 // 移除单个用户
-function removeUser(user: SysUserType.UserListVo) {
+function removeUser(user: UserListVo) {
   const index = selectedUsers.value.findIndex((u) => u.userId === user.userId);
   if (index !== -1) {
     selectedUsers.value.splice(index, 1);
     try {
       gridApi.grid.setCheckboxRow(user, false);
-    } catch {}
+    } catch { }
     const userIds = selectedUsers.value.map((u) => u.userId!);
     emit('update:modelValue', userIds);
 
@@ -381,11 +378,11 @@ defineExpose({
 });
 
 // 选择操作按钮：与勾选行为一致
-function selectRow(row: SysUserType.UserListVo) {
+function selectRow(row: UserListVo) {
   try {
-    const isChecked = (
-      gridApi.grid.getCheckboxRecords() as SysUserType.UserListVo[]
-    ).some((r) => r.userId === row.userId);
+    const isChecked = (gridApi.grid.getCheckboxRecords() as UserListVo[]).some(
+      (r) => r.userId === row.userId,
+    );
     gridApi.grid.setCheckboxRow(row, !isChecked);
     // 手动同步右侧已选与 v-model
     syncSelectionAfterToggle();
@@ -400,35 +397,20 @@ function selectRow(row: SysUserType.UserListVo) {
   <div class="user-select-interface h-full">
     <div class="flex h-full min-h-0 gap-6">
       <!-- 左侧面板 - 用户表格（主要操作区域） -->
-      <div
-        class="flex min-h-0 flex-1 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
-      >
+      <div class="flex min-h-0 flex-1 flex-col rounded-lg border border-gray-200 bg-white shadow-sm">
         <!-- 表格标题栏 -->
-        <div
-          class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5"
-        >
+        <div class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <div class="text-xl font-semibold text-gray-900">用户列表</div>
-              <div
-                class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600"
-              >
+              <div class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600">
                 选择需要的用户
               </div>
             </div>
             <div class="flex items-center space-x-2 text-sm text-gray-500">
-              <svg
-                class="h-4 w-4 text-blue-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg class="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>在表格中勾选用户，选择结果将显示在右侧</span>
             </div>
@@ -448,13 +430,9 @@ function selectRow(row: SysUserType.UserListVo) {
       </div>
 
       <!-- 右侧面板 - 已选择用户展示（与角色选择保持一致宽度） -->
-      <div
-        class="flex min-h-0 w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-sm"
-      >
+      <div class="flex min-h-0 w-96 flex-col rounded-lg border border-gray-200 bg-white shadow-sm">
         <!-- 右侧面板头部 - 状态指示器 -->
-        <div
-          class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5"
-        >
+        <div class="rounded-t-lg border-b border-gray-100 bg-gray-50/50 px-6 py-5">
           <div class="mb-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <div class="flex items-center space-x-3">
@@ -462,34 +440,18 @@ function selectRow(row: SysUserType.UserListVo) {
                 <span class="text-lg font-semibold text-gray-900">
                   已选择用户
                 </span>
-                <span
-                  class="rounded-full border border-gray-200 bg-white px-2 py-1 text-sm text-gray-500"
-                >
+                <span class="rounded-full border border-gray-200 bg-white px-2 py-1 text-sm text-gray-500">
                   {{ selectedUsers.length }}/{{ props.maxCount }}
                 </span>
               </div>
             </div>
 
             <div class="flex items-center space-x-2">
-              <Button
-                v-if="selectedUsers.length > 0"
-                type="link"
-                size="small"
-                @click="clearSelection"
-                class="text-sm font-medium text-gray-500 transition-colors hover:text-red-500"
-              >
-                <svg
-                  class="mr-1 h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  >
+              <Button v-if="selectedUsers.length > 0" type="link" size="small" @click="clearSelection"
+                class="text-sm font-medium text-gray-500 transition-colors hover:text-red-500">
+                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                     >
                   </path>
                 </svg>
@@ -504,23 +466,16 @@ function selectRow(row: SysUserType.UserListVo) {
               class="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
               :style="{
                 width: `${Math.min((selectedUsers.length / props.maxCount) * 100, 100)}%`,
-              }"
-            ></div>
+              }"></div>
           </div>
         </div>
 
         <!-- 右侧面板内容 - 已选择用户展示 -->
         <div class="min-h-0 flex-1 overflow-hidden">
           <!-- 空状态 -->
-          <div
-            v-if="selectedUsers.length === 0"
-            class="flex h-full items-center justify-center p-8"
-          >
+          <div v-if="selectedUsers.length === 0" class="flex h-full items-center justify-center p-8">
             <div class="text-center">
-              <Empty
-                description="暂无选择用户"
-                :image="Empty.PRESENTED_IMAGE_SIMPLE"
-              >
+              <Empty description="暂无选择用户" :image="Empty.PRESENTED_IMAGE_SIMPLE">
                 <template #description>
                   <span class="text-gray-500">请在左侧表格中勾选用户</span>
                 </template>
@@ -529,33 +484,23 @@ function selectRow(row: SysUserType.UserListVo) {
           </div>
 
           <!-- 用户卡片网格 -->
-          <div
-            v-else
+          <div v-else
             class="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 h-full overflow-y-auto p-6"
-            style="scroll-behavior: smooth"
-          >
+            style="scroll-behavior: smooth">
             <div class="grid grid-cols-1 gap-4">
               <!-- 用户卡片 -->
-              <div
-                v-for="user in visibleUsers"
-                :key="user.userId"
-                class="group relative rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow-md"
-              >
+              <div v-for="user in visibleUsers" :key="user.userId"
+                class="group relative rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow-md">
                 <div class="flex items-start justify-between">
                   <div class="min-w-0 flex-1">
                     <!-- 用户名 -->
-                    <div
-                      class="mb-2 truncate text-base font-semibold text-gray-900"
-                    >
+                    <div class="mb-2 truncate text-base font-semibold text-gray-900">
                       {{ user.username }}
                     </div>
 
                     <!-- 用户信息 -->
                     <div class="space-y-1">
-                      <div
-                        v-if="user.nickname"
-                        class="truncate text-sm text-gray-600"
-                      >
+                      <div v-if="user.nickname" class="truncate text-sm text-gray-600">
                         <span class="text-gray-400">昵称:</span>
                         {{ user.nickname }}
                       </div>
@@ -563,22 +508,17 @@ function selectRow(row: SysUserType.UserListVo) {
                         <span class="text-gray-400">部门:</span>
                         {{ user.deptName || '未分配部门' }}
                       </div>
-                      <div
-                        v-if="user.phone"
-                        class="truncate text-sm text-gray-600"
-                      >
+                      <div v-if="user.phone" class="truncate text-sm text-gray-600">
                         <span class="text-gray-400">手机:</span>
                         {{ user.phone }}
                       </div>
                       <div class="truncate text-sm text-gray-600">
                         <span class="text-gray-400">状态:</span>
-                        <span
-                          :class="[
-                            user.status === 0
-                              ? 'text-green-600'
-                              : 'text-red-600',
-                          ]"
-                        >
+                        <span :class="[
+                          user.status === 0
+                            ? 'text-green-600'
+                            : 'text-red-600',
+                        ]">
                           {{ user.status === 0 ? '已启用' : '已禁用' }}
                         </span>
                       </div>
@@ -586,34 +526,18 @@ function selectRow(row: SysUserType.UserListVo) {
                   </div>
 
                   <!-- 移除按钮 -->
-                  <Button
-                    type="text"
-                    size="small"
-                    @click="removeUser(user)"
-                    class="absolute right-3 top-3 ml-3 flex-shrink-0 text-gray-400 opacity-0 transition-opacity duration-200 hover:text-red-500 group-hover:opacity-100"
-                  >
-                    <svg
-                      class="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                  <Button type="text" size="small" @click="removeUser(user)"
+                    class="absolute right-3 top-3 ml-3 flex-shrink-0 text-gray-400 opacity-0 transition-opacity duration-200 hover:text-red-500 group-hover:opacity-100">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </Button>
                 </div>
               </div>
 
               <!-- 更多用户指示器 -->
-              <div
-                v-if="hiddenUsersCount > 0"
-                class="flex items-center justify-center rounded-lg border border-blue-200 bg-blue-50 p-4 text-center"
-              >
+              <div v-if="hiddenUsersCount > 0"
+                class="flex items-center justify-center rounded-lg border border-blue-200 bg-blue-50 p-4 text-center">
                 <div>
                   <div class="text-sm font-semibold text-blue-700">
                     +{{ hiddenUsersCount }} 更多用户
@@ -630,9 +554,7 @@ function selectRow(row: SysUserType.UserListVo) {
     </div>
 
     <!-- 操作按钮区域 -->
-    <div
-      class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4"
-    >
+    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4">
       <Button @click="handleCancel"> 取消 </Button>
       <Button type="primary" @click="handleConfirm"> 确定选择 </Button>
     </div>

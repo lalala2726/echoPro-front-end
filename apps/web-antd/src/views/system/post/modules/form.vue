@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { SystemPostType } from '#/api/system/post';
+import type {
+  PostUpdateRequest,
+  PostVo,
+  SysPostAddRequest,
+} from '#/api/system/post/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,12 +12,12 @@ import { useVbenModal } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addPost, getPostById, updatePost } from '#/api/system/post';
+import { addPost, getPostById, updatePost } from '#/api/system/post/post';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemPostType.PostVo>>();
+const formData = ref<Partial<PostVo>>();
 const getTitle = computed(() => {
   return formData.value?.id ? '修改岗位' : '新增岗位';
 });
@@ -53,8 +57,8 @@ const [Modal, modalApi] = useVbenModal({
           ? updatePost({
               ...data,
               id: formData.value.id!,
-            } as SystemPostType.PostUpdateRequest)
-          : addPost(data as SystemPostType.SysPostAddRequest));
+            } as PostUpdateRequest)
+          : addPost(data as SysPostAddRequest));
         await modalApi.close();
         emit('success');
       } finally {
@@ -70,7 +74,7 @@ const [Modal, modalApi] = useVbenModal({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = modalApi.getData<SystemPostType.PostVo>();
+          const data = modalApi.getData<PostVo>();
 
           if (data && data.id) {
             // 编辑模式：加载完整的岗位详情

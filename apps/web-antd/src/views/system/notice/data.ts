@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeGridPropTypes } from '#/adapter/vxe-table';
-import type { SystemNoticeType } from '#/api/system/notice';
+import type { SysNoticeVo } from '#/api/system/notice/types';
 
 import { useAccess } from '@vben/access';
 
@@ -10,10 +10,7 @@ import { z } from '#/adapter/form';
  * 表格列配置
  */
 export function useColumns(
-  onActionClick: (params: {
-    code: string;
-    row: SystemNoticeType.SysNoticeVo;
-  }) => void,
+  onActionClick: (params: { code: string; row: SysNoticeVo }) => void,
 ): VxeGridPropTypes.Columns {
   const { hasAccessByCodes } = useAccess();
   return [

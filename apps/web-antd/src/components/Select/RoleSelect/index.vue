@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRole } from '#/api/system/role/types';
 
 import { computed, onMounted, ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { Page } from '@vben/common-ui';
 import { Button, Empty, message, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getRoleList } from '#/api/system/role';
+import { getRoleList } from '#/api/system/role/role';
 
 import { roleColumns, roleStatusMap, useRoleSelectFormSchema } from './data';
 
@@ -25,10 +25,10 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: string[]): void;
-  (e: 'change', roles: SystemRoleApi.SystemRole[]): void;
+  (e: 'change', roles: SystemRole[]): void;
   (
     e: 'confirm',
-    data: { roleIds: string[]; roles: SystemRoleApi.SystemRole[] },
+    data: { roleIds: string[]; roles: SystemRole[] },
   ): void;
   (e: 'cancel'): void;
 }
@@ -43,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 
 // 选中的角色数据
-const selectedRoles = ref<SystemRoleApi.SystemRole[]>([]);
+const selectedRoles = ref<SystemRole[]>([]);
 
 // VxeGrid配置
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -98,7 +98,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     checkboxAll: ({ checked }: { checked: boolean }) => {
       try {
         const currentPageData = gridApi.grid.getTableData()
-          .fullData as SystemRoleApi.SystemRole[];
+          .fullData as SystemRole[];
         if (checked) {
           const pageIds = new Set(currentPageData.map((r) => r.id!));
           const other = selectedRoles.value.filter((r) => !pageIds.has(r.id!));
@@ -141,10 +141,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function syncSelectionAfterToggle() {
   try {
-    const currentPageRecords =
-      gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[];
-    const currentPageData = gridApi.grid.getTableData()
-      .fullData as SystemRoleApi.SystemRole[];
+    const currentPageRecords = gridApi.grid.getCheckboxRecords() as SystemRole[];
+    const currentPageData = gridApi.grid.getTableData().fullData as SystemRole[];
 
     const currentIds = new Set(currentPageData.map((r) => r.id!));
     const otherPagesSelected = selectedRoles.value.filter(
@@ -182,8 +180,7 @@ function syncSelectionAfterToggle() {
 
 // 确认选择
 async function handleConfirm() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as SystemRole[];
 
   if (!props.multiple && selectedRows.length > 1) {
     message.warning('只能选择一个角色');
@@ -233,12 +230,12 @@ function clearSelection() {
 }
 
 // 移除单个角色
-function removeRole(role: SystemRoleApi.SystemRole) {
+function removeRole(role: SystemRole) {
   if (role.id) {
     selectedRoles.value = selectedRoles.value.filter((r) => r.id !== role.id);
     try {
       gridApi.grid.setCheckboxRow(role, false);
-    } catch {}
+    } catch { }
     const roleIds = selectedRoles.value.map((u) => u.id!);
     emit('update:modelValue', roleIds);
   }
@@ -250,11 +247,11 @@ onMounted(() => {
 });
 
 // 选择操作按钮：与勾选行为一致
-function selectRow(row: SystemRoleApi.SystemRole) {
+function selectRow(row: SystemRole) {
   try {
-    const isChecked = (
-      gridApi.grid.getCheckboxRecords() as SystemRoleApi.SystemRole[]
-    ).some((r) => r.id === row.id);
+    const isChecked = (gridApi.grid.getCheckboxRecords() as SystemRole[]).some(
+      (r) => r.id === row.id,
+    );
     gridApi.grid.setCheckboxRow(row, !isChecked);
     // 手动同步右侧已选与 v-model
     syncSelectionAfterToggle();
@@ -285,19 +282,13 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
             <Grid>
               <!-- 状态列插槽 -->
               <template #status="{ row }">
-                <Tag
-                  :color="roleStatusMap[row.status ?? 0]?.color || 'default'"
-                >
+                <Tag :color="roleStatusMap[row.status ?? 0]?.color || 'default'">
                   {{ roleStatusMap[row.status ?? 0]?.text || '未知' }}
                 </Tag>
               </template>
               <!-- 操作列插槽：选择按钮 -->
               <template #action="slotProps">
-                <Button
-                  type="link"
-                  size="small"
-                  @click="() => selectRow((slotProps as any).row)"
-                >
+                <Button type="link" size="small" @click="() => selectRow((slotProps as any).row)">
                   选择
                 </Button>
               </template>
@@ -316,12 +307,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
               <span class="ml-1 text-blue-600">{{ selectedCount }}</span>
               <span class="text-gray-500">/ {{ props.maxCount }}</span>
             </span>
-            <Button
-              v-if="selectedCount > 0"
-              size="small"
-              type="text"
-              @click="clearSelection"
-            >
+            <Button v-if="selectedCount > 0" size="small" type="text" @click="clearSelection">
               清空
             </Button>
           </div>
@@ -336,51 +322,32 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
 
         <!-- 已选择角色列表 -->
         <div class="flex-1 overflow-y-auto p-4">
-          <div
-            v-if="selectedCount === 0"
-            class="flex h-full items-center justify-center"
-          >
-            <Empty
-              :image="Empty.PRESENTED_IMAGE_SIMPLE"
-              description="暂无选择的角色"
-            />
+          <div v-if="selectedCount === 0" class="flex h-full items-center justify-center">
+            <Empty :image="Empty.PRESENTED_IMAGE_SIMPLE" description="暂无选择的角色" />
           </div>
 
           <div v-else class="space-y-2">
-            <div
-              v-for="role in selectedRoles"
-              :key="role.id"
-              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm"
-            >
+            <div v-for="role in selectedRoles" :key="role.id"
+              class="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-sm">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <span class="truncate text-sm font-medium text-gray-900">
                     {{ role.roleName }}
                   </span>
-                  <Tag
-                    size="small"
-                    :color="roleStatusMap[role.status ?? 0]?.color || 'default'"
-                  >
+                  <Tag size="small" :color="roleStatusMap[role.status ?? 0]?.color || 'default'">
                     {{ roleStatusMap[role.status ?? 0]?.text || '未知' }}
                   </Tag>
                 </div>
                 <div class="mt-1 truncate text-xs text-gray-500">
                   {{ role.roleKey }}
                 </div>
-                <div
-                  v-if="role.remark"
-                  class="mt-1 truncate text-xs text-gray-400"
-                >
+                <div v-if="role.remark" class="mt-1 truncate text-xs text-gray-400">
                   {{ role.remark }}
                 </div>
               </div>
 
-              <Button
-                size="small"
-                type="text"
-                class="opacity-0 transition-opacity group-hover:opacity-100"
-                @click="removeRole(role)"
-              >
+              <Button size="small" type="text" class="opacity-0 transition-opacity group-hover:opacity-100"
+                @click="removeRole(role)">
                 移除
               </Button>
             </div>
@@ -390,9 +357,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
     </div>
 
     <!-- 操作按钮区域 -->
-    <div
-      class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4"
-    >
+    <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50/50 px-6 py-4">
       <Button @click="handleCancel"> 取消 </Button>
       <Button type="primary" @click="handleConfirm"> 确定选择 </Button>
     </div>

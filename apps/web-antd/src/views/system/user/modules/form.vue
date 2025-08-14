@@ -1,7 +1,11 @@
 <script lang="ts" setup>
 import type { Option } from '@vben/types';
 
-import type { SysUserType } from '#/api/system/user';
+import type {
+  SysUser,
+  SysUserAddRequest,
+  SysUserUpdateRequest,
+} from '#/api/system/user/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -9,9 +13,9 @@ import { useVbenDrawer } from '@vben/common-ui';
 
 import { useVbenForm } from '#/adapter/form';
 import { getDeptOptions } from '#/api/system/dept/dept';
-import { getOptions as getPostOptions } from '#/api/system/post';
-import { getRoleOption } from '#/api/system/role';
-import { addUser, getUserById, updateUser } from '#/api/system/user';
+import { getOptions as getPostOptions } from '#/api/system/post/post';
+import { getRoleOption } from '#/api/system/role/role';
+import { addUser, getUserById, updateUser } from '#/api/system/user/user';
 import { UploadAvatar } from '#/components/Upload';
 
 import { useFormSchema } from '../data';
@@ -23,7 +27,7 @@ interface DeptOption {
 }
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SysUserType.SysUser>>();
+const formData = ref<Partial<SysUser>>();
 const userAvatar = ref<string>('');
 const deptOptions = ref<DeptOption[]>([]);
 const roleOptions = ref<Option[]>([]);
@@ -51,7 +55,7 @@ async function loadDeptOptions() {
     deptOptions.value = result || [];
 
     // 更新表单中部门选择器的选项
-    await formApi.updateSchema([
+    formApi.updateSchema([
       {
         fieldName: 'deptId',
         componentProps: {
@@ -110,9 +114,9 @@ async function loadPostOptions() {
 /**
  * 加载用户详情数据
  */
-async function loadUserData(userId: number) {
+async function loadUserData(userId: number | string) {
   try {
-    const userDetail = await getUserById(userId);
+    const userDetail = await getUserById(String(userId));
     formData.value = userDetail;
     userAvatar.value = userDetail.avatar || '';
 
@@ -172,9 +176,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
         await (formData.value?.userId
           ? updateUser({
               ...payload,
-              userId: formData.value.userId,
-            } as unknown as SysUserType.SysUserUpdateRequest)
-          : addUser(payload as unknown as SysUserType.SysUserAddRequest));
+              userId: Number(formData.value.userId),
+            } as unknown as SysUserUpdateRequest)
+          : addUser(payload as unknown as SysUserAddRequest));
         await drawerApi.close();
         emit('success');
       } finally {
@@ -193,7 +197,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
             loadPostOptions(),
           ]);
 
-          const data = drawerApi.getData<SysUserType.SysUser>();
+          const data = drawerApi.getData<SysUser>();
           if (data && data.userId) {
             formData.value = data;
             await loadUserData(data.userId);

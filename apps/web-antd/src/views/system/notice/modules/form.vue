@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemNoticeType } from '#/api/system/notice';
+import type { SysNoticeVo } from '#/api/system/notice/types';
 
 import { computed, nextTick, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { Button } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { addNotice, noticeById, updateNotice } from '#/api/system/notice';
+import { addNotice, noticeById, updateNotice } from '#/api/system/notice/notice';
 import AiEditor from '#/components/Editor/AiEditor.vue';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<Partial<SystemNoticeType.SysNoticeVo>>();
+const formData = ref<Partial<SysNoticeVo>>();
 const noticeContent = ref<string>('');
 
 const getTitle = computed(() => {
@@ -70,8 +70,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
           ? updateNotice({
               ...submitData,
               id: formData.value.id,
-            } as SystemNoticeType.SysNoticeVo)
-          : addNotice(submitData as SystemNoticeType.SysNoticeVo));
+            } as SysNoticeVo)
+          : addNotice(submitData as SysNoticeVo));
         await drawerApi.close();
         emit('success');
       } finally {
@@ -87,7 +87,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // 使用nextTick确保DOM更新后再执行异步操作
       nextTick(async () => {
         try {
-          const data = drawerApi.getData<SystemNoticeType.SysNoticeVo>();
+          const data = drawerApi.getData<SysNoticeVo>();
 
           if (data && data.id) {
             // 编辑模式：加载完整的公告详情

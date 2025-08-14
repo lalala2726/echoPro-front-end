@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNoticeType } from '#/api/system/notice';
+import type { SysNoticeVo } from '#/api/system/notice/types';
 
 import { ref } from 'vue';
 
@@ -19,7 +19,7 @@ import {
   exportNoticeList,
   noticeById,
   noticeList,
-} from '#/api/system/notice';
+} from '#/api/system/notice/notice';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -79,13 +79,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemNoticeType.SysNoticeVo>,
+  } as VxeTableGridOptions<SysNoticeVo>,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemNoticeType.SysNoticeVo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysNoticeVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -108,7 +105,7 @@ function onActionClick({
 /**
  * 编辑公告
  */
-function onEdit(row: SystemNoticeType.SysNoticeVo) {
+function onEdit(row: SysNoticeVo) {
   formDrawerApi.setData(row);
   formDrawerApi.open();
 }
@@ -116,7 +113,7 @@ function onEdit(row: SystemNoticeType.SysNoticeVo) {
 /**
  * 预览公告
  */
-async function onPreview(row: SystemNoticeType.SysNoticeVo) {
+async function onPreview(row: SysNoticeVo) {
   try {
     message.loading({
       content: '正在加载公告详情...',
@@ -139,7 +136,7 @@ async function onPreview(row: SystemNoticeType.SysNoticeVo) {
 /**
  * 删除公告
  */
-function onDelete(row: SystemNoticeType.SysNoticeVo) {
+function onDelete(row: SysNoticeVo) {
   Modal.confirm({
     title: '确认删除',
     content: `确定要删除公告 "${row.noticeTitle}" 吗？`,
@@ -182,8 +179,7 @@ function onCreate() {
  * 批量删除公告
  */
 function onBatchDelete() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemNoticeType.SysNoticeVo[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as SysNoticeVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的公告');
     return;
@@ -197,7 +193,7 @@ function onBatchDelete() {
     okType: 'danger',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemNoticeType.SysNoticeVo) => {
+        .map((row: SysNoticeVo) => {
           return row.id;
         })
         .filter((id: any) => !id && id !== undefined) as string[];

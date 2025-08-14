@@ -3,7 +3,11 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemPostType } from '#/api/system/post';
+import type {
+  PostListVo,
+  PostUpdateRequest,
+  PostVo,
+} from '#/api/system/post/types';
 
 import { ref } from 'vue';
 
@@ -19,7 +23,7 @@ import {
   exportPostList,
   getPostList,
   updatePost,
-} from '#/api/system/post';
+} from '#/api/system/post/post';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -73,13 +77,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemPostType.PostListVo>,
+  } as VxeTableGridOptions<PostListVo>,
 });
 
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SystemPostType.PostListVo>) {
+function onActionClick({ code, row }: OnActionClickParams<PostListVo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -98,10 +99,7 @@ function onActionClick({
 /**
  * 状态切换
  */
-async function onStatusChange(
-  checked: boolean,
-  row: SystemPostType.PostListVo,
-) {
+async function onStatusChange(checked: boolean, row: PostListVo) {
   const status = checked ? 0 : 1;
   const statusText = status === 0 ? '启用' : '停用';
 
@@ -118,7 +116,7 @@ async function onStatusChange(
       postName: row.postName,
       sort: row.sort,
       status,
-    } as SystemPostType.PostUpdateRequest);
+    } as PostUpdateRequest);
     message.success({
       content: `${row.postName} ${statusText}成功`,
       key: 'status_change_msg',
@@ -133,15 +131,15 @@ async function onStatusChange(
 /**
  * 编辑岗位
  */
-function onEdit(row: SystemPostType.PostListVo) {
-  formModalApi.setData(row as unknown as SystemPostType.PostVo);
+function onEdit(row: PostListVo) {
+  formModalApi.setData(row as unknown as PostVo);
   formModalApi.open();
 }
 
 /**
  * 删除岗位
  */
-function onDelete(row: SystemPostType.PostListVo) {
+function onDelete(row: PostListVo) {
   Modal.confirm({
     title: '确认删除',
     content: `确定要删除岗位 "${row.postName}" 吗？`,
@@ -184,8 +182,7 @@ function onCreate() {
  * 批量删除岗位
  */
 function onBatchDelete() {
-  const selectedRows =
-    gridApi.grid.getCheckboxRecords() as SystemPostType.PostListVo[];
+  const selectedRows = gridApi.grid.getCheckboxRecords() as PostListVo[];
   if (selectedRows.length === 0) {
     message.warning('请选择要删除的岗位');
     return;
@@ -199,7 +196,7 @@ function onBatchDelete() {
     okType: 'danger',
     onOk: () => {
       const ids = selectedRows
-        .map((row: SystemPostType.PostListVo) => {
+        .map((row: PostListVo) => {
           return row.id;
         })
         .filter(
