@@ -14,6 +14,7 @@ export const overridesPreferences = defineOverridesPreferences({
   },
   theme: {
     mode: 'light',
+    semiDarkSidebar: true,
   },
   logo: {
     source: '/logo/logo.png', // 使用本地图片，放在 public/ 目录下
