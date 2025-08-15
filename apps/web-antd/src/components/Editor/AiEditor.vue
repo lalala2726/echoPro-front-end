@@ -42,6 +42,30 @@ const emit = defineEmits<{
 const rootEl = ref<HTMLElement | null>(null);
 let editor: AiEditorType | null = null;
 
+// 基于 DOM 的应用主题判断与监听（当未显式传入 props.theme 时启用）
+let themeObserver: MutationObserver | null = null;
+function isDarkFromDom() {
+  return document.documentElement.classList.contains('dark');
+}
+function initThemeObserver() {
+  if (themeObserver) return;
+  // 初始化一次，确保与应用当前主题保持一致
+  if (editor) editor.changeTheme(isDarkFromDom() ? 'dark' : 'light');
+  themeObserver = new MutationObserver(() => {
+    if (!editor) return;
+    editor.changeTheme(isDarkFromDom() ? 'dark' : 'light');
+  });
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+}
+function stopThemeObserver() {
+  if (themeObserver) {
+    themeObserver.disconnect();
+    themeObserver = null;
+  }
+}
 const computedHeight = computed(() =>
   typeof props.height === 'number' ? `${props.height}px` : props.height,
 );
@@ -129,11 +153,16 @@ onMounted(() => {
     },
   });
   emit('ready', editor);
+
+  // 若未显式传入主题（受控），则跟随应用 DOM 暗色类自动切换
+  if (props.theme === undefined) initThemeObserver();
 });
 
 onUnmounted(() => {
   editor && editor.destroy();
   editor = null;
+  // 清理主题监听
+  stopThemeObserver();
 });
 
 watch(
@@ -148,6 +177,22 @@ watch(
       if (props.contentFormat === 'markdown')
         editor.setMarkdownContent(val || '');
       else editor.setContent(val || '');
+    }
+  },
+);
+// 监听主题变化，跟随应用主题自动切换（当父组件受控传入时优先）
+watch(
+  () => props.theme,
+  (newTheme) => {
+    if (!editor) return;
+    if (newTheme === undefined) {
+      // 进入非受控模式：跟随 DOM
+      initThemeObserver();
+      editor.changeTheme(isDarkFromDom() ? 'dark' : 'light');
+    } else {
+      // 受控模式：使用外部传入主题并停止 DOM 监听，避免冲突
+      stopThemeObserver();
+      editor.changeTheme(newTheme);
     }
   },
 );
