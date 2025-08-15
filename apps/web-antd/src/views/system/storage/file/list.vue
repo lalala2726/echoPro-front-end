@@ -8,7 +8,7 @@ import type { StorageFileListVo } from '#/api/system/storage/types';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
-import { downloadFileFromImageUrl, downloadFileFromUrl } from '@vben/utils';
+import { downloadFileFromUrl } from '@vben/utils';
 
 import { useDebounceFn } from '@vueuse/core';
 import { message } from 'ant-design-vue';
@@ -73,16 +73,10 @@ const debouncedDownload = useDebounceFn(async (row: StorageFileListVo) => {
     message.info('正在下载');
 
     // 根据文件类型选择下载方式
-    const isImage = row.contentType?.startsWith('image') ?? false;
-    await (isImage
-      ? downloadFileFromImageUrl({
-          fileName: row.originalName,
-          source: row.originalFileUrl,
-        })
-      : downloadFileFromUrl({
-          fileName: row.originalName,
-          source: row.originalFileUrl,
-        }));
+    await downloadFileFromUrl({
+      fileName: row.originalName,
+      source: row.originalFileUrl,
+    });
 
     if (!isDestroyed.value) {
       message.success('文件下载成功');

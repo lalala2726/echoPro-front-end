@@ -1,4 +1,4 @@
-import { openWindow } from './window';
+// removed unused import './window'
 
 interface DownloadOptions<T = string> {
   fileName?: string;
@@ -15,29 +15,49 @@ const DEFAULT_FILENAME = 'downloaded_file';
 export async function downloadFileFromUrl({
   fileName,
   source,
-  target = '_blank',
+  target: _target = '_blank',
 }: DownloadOptions): Promise<void> {
   if (!source) {
     throw new Error('Invalid URL.');
   }
 
-  const isChrome = window.navigator.userAgent.toLowerCase().includes('chrome');
-  const isSafari = window.navigator.userAgent.toLowerCase().includes('safari');
+  const url = String(source);
+  try {
+    const response = await fetch(url, { mode: 'cors' });
 
-  if (/iP/.test(window.navigator.userAgent)) {
-    console.error('Your browser does not support download!');
-    return;
-  }
+    if (!response.ok) {
+      throw new Error(`Failed to download. Status: ${response.status}`);
+    }
 
-  if (isChrome || isSafari) {
-    triggerDownload(source, resolveFileName(source, fileName));
-    return;
-  }
-  if (!source.includes('?')) {
-    source += '?download';
-  }
+    const blob = await response.blob();
 
-  openWindow(source, { target });
+    // 优先使用传入的文件名，其次尝试从响应头解析，最后从 URL 推断
+    let finalFileName = fileName;
+    if (!finalFileName) {
+      const disposition =
+        response.headers.get('Content-Disposition') ||
+        response.headers.get('content-disposition') ||
+        '';
+      if (disposition) {
+        const match = disposition.match(
+          /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
+        );
+        if (match && match[1]) {
+          finalFileName = decodeURIComponent(match[1].replaceAll(/['"]/g, ''));
+        }
+      }
+    }
+
+    finalFileName = resolveFileName(url, finalFileName);
+
+    const objectUrl = URL.createObjectURL(blob);
+    triggerDownload(objectUrl, finalFileName);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to download file.');
+  }
 }
 
 /**
