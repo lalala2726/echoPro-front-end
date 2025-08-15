@@ -20,8 +20,6 @@ export function registerAppSubscriptions() {
   // 清理之前的订阅（如果有）
   cleanupAppSubscriptions();
 
-  console.log('[RealTime] 开始注册应用订阅...');
-
   // 注册新消息订阅
   const messageCleanup = registerMessageSubscription(service);
   subscriptionCleanupFunctions.push(messageCleanup);
@@ -33,10 +31,6 @@ export function registerAppSubscriptions() {
   // 这里可以继续添加其他业务订阅
   // const otherCleanup = registerOtherSubscription(service);
   // subscriptionCleanupFunctions.push(otherCleanup);
-
-  console.log(
-    `[RealTime] 已注册 ${subscriptionCleanupFunctions.length} 个订阅`,
-  );
 }
 
 /**
@@ -45,9 +39,6 @@ export function registerAppSubscriptions() {
  */
 export function cleanupAppSubscriptions() {
   if (subscriptionCleanupFunctions.length > 0) {
-    console.log(
-      `[RealTime] 清理 ${subscriptionCleanupFunctions.length} 个订阅`,
-    );
     subscriptionCleanupFunctions.forEach((cleanup) => cleanup());
     subscriptionCleanupFunctions = [];
   }

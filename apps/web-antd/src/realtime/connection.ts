@@ -10,15 +10,12 @@ let globalWebSocketService: null | ReturnType<typeof createWebSocketService> =
  * 创建 WebSocket 配置（仅负责连接配置，不包含业务订阅）
  */
 function createWebSocketConfig() {
-  const { backendURL, websocketPath } = useAppConfig(
+  const { apiURL, websocketPath } = useAppConfig(
     import.meta.env,
     import.meta.env.PROD,
   );
 
-  const wsUrl = `${backendURL}${websocketPath}`;
-  console.log('[WebSocket] 配置地址:', wsUrl);
-  console.log('[WebSocket] 环境变量:', { backendURL, websocketPath });
-
+  const wsUrl = `${apiURL}${websocketPath}`;
   return {
     url: wsUrl,
     debug: !import.meta.env.PROD,
@@ -41,7 +38,6 @@ export function getWebSocketService() {
 
     // 仅设置连接相关的事件处理，业务消息处理由订阅层负责
     globalWebSocketService.on('connected', () => {
-      console.log('[WebSocket] 服务连接成功');
       // 连接成功后自动注册业务订阅
       import('./subscriptions').then(({ registerAppSubscriptions }) => {
         registerAppSubscriptions();
@@ -49,7 +45,6 @@ export function getWebSocketService() {
     });
 
     globalWebSocketService.on('disconnected', () => {
-      console.log('[WebSocket] 服务连接断开');
       // 连接断开时清理订阅
       import('./subscriptions').then(({ cleanupAppSubscriptions }) => {
         cleanupAppSubscriptions();
@@ -81,7 +76,6 @@ export async function initWebSocket(): Promise<void> {
     if (!service.isConnected) {
       // 使用 token 参数进行认证，格式：ws://localhost:8080/ws?token=jwt-token
       await service.connect(token);
-      console.log('[WebSocket] 初始化连接成功');
     }
   } catch (error) {
     // 不再抛出异常，只记录错误，让应用正常启动
@@ -121,7 +115,6 @@ export async function reconnectWebSocket(): Promise<void> {
 
     // 重新连接
     await service.connect(token);
-    console.log('[WebSocket] 重连成功');
   } catch (error) {
     console.error('[WebSocket] 重连失败:', error);
   }

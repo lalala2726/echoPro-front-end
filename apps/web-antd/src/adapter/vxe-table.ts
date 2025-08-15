@@ -237,18 +237,31 @@ setupVbenVxeTable({
           .map((opt) => {
             const optBtn: Recordable<any> = {};
             Object.keys(opt).forEach((key) => {
-              optBtn[key] = isFunction(opt[key]) ? opt[key](row) : opt[key];
+              const val = isFunction(opt[key]) ? opt[key](row) : opt[key];
+              if (key === 'visible') {
+                // 映射已使用的 "visible" 到内部的 "show"，并避免向组件下发 deprecated 属性
+                optBtn.show = val;
+              } else {
+                optBtn[key] = val;
+              }
             });
             return optBtn;
           })
           .filter((opt) => opt.show !== false);
 
         function renderBtn(opt: Recordable<any>, listen = true) {
+          const btnProps = objectOmit(opt, [
+            'text',
+            'icon',
+            'code',
+            'show',
+            'visible',
+          ]);
           return h(
             Button,
             {
               ...props,
-              ...opt,
+              ...btnProps,
               icon: undefined,
               onClick: listen
                 ? () =>
@@ -275,6 +288,13 @@ setupVbenVxeTable({
 
         function renderConfirm(opt: Recordable<any>) {
           let viewportWrapper: HTMLElement | null = null;
+          const confirmProps = objectOmit(opt, [
+            'text',
+            'icon',
+            'code',
+            'show',
+            'visible',
+          ]);
           return h(
             Popconfirm,
             {
@@ -292,7 +312,7 @@ setupVbenVxeTable({
               placement: 'topLeft',
               title: $t('ui.actionTitle.delete', [attrs?.nameTitle || '']),
               ...props,
-              ...opt,
+              ...confirmProps,
               icon: undefined,
               onOpenChange: (open: boolean) => {
                 // 当弹窗打开时，禁止表格的滚动

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MessageNotification } from '@vben/websocket';
+import type { MessageNotification } from '../../../realtime/types/message';
 
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
@@ -27,17 +27,16 @@ const { TextArea } = Input;
 
 // 获取环境配置
 const appConfig = useAppConfig(import.meta.env, import.meta.env.PROD);
-const wsUrl = `${appConfig.backendURL || 'http://localhost:8080'}${appConfig.websocketPath || '/ws'}`;
+const wsUrl = `${appConfig.apiURL}${appConfig.websocketPath || '/ws'}`;
 
 // 创建独立的测试用 WebSocket 服务实例（不影响全局）
 const service = createWebSocketService({
-  url: wsUrl,
   debug: true,
   defaultSubscriptions: [],
   reconnect: {
     enabled: true,
-    maxAttempts: 5,
     interval: 3000,
+    maxAttempts: 5,
   },
 });
 
@@ -57,13 +56,16 @@ const {
 const accessStore = useAccessStore();
 
 // 配置
-const wsConfig = ref({
-  url: wsUrl,
+const wsConfig = ref<{
+  params: Array<{ enabled: boolean; key: string; value: string }>;
+  url: string;
+}>({
   params: [
-    { key: 'token', value: '', enabled: true },
-    { key: 'clientType', value: 'web-test', enabled: false },
-    { key: 'version', value: '1.0', enabled: false },
+    { enabled: true, key: 'token', value: '' },
+    { enabled: false, key: 'clientType', value: 'web-test' },
+    { enabled: false, key: 'version', value: '1.0' },
   ],
+  url: wsUrl,
 });
 
 // 订阅相关
@@ -130,48 +132,6 @@ const refreshToken = () => {
     message.success('访问令牌已更新');
   }
 };
-
-const previewConnectionUrl = () => {
-  // 模拟连接URL构建过程
-  let finalToken = accessStore.accessToken;
-  const customParams: Record<string, string> = {};
-  let hasTokenParam = false;
-
-  wsConfig.value.params.forEach((param: any) => {
-    if (param.enabled && param.key && param.value) {
-      if (param.key === 'token') {
-        finalToken = param.value;
-        hasTokenParam = true;
-      } else {
-        customParams[param.key] = param.value;
-      }
-    }
-  });
-
-  // 构建URL参数
-  let previewUrl = wsConfig.value.url;
-  const urlParams = new URLSearchParams();
-
-  if (finalToken) {
-    urlParams.append('token', finalToken);
-  }
-
-  Object.entries(customParams).forEach(([key, value]) => {
-    urlParams.append(key, value);
-  });
-
-  if (urlParams.toString()) {
-    previewUrl += (previewUrl.includes('?') ? '&' : '?') + urlParams.toString();
-  }
-
-  addLog('system', `预览连接URL: ${previewUrl}`);
-  addLog('system', `Token来源: ${hasTokenParam ? 'UI配置' : '当前登录令牌'}`);
-  addLog(
-    'system',
-    `Token值: ${finalToken ? `${finalToken.slice(0, 10)}...` : 'None'}`,
-  );
-};
-
 // 定时器
 let durationTimer: NodeJS.Timeout | null = null;
 
@@ -486,9 +446,6 @@ onUnmounted(() => {
                   添加参数
                 </Button>
                 <Button size="small" @click="refreshToken"> 刷新令牌 </Button>
-                <Button size="small" @click="previewConnectionUrl">
-                  预览连接
-                </Button>
               </Space>
             </div>
             <div class="space-y-2">
@@ -530,9 +487,7 @@ onUnmounted(() => {
           </div>
 
           <!-- 连接状态 -->
-          <div
-            class="flex items-center justify-between rounded-lg bg-gray-50 p-4"
-          >
+          <div class="flex items-center justify-between rounded-lg">
             <div class="flex items-center space-x-4">
               <Badge
                 :status="connectionStatus.status"
@@ -691,7 +646,8 @@ onUnmounted(() => {
         </template>
         <div
           ref="logContainer"
-          class="h-80 overflow-y-auto rounded-lg bg-gray-900 p-4 font-mono text-sm text-white"
+          class="h-80 overflow-y-auto rounded-lg p-4 font-mono text-sm"
+          style="color: #fff; background-color: #181820"
         >
           <div
             v-for="(log, index) in logs"

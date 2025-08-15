@@ -6,6 +6,7 @@ import { h } from 'vue';
 
 import { Button, notification } from 'ant-design-vue';
 
+import { useMessageStore } from '#/composables/useMessageStore';
 import { router } from '#/router';
 
 type WebSocketService = ReturnType<typeof createWebSocketService>;
@@ -26,6 +27,12 @@ export function registerMessageSubscription(service: WebSocketService) {
         typeof payload === 'string' ? JSON.parse(payload) : payload;
 
       const key = `message_${messageData.id}`;
+
+      // 新消息推送时主动更新消息阅读数量
+      const { fetchUnreadCount } = useMessageStore();
+      fetchUnreadCount().catch((error) => {
+        console.warn('[RealTime] 更新消息数量失败:', error);
+      });
 
       // 使用 Ant Design Vue 的通知组件显示消息
       notification.info({

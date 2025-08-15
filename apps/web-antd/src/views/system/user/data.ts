@@ -49,7 +49,6 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'Select',
       fieldName: 'deptId',
       label: '所属部门',
-      rules: 'required',
       componentProps: {
         placeholder: '请选择部门',
         allowClear: true,
@@ -90,22 +89,27 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '手机号',
       rules: z
         .string()
-        .min(1, '请输入手机号')
-        .regex(/^[0-9\-+()\s]{6,20}$/, '请输入有效的手机号'),
+        .regex(/^[0-9\-+()\s]{6,20}$/, '请输入有效的手机号')
+        .optional()
+        .or(z.string().min(1, '请输入手机号')),
     },
     {
       component: 'Input',
       fieldName: 'email',
       label: '邮箱',
-      rules: z.string().min(1, '请输入邮箱').email('请输入有效的邮箱'),
+      rules: z
+        .string()
+        .email('请输入有效的邮箱')
+        .optional()
+        .or(z.string().min(1, '请输入邮箱')),
     },
     {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
         options: [
-          { label: '男', value: 1 },
-          { label: '女', value: 2 },
+          { label: '男', value: 0 },
+          { label: '女', value: 1 },
         ],
         optionType: 'button',
       },

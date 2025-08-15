@@ -142,7 +142,7 @@ async function markMessageAsUnRead(ids: Array<string>) {
  * 删除消息 (支持批量删除)
  * @param ids 消息ID列表
  */
-async function deleteMessages(ids: Array<string>) {
+async function deleteMessages(ids: Array<number | string>) {
   return requestClient.delete(`/personal/message/${ids.join(',')}`);
 }
 

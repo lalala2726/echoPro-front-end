@@ -75,16 +75,13 @@ async function bootstrap(namespace: string) {
   if (accessStore.accessToken) {
     // 使用 Promise.resolve() 确保异步执行，不阻塞应用启动
     Promise.resolve().then(async () => {
-      try {
-        const { initWebSocket } = await import('#/realtime/connection');
-        const { registerAppSubscriptions } = await import('#/realtime/subscriptions');
+      const { initWebSocket } = await import('#/realtime/connection');
+      const { registerAppSubscriptions } = await import(
+        '#/realtime/subscriptions'
+      );
 
-        await initWebSocket();
-        registerAppSubscriptions();
-        console.log('[App] WebSocket 连接和订阅初始化成功');
-      } catch (error) {
-        console.warn('[App] WebSocket 初始化失败，将在后台继续尝试重连:', error);
-      }
+      await initWebSocket();
+      registerAppSubscriptions();
     });
   }
 

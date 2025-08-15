@@ -3,8 +3,8 @@ import type { StorageFileVo } from '#/api/system/storage/types';
 
 import { computed, nextTick, ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
-import { downloadFileFromUrl } from '@vben/utils';
+import { useVbenDrawer } from '@vben/common-ui';
+import { downloadFileFromImageUrl, downloadFileFromUrl } from '@vben/utils';
 
 import {
   Button,
@@ -31,7 +31,11 @@ const getTitle = computed(() => {
  * 判断是否为可预览的图片
  */
 const isImagePreviewable = computed(() => {
-  return detailData.value && isPreviewableImage(detailData.value.contentType);
+  return (
+    detailData.value &&
+    isPreviewableImage(detailData.value.contentType) &&
+    detailData.value.isTrash !== 1
+  ); // 回收站中的图片不可预览
 });
 
 /**
@@ -95,13 +99,30 @@ const getStorageTypeColor = (storageType?: string) => {
 };
 
 /**
- * 查看原图 - 在新窗口中打开原图
+ * 下载文件 - 与列表下载逻辑保持一致
  */
-function handleViewOriginal() {
-  if (originalImageUrl.value) {
-    handleOpenUrl(originalImageUrl.value);
-  } else {
-    message.warning('原图链接不存在');
+async function handleDownload() {
+  if (!detailData.value) return;
+
+  try {
+    message.info('正在下载');
+
+    // 根据文件类型选择下载方式
+    const isImage = detailData.value.contentType?.startsWith('image') ?? false;
+    await (isImage
+      ? downloadFileFromImageUrl({
+          fileName: detailData.value.originalName,
+          source: detailData.value.originalFileUrl,
+        })
+      : downloadFileFromUrl({
+          fileName: detailData.value.originalName,
+          source: detailData.value.originalFileUrl,
+        }));
+
+    message.success('文件下载成功');
+  } catch (error) {
+    console.error('下载文件失败:', error);
+    message.error('下载失败');
   }
 }
 
@@ -146,44 +167,38 @@ function handleOpenUrl(url?: string) {
   }
 }
 
-const [Modal, modalApi] = useVbenModal({
-  showCancelButton: false,
-  showConfirmButton: false, // 禁用默认的确定按钮，我们将使用自定义footer
+const [Drawer, drawerApi] = useVbenDrawer({
   class: 'w-[900px] min-w-[600px]',
-  contentClass: 'overflow-auto max-h-[80vh]',
-  fullscreen: false,
-  fullscreenButton: true,
-  footer: true, // 确保显示footer区域
   onOpenChange(isOpen) {
     if (isOpen) {
-      modalApi.setState({ loading: true });
+      drawerApi.setState({ loading: true });
 
       nextTick(async () => {
         try {
-          const data = modalApi.getData<StorageFileVo>();
+          const data = drawerApi.getData<StorageFileVo>();
           if (data) {
             detailData.value = data;
           }
         } catch (error) {
           console.error('加载数据失败:', error);
         } finally {
-          modalApi.setState({ loading: false });
+          drawerApi.setState({ loading: false });
         }
       });
     } else {
       detailData.value = undefined;
-      modalApi.setState({ loading: false });
+      drawerApi.setState({ loading: false });
     }
   },
 });
 
 defineExpose({
-  modalApi,
+  drawerApi,
 });
 </script>
 
 <template>
-  <Modal :title="getTitle">
+  <Drawer :title="getTitle" class="w-[900px]">
     <div v-if="detailData" class="mx-4">
       <!-- 图片预览区域 - 只有图片资源才显示 -->
       <Card
@@ -200,7 +215,6 @@ defineExpose({
               src: previewImageUrl,
             }"
             class="max-h-80 max-w-full cursor-pointer rounded-lg shadow-sm"
-            @error="() => message.error('图片加载失败')"
           />
         </div>
       </Card>
@@ -251,7 +265,6 @@ defineExpose({
               >
                 文件类型:
               </Text>
-              <!-- todo 通过字典获取文件类型和颜色信息 -->
               <Tag :color="getFileTypeColor(detailData.contentType)">
                 {{ detailData.contentType || '--' }}
               </Tag>
@@ -463,28 +476,21 @@ defineExpose({
 
     <!-- 自定义footer按钮 -->
     <template #footer>
-      <!-- 只有图片资源才显示查看原图按钮 -->
       <Button
-        v-if="isImagePreviewable && detailData"
-        @click="handleViewOriginal"
+        v-if="detailData && detailData.isTrash !== 1"
+        @click="handleCopyLink"
       >
-        查看原图
+        复制链接
       </Button>
-      <Button v-if="detailData" @click="handleCopyLink">复制链接</Button>
       <Button
-        v-if="detailData"
-        @click="
-          downloadFileFromUrl({
-            source: detailData.originalFileUrl,
-            target: '_self',
-          })
-        "
+        v-if="detailData && detailData.isTrash !== 1"
+        @click="handleDownload"
       >
         下载文件
       </Button>
-      <Button type="primary" @click="() => modalApi.close()">确定</Button>
+      <Button type="primary" @click="() => drawerApi.close()">确定</Button>
     </template>
-  </Modal>
+  </Drawer>
 </template>
 
 <style scoped>
