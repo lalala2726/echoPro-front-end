@@ -487,9 +487,7 @@ onUnmounted(() => {
           </div>
 
           <!-- 连接状态 -->
-          <div
-            class="flex items-center justify-between rounded-lg "
-          >
+          <div class="flex items-center justify-between rounded-lg">
             <div class="flex items-center space-x-4">
               <Badge
                 :status="connectionStatus.status"
@@ -649,7 +647,7 @@ onUnmounted(() => {
         <div
           ref="logContainer"
           class="h-80 overflow-y-auto rounded-lg p-4 font-mono text-sm"
-          style="background-color: #181820; color: #ffffff"
+          style="color: #fff; background-color: #181820"
         >
           <div
             v-for="(log, index) in logs"
