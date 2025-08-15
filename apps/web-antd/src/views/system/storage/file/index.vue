@@ -49,7 +49,7 @@ async function onActionClick(params: OnActionClickParams<StorageFileListVo>) {
         try {
           const fileDetail = await getStorageFileById(row.id);
           if (!isDestroyed.value) {
-            fileDetailRef.value?.modalApi.setData(fileDetail).open();
+            fileDetailRef.value?.drawerApi.setData(fileDetail).open();
           }
         } catch (error) {
           console.error('获取文件详情失败:', error);

@@ -48,3 +48,4 @@ export function registerMessageCountSubscription(service: WebSocketService) {
     service.unsubscribe(destination);
   };
 }
+
