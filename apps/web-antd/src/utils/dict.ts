@@ -11,16 +11,6 @@ export interface DictOption {
 }
 
 /**
- * 字典API响应接口
- */
-export interface DictApiResponse {
-  code: number;
-  data: DictOption[];
-  message: string;
-  timestamp: string;
-}
-
-/**
  * 获取字典数据（返回响应式ref，每次都从后端获取）
  * @param dictType 字典类型名称
  * @returns Ref<DictOption[]>
@@ -38,15 +28,10 @@ export function getDictOptions(dictType: string) {
  */
 async function loadDictData(dictType: string, options: any) {
   try {
-    const response = await requestClient.get<DictApiResponse>(
+    const response = await requestClient.get<DictOption[]>(
       `/system/dict/data/option/${dictType}`,
     );
-    if (response.code === 200) {
-      options.value = response.data || [];
-    } else {
-      console.warn(`获取字典数据失败: ${response.message || '未知错误'}`);
-      options.value = [];
-    }
+    options.value = response || [];
   } catch (error) {
     console.error(`获取字典数据异常:`, error);
     options.value = [];
@@ -62,15 +47,10 @@ export async function getDictOptionsSync(
   dictType: string,
 ): Promise<DictOption[]> {
   try {
-    const response = await requestClient.get<DictApiResponse>(
+    const response = await requestClient.get<DictOption[]>(
       `/system/dict/data/option/${dictType}`,
     );
-    if (response.code === 200) {
-      return response.data || [];
-    } else {
-      console.warn(`获取字典数据失败: ${response.message || '未知错误'}`);
-      return [];
-    }
+    return response || [];
   } catch (error) {
     console.error(`获取字典数据异常:`, error);
     return [];
