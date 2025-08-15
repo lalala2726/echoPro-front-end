@@ -4,7 +4,7 @@ import 'vue-router';
 
 declare module 'vue-router' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface RouteMeta extends IRouteMeta { }
+  interface RouteMeta extends IRouteMeta {}
 }
 
 export interface VbenAdminProAppConfigRaw {
