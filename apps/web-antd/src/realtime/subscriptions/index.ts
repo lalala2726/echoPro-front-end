@@ -20,7 +20,6 @@ export function registerAppSubscriptions() {
   // 清理之前的订阅（如果有）
   cleanupAppSubscriptions();
 
-
   // 注册新消息订阅
   const messageCleanup = registerMessageSubscription(service);
   subscriptionCleanupFunctions.push(messageCleanup);

@@ -10,13 +10,12 @@ let globalWebSocketService: null | ReturnType<typeof createWebSocketService> =
  * 创建 WebSocket 配置（仅负责连接配置，不包含业务订阅）
  */
 function createWebSocketConfig() {
-  const { apiURL, apiPath, websocketPath } = useAppConfig(
+  const { apiURL, websocketPath } = useAppConfig(
     import.meta.env,
     import.meta.env.PROD,
   );
 
-  const prefix = apiPath && apiPath.trim().length > 0 ? apiPath : '';
-  const wsUrl = `${apiURL}${prefix}${websocketPath}`;
+  const wsUrl = `${apiURL}${websocketPath}`;
   return {
     url: wsUrl,
     debug: !import.meta.env.PROD,

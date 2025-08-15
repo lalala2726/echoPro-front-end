@@ -44,11 +44,14 @@ export class WebSocketServiceImpl implements WebSocketService {
       try {
         this.isManualDisconnect = false; // 重置手动断开标识
 
-        // 构建 WebSocket URL，将认证信息作为查询参数
-        let wsUrl = this.config.url;
+        // 构建 WebSocket URL，使用环境变量拼接
+        const config = (window as any)._VBEN_ADMIN_PRO_APP_CONF_ || {};
+        const apiUrl = config.VITE_GLOB_API_URL;
+        const wsPath = config.VITE_WEBSOCKET_PATH;
+        let wsUrl = `${apiUrl}${wsPath}`;
         const urlParams = new URLSearchParams();
 
-        // 添加 token 参数（主要认证方式）
+        // 添加 token 参数
         if (token) {
           urlParams.append('token', encodeURIComponent(token));
         }
@@ -57,7 +60,6 @@ export class WebSocketServiceImpl implements WebSocketService {
         if (customParams) {
           Object.entries(customParams).forEach(([key, value]) => {
             if (key !== 'token') {
-              // 避免重复添加 token
               urlParams.append(key, encodeURIComponent(value));
             }
           });
@@ -67,17 +69,6 @@ export class WebSocketServiceImpl implements WebSocketService {
         if (urlParams.toString()) {
           wsUrl += (wsUrl.includes('?') ? '&' : '?') + urlParams.toString();
         }
-
-        // eslint-disable-next-line no-console
-        console.log('[WebSocket] 连接URL:', wsUrl);
-        // eslint-disable-next-line no-console
-        console.log('[WebSocket] URL参数传递token认证:', {
-          hasToken: !!token,
-          tokenPreview: token ? `${token.slice(0, 10)}...` : 'None',
-          customParamsCount: customParams
-            ? Object.keys(customParams).length
-            : 0,
-        });
 
         // 创建 SockJS 连接
         const socket = new SockJS(wsUrl);

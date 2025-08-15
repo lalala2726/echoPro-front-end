@@ -27,11 +27,7 @@ const { TextArea } = Input;
 
 // 获取环境配置
 const appConfig = useAppConfig(import.meta.env, import.meta.env.PROD);
-const apiPrefix =
-  appConfig.apiPath && appConfig.apiPath.trim().length > 0
-    ? appConfig.apiPath
-    : '';
-const wsUrl = `${appConfig.apiURL}${apiPrefix}${appConfig.websocketPath || '/ws'}`;
+const wsUrl = `${appConfig.apiURL}${appConfig.websocketPath || '/ws'}`;
 
 // 创建独立的测试用 WebSocket 服务实例（不影响全局）
 const service = createWebSocketService({
