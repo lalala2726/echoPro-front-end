@@ -1,4 +1,4 @@
-import type { PageResult, Recordable } from '@vben/types';
+import type {PageResult, Recordable} from '@vben/types';
 
 import type {
   SysUser,
@@ -8,8 +8,8 @@ import type {
   UserListVo,
 } from '#/api/system/user/types';
 
-import { exportFile } from '#/api/download';
-import { requestClient } from '#/api/request';
+import {exportFile} from '#/api/download';
+import {requestClient} from '#/api/request';
 
 /**
  * 获取用户列表
@@ -61,11 +61,13 @@ async function deleteUser(ids: Array<string>) {
 }
 
 /**
- * 导出角色列表
+ * 导出用户列表
  * @param params 查询参数（可选）
  */
 async function exportUserList(params?: Recordable<any>) {
-  return exportFile('/system/user/export', params);
+  return exportFile('/system/user/export', {
+    params,
+  });
 }
 
 export {
