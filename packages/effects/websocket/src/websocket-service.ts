@@ -116,9 +116,7 @@ export class WebSocketServiceImpl implements WebSocketService {
         };
 
         // 连接断开处理
-        this.client.onDisconnect = (frame) => {
-          // eslint-disable-next-line no-console
-          console.log('[WebSocket] 连接断开:', frame);
+        this.client.onDisconnect = () => {
           this.isConnected = false;
           this.emit('disconnected');
 
