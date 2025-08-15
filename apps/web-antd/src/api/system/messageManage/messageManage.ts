@@ -16,7 +16,7 @@ import { requestClient } from '#/api/request';
  */
 async function getMessageList(params?: SysMessageQueryRequest) {
   return requestClient.get<PageResult<SysMessageListVo[]>>(
-    '/system/message/manage/list',
+    '/system/manage/message/list',
     { params },
   );
 }
@@ -26,7 +26,7 @@ async function getMessageList(params?: SysMessageQueryRequest) {
  * @param data 发送消息参数
  */
 async function sendMessage(data: SysSendMessageRequest) {
-  return requestClient.post('/system/message/manage/send', data);
+  return requestClient.post('/system/manage/message/send', data);
 }
 
 /**
@@ -50,7 +50,7 @@ async function deleteMessage(ids: Array<string>) {
  * @param id 消息ID
  */
 async function getMessageById(id: string) {
-  return requestClient.get(`/system/message/manage/${id}`);
+  return requestClient.get(`/system/manage/message/${id}`);
 }
 
 /**
@@ -58,7 +58,7 @@ async function getMessageById(id: string) {
  * @param params 查询参数
  */
 async function exportMessage(params?: Recordable<SysMessageQueryRequest>) {
-  return exportFile('/system/message/manage/export', params);
+  return exportFile('/system/manage/message/export', params);
 }
 
 export {

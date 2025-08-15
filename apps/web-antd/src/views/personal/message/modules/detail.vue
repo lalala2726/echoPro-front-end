@@ -247,7 +247,6 @@ onMounted(() => {
 
       <!-- 消息内容 -->
       <div class="message-content">
-        <Typography.Title :level="4" class="mb-4"> 消息内容 </Typography.Title>
         <div
           class="prose prose-sm dark:prose-invert max-w-none"
           v-html="messageDetail.content"
