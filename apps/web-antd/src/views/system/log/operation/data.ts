@@ -137,13 +137,13 @@ export function useColumns(
           {
             code: 'detail',
             text: '详情',
-            visible: () => hasAccessByCodes(['system:log:operation:query']),
+            visible: () => hasAccessByCodes(['system:log-operation:query']),
           },
           {
             code: 'delete',
             text: '删除',
             danger: true,
-            visible: () => hasAccessByCodes(['system:log:operation:delete']),
+            visible: () => hasAccessByCodes(['system:log-operation:delete']),
           },
         ],
       },
