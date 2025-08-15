@@ -17,7 +17,7 @@ import { useAccess } from '@vben/access';
 import { ColPage, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Image as AImage, Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -337,7 +337,7 @@ function onResetPasswordSuccess(username: string) {
 
       <Grid table-title="用户列表">
         <template #avatar="{ row }">
-          <a-image
+          <AImage
             :src="row.avatar"
             :preview="false"
             :width="36"
