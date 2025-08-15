@@ -240,7 +240,7 @@ const selectedCount = computed(() => selectedDepts.value.length);
 </script>
 
 <template>
-  <div class="user-select-interface h-full">
+  <div class="dept-select-interface h-full">
     <div class="flex h-full min-h-0 gap-6">
       <!-- 左侧面板 - 部门树表格 -->
       <div

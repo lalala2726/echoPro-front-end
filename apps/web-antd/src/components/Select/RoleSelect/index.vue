@@ -271,7 +271,7 @@ const isMaxReached = computed(() => selectedCount.value >= props.maxCount);
 </script>
 
 <template>
-  <div class="flex h-full flex-col bg-white">
+  <div class="role-select-interface flex h-full flex-col bg-white">
     <!-- 主要内容区域 -->
     <div class="flex flex-1 overflow-hidden">
       <!-- 左侧：角色搜索和列表 -->

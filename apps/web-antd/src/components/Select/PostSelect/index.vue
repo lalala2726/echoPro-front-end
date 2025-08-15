@@ -262,7 +262,7 @@ function selectRow(row: PostListVo) {
 </script>
 
 <template>
-  <div class="flex h-full flex-col bg-white">
+  <div class="post-select-interface flex h-full flex-col bg-white">
     <div class="flex flex-1 overflow-hidden">
       <!-- 左侧：岗位搜索和列表 -->
       <div class="flex flex-1 flex-col border-r border-gray-200">
