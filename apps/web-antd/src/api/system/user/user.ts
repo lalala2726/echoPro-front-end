@@ -61,11 +61,13 @@ async function deleteUser(ids: Array<string>) {
 }
 
 /**
- * 导出角色列表
+ * 导出用户列表
  * @param params 查询参数（可选）
  */
 async function exportUserList(params?: Recordable<any>) {
-  return exportFile('/system/user/export', params);
+  return exportFile('/system/user/export', {
+    params,
+  });
 }
 
 export {

@@ -204,42 +204,28 @@ function onCreate() {
  * 使用状态管理防止重复点击，立即响应用户操作
  */
 async function onExport() {
-  // 防止重复导出
-  if (isExporting.value) {
-    message.warning('正在导出中，请耐心等待...');
-    return;
-  }
-
   try {
     isExporting.value = true;
-
-    // 显示导出提示
     message.loading({
-      content: '正在请求后端生成文件，请耐心等待...',
+      content: '正在导出用户列表...',
       duration: 0,
       key: 'export_loading_msg',
     });
 
     // 获取当前搜索表单的参数
     const formValues = await gridApi.formApi.getValues();
-
-    // 调用导出API
     await exportUserList(formValues);
 
-    // 导出成功提示
     message.success({
-      content: '用户列表导出成功！',
+      content: '用户导出成功',
       key: 'export_loading_msg',
-      duration: 3,
     });
   } catch (error: any) {
-    console.error('导出失败:', error);
     // 使用具体的错误消息，如果没有则使用默认消息
-    const errorMessage = error?.message || '导出失败，请重试';
+    const errorMessage = error?.message || '角色用户导出失败';
     message.error({
       content: errorMessage,
       key: 'export_loading_msg',
-      duration: 5,
     });
   } finally {
     isExporting.value = false;
