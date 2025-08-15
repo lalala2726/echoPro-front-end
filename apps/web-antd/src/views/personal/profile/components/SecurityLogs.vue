@@ -39,13 +39,13 @@ const loadSecurityLogs = async (pageNum?: number, pageSize?: number) => {
     securityLogs.value = response.rows || [];
 
     if (response.total !== undefined) {
-      securityLogPagination.value.total = response.total;
+      securityLogPagination.value.total = Number(response.total);
     }
     if (response.pageNum !== undefined) {
-      securityLogPagination.value.current = response.pageNum;
+      securityLogPagination.value.current = Number(response.pageNum);
     }
     if (response.pageSize !== undefined) {
-      securityLogPagination.value.pageSize = response.pageSize;
+      securityLogPagination.value.pageSize = Number(response.pageSize);
     }
   } catch {
     console.warn('获取安全日志失败');

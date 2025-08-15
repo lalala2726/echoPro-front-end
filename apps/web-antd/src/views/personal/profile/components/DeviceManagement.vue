@@ -39,13 +39,13 @@ const loadDevices = async (pageNum?: number, pageSize?: number) => {
     devices.value = response.rows || [];
 
     if (response.total !== undefined) {
-      devicePagination.value.total = response.total;
+      devicePagination.value.total = Number(response.total);
     }
     if (response.pageNum !== undefined) {
-      devicePagination.value.current = response.pageNum;
+      devicePagination.value.current = Number(response.pageNum);
     }
     if (response.pageSize !== undefined) {
-      devicePagination.value.pageSize = response.pageSize;
+      devicePagination.value.pageSize = Number(response.pageSize);
     }
   } catch {
     console.warn('获取设备列表失败');
