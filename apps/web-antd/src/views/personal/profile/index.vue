@@ -31,7 +31,7 @@ function handleChangePassword() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-black">
+  <div class="dark:bg-background min-h-screen bg-gray-50">
     <div class="mx-auto max-w-none px-6 py-8 sm:px-8 lg:px-12">
       <!-- 主要内容布局 -->
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -46,7 +46,7 @@ function handleChangePassword() {
         <!-- 右侧内容区域 (4/5 宽度) -->
         <div class="lg:col-span-4">
           <div
-            class="rounded-lg bg-white p-6 shadow-sm dark:bg-[rgb(24,24,32)]"
+            class="dark:bg-card dark:border-border rounded-lg bg-white p-6 shadow-sm"
           >
             <!-- 基于活跃选项卡的动态内容 -->
             <ProfileOverview

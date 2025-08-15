@@ -81,7 +81,7 @@ const _getLogTypeColor = (type: string) => {
       return 'text-purple-600 dark:text-purple-400';
     }
     default: {
-      return 'text-gray-600 dark:text-gray-400';
+      return 'text-gray-600 dark:text-muted-foreground';
     }
   }
 };
@@ -115,17 +115,17 @@ onMounted(async () => {
 <template>
   <!-- 安全日志 -->
   <div
-    class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+    class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
   >
     <div class="mb-6 flex items-center space-x-3">
       <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-500/20">
         <Shield class="h-5 w-5 text-blue-600 dark:text-blue-400" />
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 class="dark:text-foreground text-lg font-semibold text-gray-900">
           安全日志
         </h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="dark:text-muted-foreground text-sm text-gray-600">
           查看账户的安全操作记录
         </p>
       </div>
@@ -135,18 +135,18 @@ onMounted(async () => {
       <div
         v-for="i in 5"
         :key="i"
-        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        class="dark:border-border flex items-center justify-between rounded-lg border border-gray-200 p-4"
       >
         <div class="flex items-center space-x-4">
           <div
-            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-10 w-10 animate-pulse rounded-lg bg-gray-200"
           ></div>
           <div>
             <div
-              class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-4 w-32 animate-pulse rounded bg-gray-200"
             ></div>
             <div
-              class="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-3 w-48 animate-pulse rounded bg-gray-200"
             ></div>
           </div>
         </div>
@@ -154,22 +154,24 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="securityLogs.length === 0" class="py-8 text-center">
-      <div class="text-sm text-gray-500 dark:text-gray-400">暂无安全日志</div>
+      <div class="dark:text-muted-foreground text-sm text-gray-500">
+        暂无安全日志
+      </div>
     </div>
 
     <div v-else class="space-y-4">
       <div
         v-for="log in securityLogs"
         :key="log.id"
-        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        class="dark:border-border flex items-center justify-between rounded-lg border border-gray-200 p-4"
       >
         <div class="flex items-center space-x-4">
-          <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
-            <Shield class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <div class="dark:bg-muted rounded-lg bg-gray-100 p-2">
+            <Shield class="dark:text-muted-foreground h-5 w-5 text-gray-600" />
           </div>
           <div>
             <div class="flex items-center space-x-2">
-              <span class="font-medium text-gray-900 dark:text-white">
+              <span class="dark:text-foreground font-medium text-gray-900">
                 {{ log.title }}
               </span>
               <span
@@ -179,7 +181,7 @@ onMounted(async () => {
                 {{ _getLogTypeText(log.operationType || '') }}
               </span>
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
+            <div class="dark:text-muted-foreground text-sm text-gray-600">
               {{ _formatDate(log.operationTime || '') }} • IP:
               {{ log.operationIp }} •
               {{ log.operationRegion }}

@@ -47,10 +47,10 @@ function handleMenuClick(key: string) {
 </script>
 
 <template>
-  <div class="rounded-lg bg-white shadow-sm dark:bg-[rgb(24,24,32)]">
+  <div class="dark:bg-card dark:border-border rounded-lg bg-white shadow-sm">
     <!-- 导航头部 -->
-    <div class="border-b border-gray-200 p-4 dark:border-gray-700">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+    <div class="dark:border-border border-b border-gray-200 p-4">
+      <h3 class="dark:text-foreground text-lg font-semibold text-gray-900">
         账户中心
       </h3>
     </div>
@@ -63,8 +63,8 @@ function handleMenuClick(key: string) {
             class="group flex w-full items-start rounded-lg p-3 text-left transition-colors duration-200"
             :class="[
               props.activeSection === item.key
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700',
+                ? 'bg-blue-50dark:bg-blue-900/20 dark:text-blue-400'
+                : 'dark:text-muted-foreground dark:hover:bg-muted text-gray-700 hover:bg-gray-50',
             ]"
             @click="handleMenuClick(item.key)"
           >
@@ -74,7 +74,7 @@ function handleMenuClick(key: string) {
               :class="[
                 props.activeSection === item.key
                   ? 'bg-blue-100 text-blue-600 dark:bg-blue-800/30 dark:text-blue-400'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:group-hover:bg-gray-600',
+                  : 'dark:bg-muted dark:text-muted-foreground dark:group-hover:bg-muted/80 bg-gray-100 text-gray-500 group-hover:bg-gray-200',
               ]"
             >
               <component :is="item.icon" class="h-4 w-4" />
@@ -87,7 +87,7 @@ function handleMenuClick(key: string) {
                 :class="[
                   props.activeSection === item.key
                     ? 'text-blue-700 dark:text-blue-400'
-                    : 'text-gray-900 dark:text-white',
+                    : 'dark:text-foreground text-gray-900',
                 ]"
               >
                 {{ item.label }}
@@ -97,7 +97,7 @@ function handleMenuClick(key: string) {
                 :class="[
                   props.activeSection === item.key
                     ? 'text-blue-600 dark:text-blue-500'
-                    : 'text-gray-500 dark:text-gray-400',
+                    : 'dark:text-muted-foreground text-gray-500',
                 ]"
               >
                 {{ item.description }}

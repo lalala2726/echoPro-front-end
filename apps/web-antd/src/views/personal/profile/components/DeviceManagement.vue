@@ -115,7 +115,7 @@ onMounted(async () => {
 <template>
   <!-- 登录设备管理 -->
   <div
-    class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+    class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
   >
     <div class="mb-6 flex items-center justify-between">
       <div class="flex items-center space-x-3">
@@ -123,16 +123,16 @@ onMounted(async () => {
           <Smartphone class="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 class="dark:text-foreground text-lg font-semibold text-gray-900">
             登录设备管理
           </h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="dark:text-muted-foreground text-sm text-gray-600">
             管理已登录的设备，保护账户安全
           </p>
         </div>
       </div>
       <button
-        class="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-red-600 dark:bg-[rgb(24,24,32)] dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:focus:ring-offset-gray-800"
+        class="dark:bg-card dark:focus:ring-offset-background rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
         @click="handleLogoutAllDevices"
       >
         全部注销
@@ -143,53 +143,57 @@ onMounted(async () => {
       <div
         v-for="i in 3"
         :key="i"
-        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        class="dark:border-border flex items-center justify-between rounded-lg border border-gray-200 p-4"
       >
         <div class="flex items-center space-x-4">
           <div
-            class="h-10 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-10 w-10 animate-pulse rounded-lg bg-gray-200"
           ></div>
           <div>
             <div
-              class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-4 w-32 animate-pulse rounded bg-gray-200"
             ></div>
             <div
-              class="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-3 w-48 animate-pulse rounded bg-gray-200"
             ></div>
           </div>
           <div
-            class="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-8 w-16 animate-pulse rounded bg-gray-200"
           ></div>
         </div>
       </div>
     </div>
 
     <div v-else-if="devices.length === 0" class="py-8 text-center">
-      <div class="text-sm text-gray-500 dark:text-gray-400">暂无登录设备</div>
+      <div class="dark:text-muted-foreground text-sm text-gray-500">
+        暂无登录设备
+      </div>
     </div>
 
     <div v-else class="space-y-4">
       <div
         v-for="device in devices"
         :key="device.refreshTokenId"
-        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        class="dark:border-border flex items-center justify-between rounded-lg border border-gray-200 p-4"
       >
         <div class="flex items-center space-x-4">
-          <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
-            <Smartphone class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <div class="dark:bg-muted rounded-lg bg-gray-100 p-2">
+            <Smartphone
+              class="dark:text-muted-foreground h-5 w-5 text-gray-600"
+            />
           </div>
           <div>
-            <div class="font-medium text-gray-900 dark:text-white">
+            <div class="dark:text-foreground font-medium text-gray-900">
               {{ device.deviceName || device.deviceType }}
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
+            <div class="dark:text-muted-foreground text-sm text-gray-600">
               {{ _formatDate(device.loginTime || '') }} •
               {{ device.location }} • IP: {{ device.ip }}
             </div>
           </div>
         </div>
         <button
-          class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-gray-400 dark:hover:bg-gray-500/10 dark:hover:text-gray-300 dark:focus:ring-offset-gray-800"
+          class="dark:border-border dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted/80 dark:hover:text-foreground dark:focus:ring-offset-background rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           @click="
             handleLogoutDevice(
               device.refreshTokenId || '',

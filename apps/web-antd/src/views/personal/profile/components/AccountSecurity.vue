@@ -104,10 +104,10 @@ const handlePasswordUpdate = async () => {
     <!-- Section Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 class="dark:text-foreground text-2xl font-bold text-gray-900">
           账户安全
         </h2>
-        <p class="mt-1 text-gray-600 dark:text-gray-400">
+        <p class="dark:text-muted-foreground mt-1 text-gray-600">
           管理您的密码、查看安全日志和设备登录状态
         </p>
       </div>
@@ -115,28 +115,28 @@ const handlePasswordUpdate = async () => {
 
     <!-- 修改密码 -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+      class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
     >
       <div class="mb-6 flex items-center space-x-3">
         <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-500/20">
           <Key class="h-5 w-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 class="dark:text-foreground text-lg font-semibold text-gray-900">
             密码管理
           </h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="dark:text-muted-foreground text-sm text-gray-600">
             定期更新密码以保护账户安全
           </p>
         </div>
       </div>
 
       <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
+        <div class="dark:text-muted-foreground text-sm text-gray-600">
           上次修改时间：2024年1月15日
         </div>
         <button
-          class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          class="dark:focus:ring-offset-background rounded-md px-4 py-2 text-sm font-medium text-white"
           @click="showPasswordForm = !showPasswordForm"
         >
           {{ showPasswordForm ? '取消修改' : '修改密码' }}
@@ -147,7 +147,7 @@ const handlePasswordUpdate = async () => {
       <div v-if="showPasswordForm" class="mt-6 space-y-4">
         <div>
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
             for="current-password"
           >
             当前密码
@@ -157,7 +157,7 @@ const handlePasswordUpdate = async () => {
               id="current-password"
               v-model="currentPassword"
               :type="showOldPassword ? 'text' : 'password'"
-              class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+              class="dark:border-border dark:bg-input dark:text-foreground block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm"
               placeholder="请输入当前密码"
             />
             <button
@@ -173,7 +173,7 @@ const handlePasswordUpdate = async () => {
 
         <div>
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
             for="new-password"
           >
             新密码
@@ -183,7 +183,7 @@ const handlePasswordUpdate = async () => {
               id="new-password"
               v-model="newPassword"
               :type="showNewPassword ? 'text' : 'password'"
-              class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+              class="dark:border-border dark:bg-input dark:text-foreground block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm"
               placeholder="请输入新密码"
             />
             <button
@@ -212,7 +212,7 @@ const handlePasswordUpdate = async () => {
                         : passwordStrength === 3
                           ? 'bg-blue-500'
                           : 'bg-green-500'
-                    : 'bg-gray-200 dark:bg-gray-700',
+                    : 'dark:bg-muted bg-gray-200',
                 ]"
               ></div>
             </div>
@@ -227,14 +227,14 @@ const handlePasswordUpdate = async () => {
                   :class="[
                     requirement.met
                       ? 'bg-green-500'
-                      : 'bg-gray-300 dark:bg-gray-600',
+                      : 'dark:bg-muted bg-gray-300',
                   ]"
                 ></div>
                 <span
                   :class="[
                     requirement.met
                       ? 'text-green-600 dark:text-green-400'
-                      : 'text-gray-500 dark:text-gray-400',
+                      : 'dark:text-muted-foreground text-gray-500',
                   ]"
                 >
                   {{ requirement.text }}
@@ -246,7 +246,7 @@ const handlePasswordUpdate = async () => {
 
         <div>
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
             for="confirm-password"
           >
             确认新密码
@@ -256,7 +256,7 @@ const handlePasswordUpdate = async () => {
               id="confirm-password"
               v-model="confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
-              class="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+              class="dark:border-border dark:bg-input dark:text-foreground block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm"
               placeholder="请再次输入新密码"
             />
             <button
@@ -273,14 +273,14 @@ const handlePasswordUpdate = async () => {
         <div class="flex justify-end space-x-3 pt-4">
           <button
             type="button"
-            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-[rgb(32,32,42)] dark:text-gray-300 dark:hover:bg-[rgb(40,40,50)] dark:focus:ring-offset-gray-900"
+            class="dark:border-border"
             @click="showPasswordForm = false"
           >
             取消
           </button>
           <button
             :disabled="!canSubmitPassword || isPasswordLoading"
-            class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900"
+            class="dark:focus:ring-offset-background rounded-md"
             @click="handlePasswordUpdate"
           >
             {{ isPasswordLoading ? '更新中...' : '更新密码' }}

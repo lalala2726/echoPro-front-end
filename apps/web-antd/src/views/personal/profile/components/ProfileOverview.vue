@@ -139,25 +139,25 @@ onMounted(() => {
   <div v-if="loading" class="space-y-6">
     <!-- 用户头像和基本信息骨架屏 -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+      class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6"
     >
       <div class="flex items-center space-x-6">
         <div
-          class="h-24 w-24 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"
+          class="dark:bg-muted h-24 w-24 animate-pulse rounded-full bg-gray-200"
         ></div>
         <div class="flex-1 space-y-3">
           <div
-            class="h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-6 w-32 animate-pulse rounded bg-gray-200"
           ></div>
           <div
-            class="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-4 w-48 animate-pulse rounded bg-gray-200"
           ></div>
           <div
-            class="h-4 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-4 w-40 animate-pulse rounded bg-gray-200"
           ></div>
         </div>
         <div
-          class="h-10 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+          class="dark:bg-muted h-10 w-20 animate-pulse rounded bg-gray-200"
         ></div>
       </div>
     </div>
@@ -167,18 +167,18 @@ onMounted(() => {
       <div
         v-for="i in 6"
         :key="i"
-        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-[rgb(24,24,32)]"
+        class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-4"
       >
         <div class="flex items-center space-x-3">
           <div
-            class="h-8 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+            class="dark:bg-muted h-8 w-8 animate-pulse rounded bg-gray-200"
           ></div>
           <div class="flex-1 space-y-2">
             <div
-              class="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-4 w-20 animate-pulse rounded bg-gray-200"
             ></div>
             <div
-              class="h-5 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              class="dark:bg-muted h-5 w-32 animate-pulse rounded bg-gray-200"
             ></div>
           </div>
         </div>
@@ -190,15 +190,17 @@ onMounted(() => {
     <!-- Section Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">概览</h2>
-        <p class="mt-1 text-gray-600 dark:text-gray-400">
+        <h2 class="dark:text-foreground text-2xl font-bold text-gray-900">
+          概览
+        </h2>
+        <p class="dark:text-muted-foreground mt-1 text-gray-600">
           查看和管理您的基本信息
         </p>
       </div>
       <div class="flex space-x-2">
         <button
           v-if="!isEditing"
-          class="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          class="dark:focus:ring-offset-background flex items-center rounded-lg"
           @click="handleEditProfile"
         >
           <Edit class="mr-2 h-4 w-4" />
@@ -206,14 +208,14 @@ onMounted(() => {
         </button>
         <button
           v-if="isEditing"
-          class="flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          class="dark:focus:ring-offset-background flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           @click="handleSaveProfile"
         >
           保存
         </button>
         <button
           v-if="isEditing"
-          class="flex items-center rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          class="dark:focus:ring-offset-background flex items-center rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           @click="handleCancelEdit"
         >
           取消
@@ -223,7 +225,7 @@ onMounted(() => {
 
     <!-- Profile Card -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+      class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
     >
       <!-- Avatar and Basic Info -->
       <div class="flex items-start space-x-6">
@@ -239,11 +241,13 @@ onMounted(() => {
         <!-- Basic Info -->
         <div class="flex-1">
           <div>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            <h3
+              class="dark:text-foreground text-xl font-semibold text-gray-900"
+            >
               {{ userInfo.nickname || userInfo.username }}
             </h3>
           </div>
-          <p class="text-gray-600 dark:text-gray-400">
+          <p class="dark:text-muted-foreground text-gray-600">
             {{ userInfo.username }}
           </p>
 
@@ -253,7 +257,7 @@ onMounted(() => {
               <span
                 v-for="role in userInfo.roles"
                 :key="role"
-                class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-500/20 dark:text-blue-300"
+                class="inline-flex items-center rounded-full"
               >
                 {{ role }}
               </span>
@@ -261,7 +265,7 @@ onMounted(() => {
           </div>
 
           <div
-            class="mt-2 max-w-[380px] break-words text-sm text-gray-500 dark:text-gray-400"
+            class="dark:text-muted-foreground mt-2 max-w-[380px] break-words text-sm text-gray-500"
           >
             {{ userInfo.signature || '-' }}
           </div>
@@ -273,52 +277,54 @@ onMounted(() => {
     <div v-if="!isEditing" class="grid grid-cols-1 gap-6 md:grid-cols-2">
       <!-- Personal Information -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+        class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6"
       >
-        <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+        <h4
+          class="dark:text-foreground mb-4 text-lg font-semibold text-gray-900"
+        >
           个人信息
         </h4>
         <dl class="space-y-3">
           <div class="flex items-center">
             <dt
-              class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
               <Briefcase class="mr-2 h-4 w-4" />
               职位
             </dt>
-            <dd class="ml-auto text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
               {{ userInfo.post || '-' }}
             </dd>
           </div>
           <div class="flex items-center">
             <dt
-              class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
               <MapPin class="mr-2 h-4 w-4" />
               地区
             </dt>
-            <dd class="ml-auto text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
               {{ userInfo.region || '-' }}
             </dd>
           </div>
           <div class="flex items-center">
             <dt
-              class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
               <Briefcase class="mr-2 h-4 w-4" />
               部门
             </dt>
-            <dd class="ml-auto text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
               {{ userInfo.deptName || '-' }}
             </dd>
           </div>
           <div class="flex items-center">
             <dt
-              class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
               性别
             </dt>
-            <dd class="ml-auto text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
               {{ userInfo.gender || '-' }}
             </dd>
           </div>
@@ -327,25 +333,31 @@ onMounted(() => {
 
       <!-- Contact Information -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+        class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6"
       >
-        <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+        <h4
+          class="dark:text-foreground mb-4 text-lg font-semibold text-gray-900"
+        >
           联系方式
         </h4>
         <dl class="space-y-3">
           <div>
-            <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <dt
+              class="dark:text-muted-foreground text-sm font-medium text-gray-600"
+            >
               邮箱
             </dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground mt-1 text-sm text-gray-900">
               {{ userInfo.email || '-' }}
             </dd>
           </div>
           <div>
-            <dt class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <dt
+              class="dark:text-muted-foreground text-sm font-medium text-gray-600"
+            >
               手机号码
             </dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+            <dd class="dark:text-foreground mt-1 text-sm text-gray-900">
               {{ userInfo.phone || '-' }}
             </dd>
           </div>
@@ -357,9 +369,11 @@ onMounted(() => {
     <div v-if="isEditing" class="space-y-6">
       <!-- Basic Information Edit Form -->
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-600 dark:bg-[rgb(24,24,32)]"
+        class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6"
       >
-        <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+        <h4
+          class="dark:text-foreground mb-4 text-lg font-semibold text-gray-900"
+        >
           编辑基本信息
         </h4>
         <form class="space-y-4">
@@ -367,7 +381,7 @@ onMounted(() => {
             <!-- Nickname -->
             <div>
               <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
               >
                 昵称
               </label>
@@ -381,7 +395,7 @@ onMounted(() => {
             <!-- Gender -->
             <div>
               <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
               >
                 性别
               </label>
@@ -400,7 +414,7 @@ onMounted(() => {
             <!-- Region -->
             <div>
               <label
-                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
               >
                 地区
               </label>
@@ -415,7 +429,7 @@ onMounted(() => {
           <!-- Signature -->
           <div>
             <label
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="dark:text-muted-foreground block text-sm font-medium text-gray-700"
             >
               个性签名
             </label>
