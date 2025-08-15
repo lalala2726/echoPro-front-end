@@ -41,7 +41,7 @@ async function updateMessage(data: SysMessageUpdateRequest) {
  * 删除消息
  * @param ids 消息ID数组
  */
-async function deleteMessage(ids: Array<string>) {
+async function deleteMessage(ids: Array<any>) {
   return requestClient.delete(`/system/manage/message/${ids.join(',')}`);
 }
 
