@@ -1,12 +1,9 @@
 import type { VbenFormSchema } from '#/adapter/form';
-import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { UserListVo } from '#/api/system/user/types';
-
-import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
 
-const { hasAccessByCodes } = useAccess();
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
@@ -172,7 +169,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 export function useColumns<T = UserListVo>(
-  onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -225,8 +221,8 @@ export function useColumns<T = UserListVo>(
       cellRender: {
         name: 'CellTag',
         options: [
-          { color: 'blue', label: '男', value: 1 },
-          { color: 'pink', label: '女', value: 2 },
+          { color: 'blue', label: '男', value: 0 },
+          { color: 'pink', label: '女', value: 1 },
         ],
       },
       field: 'gender',

@@ -66,7 +66,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       highlight: true,
       labelField: 'username',
     },
-    columns: useColumns(onActionClick, onStatusChange),
+    columns: useColumns(onStatusChange),
     height: 'auto',
     keepSource: true,
     pagerConfig: {
