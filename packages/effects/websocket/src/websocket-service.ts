@@ -44,11 +44,16 @@ export class WebSocketServiceImpl implements WebSocketService {
       try {
         this.isManualDisconnect = false; // 重置手动断开标识
 
-        // 构建 WebSocket URL，使用环境变量拼接
-        const config = (window as any)._VBEN_ADMIN_PRO_APP_CONF_ || {};
-        const apiUrl = config.VITE_GLOB_API_URL;
-        const wsPath = config.VITE_WEBSOCKET_PATH;
-        let wsUrl = `${apiUrl}${wsPath}`;
+        // 使用上层明确传入的 url，不再在此处解析环境变量
+        let wsUrl = this.config.url;
+        if (!wsUrl) {
+          reject(new Error('[WebSocket] 缺少必要的 config.url'));
+          return;
+        }
+        if (this.config.debug) {
+          // eslint-disable-next-line no-console
+          console.log('[WebSocket] WebSocket URL:', wsUrl);
+        }
         const urlParams = new URLSearchParams();
 
         // 添加 token 参数

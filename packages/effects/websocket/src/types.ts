@@ -1,6 +1,8 @@
 import type { Client } from '@stomp/stompjs';
 
 export interface WebSocketConfig {
+  /** 完整的 WebSocket 基础地址（例如 https://example.com/ws 或 /ws），由上层传入 */
+  url: string;
   /** 调试模式 */
   debug?: boolean;
   /** 默认订阅的主题列表 */
