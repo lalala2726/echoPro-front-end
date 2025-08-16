@@ -60,7 +60,7 @@ async function updateRolePermission(data: UpdateRolePermissionRequest) {
 }
 
 /**
- * 更新角色
+ * 更新角色状态
  * @param data 角色数据（只包含id和status）
  */
 async function updateRole(data: Pick<SystemRole, 'id' | 'status'>) {
