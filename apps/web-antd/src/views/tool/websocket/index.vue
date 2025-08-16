@@ -31,6 +31,7 @@ const wsUrl = `${appConfig.apiURL}${appConfig.websocketPath || '/ws'}`;
 
 // 创建独立的测试用 WebSocket 服务实例（不影响全局）
 const service = createWebSocketService({
+  url: wsUrl,
   debug: true,
   defaultSubscriptions: [],
   reconnect: {

@@ -2,10 +2,6 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { DashBoardMessageType } from '#/api/personal/message';
 
-import { useAccess } from '@vben/access';
-
-const { hasAccessByCodes } = useAccess();
-
 // 消息类型选项
 const MESSAGE_TYPE_OPTIONS = [
   { label: '系统消息', value: 'system' },
@@ -175,24 +171,10 @@ export function useColumns<T = DashBoardMessageType.UserMessageListVo>(
           {
             code: 'view',
             text: '查看',
-            show: () => hasAccessByCodes(['dashboard:message:view']),
-          },
-          {
-            code: 'markRead',
-            text: '标记已读',
-            show: (row: any) =>
-              row.isRead === 0 && hasAccessByCodes(['dashboard:message:read']),
-          },
-          {
-            code: 'markUnread',
-            text: '标记未读',
-            show: (row: any) =>
-              row.isRead === 1 && hasAccessByCodes(['dashboard:message:read']),
           },
           {
             code: 'delete',
             text: '删除',
-            show: () => hasAccessByCodes(['dashboard:message:delete']),
           },
         ],
       },

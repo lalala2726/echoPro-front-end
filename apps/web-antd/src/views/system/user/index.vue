@@ -17,7 +17,15 @@ import { useAccess } from '@vben/access';
 import { ColPage, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Image as AImage, Button, message, Modal } from 'ant-design-vue';
+import {
+  Image as AImage,
+  Button,
+  Dropdown,
+  Menu,
+  MenuItem,
+  message,
+  Modal,
+} from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -58,7 +66,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       highlight: true,
       labelField: 'username',
     },
-    columns: useColumns(onActionClick, onStatusChange),
+    columns: useColumns(onStatusChange),
     height: 'auto',
     keepSource: true,
     pagerConfig: {
@@ -335,6 +343,42 @@ function onResetPasswordSuccess(username: string) {
               border-radius: 50%;
             "
           />
+        </template>
+        <template #action="{ row }">
+          <Button
+            v-if="hasAccessByCodes(['system:user:edit'])"
+            size="small"
+            type="link"
+            @click="onActionClick({ code: 'edit', row })"
+          >
+            编辑
+          </Button>
+          <Button
+            v-if="hasAccessByCodes(['system:user:delete'])"
+            danger
+            size="small"
+            type="link"
+            @click="onActionClick({ code: 'delete', row })"
+          >
+            删除
+          </Button>
+          <Dropdown placement="bottomCenter">
+            <Button size="small" type="link"> 更多 </Button>
+            <template #overlay>
+              <Menu>
+                <MenuItem key="resetPassword">
+                  <Button
+                    v-if="hasAccessByCodes(['system:user:resetPassword'])"
+                    size="small"
+                    type="link"
+                    @click="onActionClick({ code: 'resetPassword', row })"
+                  >
+                    重置密码
+                  </Button>
+                </MenuItem>
+              </Menu>
+            </template>
+          </Dropdown>
         </template>
         <template #toolbar-tools>
           <Button

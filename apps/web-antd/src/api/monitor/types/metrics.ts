@@ -334,102 +334,11 @@ export namespace MonitorTypes {
     }
   }
 
-  export interface SpringMetricsDTO {
-    /** 采集时间 */
-    timestamp?: string;
-    /** 应用信息 */
-    application?: SpringMetricsDTO.ApplicationInfo;
-    /** 数据源指标 */
-    dataSource?: SpringMetricsDTO.DataSourceMetrics;
-    /** 线程池指标 */
-    threadPools?: {
-      [key: string]: SpringMetricsDTO.ThreadPoolMetrics;
-    };
-    /** 缓存指标 */
-    caches?: {
-      [key: string]: SpringMetricsDTO.CacheMetrics;
-    };
-  }
-
-  export namespace SpringMetricsDTO {
-    export interface ApplicationInfo {
-      /** 应用名称 */
-      name?: string;
-      /** 应用版本 */
-      version?: string;
-      /** Spring Boot版本 */
-      springBootVersion?: string;
-      /** Spring版本 */
-      springVersion?: string;
-      /** 启动时间 */
-      startTime?: string;
-      /** 运行时间（毫秒） */
-      uptime?: number;
-      /** 活跃配置文件 */
-      activeProfiles?: string[];
-    }
-
-    export interface DataSourceMetrics {
-      /** 活跃连接数 */
-      active?: number;
-      /** 最大连接数 */
-      max?: number;
-      /** 最小连接数 */
-      min?: number;
-      /** 空闲连接数 */
-      idle?: number;
-      /** 连接池使用率（百分比） */
-      usage?: number;
-      /** 等待连接的线程数 */
-      waitingThreads?: number;
-    }
-
-    export interface ThreadPoolMetrics {
-      /** 核心线程数 */
-      corePoolSize?: number;
-      /** 最大线程数 */
-      maximumPoolSize?: number;
-      /** 当前线程数 */
-      poolSize?: number;
-      /** 活跃线程数 */
-      activeCount?: number;
-      /** 队列大小 */
-      queueSize?: number;
-      /** 队列剩余容量 */
-      queueRemainingCapacity?: number;
-      /** 已完成任务数 */
-      completedTaskCount?: number;
-      /** 总任务数 */
-      taskCount?: number;
-      /** 线程池使用率（百分比） */
-      usage?: number;
-    }
-
-    export interface CacheMetrics {
-      /** 缓存名称 */
-      name?: string;
-      /** 缓存大小 */
-      size?: number;
-      /** 命中次数 */
-      hitCount?: number;
-      /** 未命中次数 */
-      missCount?: number;
-      /** 命中率（百分比） */
-      hitRate?: number;
-      /** 加载次数 */
-      loadCount?: number;
-      /** 平均加载时间（毫秒） */
-      averageLoadTime?: number;
-      /** 淘汰次数 */
-      evictionCount?: number;
-    }
-  }
-
   export interface MonitorOverviewDTO {
     /** JVM概览 */
     jvm?: MonitorOverviewDTO.JvmOverview;
     /** Spring概览 */
-    spring?: MonitorOverviewDTO.SpringOverview;
+    springOverview?: SpringOverview;
     /** 系统概览 */
     system?: MonitorOverviewDTO.SystemOverview;
     /** Redis概览 */
@@ -449,19 +358,6 @@ export namespace MonitorTypes {
       nonHeapUsage?: number;
       /** 线程数 */
       threadCount?: number;
-      /** 采集时间 */
-      timestamp?: string;
-    }
-
-    export interface SpringOverview {
-      /** 平均响应时间（毫秒） */
-      averageResponseTime?: number;
-      /** 数据源使用率（百分比） */
-      dataSourceUsage?: number;
-      /** 总请求数 */
-      totalRequests?: string;
-      /** 运行时间（毫秒） */
-      uptime?: string;
       /** 采集时间 */
       timestamp?: string;
     }
@@ -489,15 +385,15 @@ export namespace MonitorTypes {
       timestamp?: string;
     }
   }
+}
 
-  export interface MonitorConfigDTO {
-    /** 启用的功能列表 */
-    features?: string[];
-    /** 更新时间 */
-    updateTime?: string;
-    /** 版本 */
-    version?: string;
-    /** 是否启用 */
-    enabled?: boolean;
-  }
+export interface SpringOverview {
+  /** 应用名称 */
+  name?: string;
+  /** 启动时间 */
+  startTime?: string;
+  /** 运行时间(毫秒) */
+  uptime?: number;
+  /** 活跃配置文件 */
+  activeProfiles?: string[];
 }

@@ -3,6 +3,8 @@ import { computed, ref } from 'vue';
 
 import { Eye, EyeOff, Key } from '@vben/icons';
 
+import { message } from 'ant-design-vue';
+
 import { updatePassword } from '#/api/personal/profile';
 
 import DeviceManagement from './DeviceManagement.vue';
@@ -86,13 +88,13 @@ const handlePasswordUpdate = async () => {
       oldPassword: currentPassword.value,
       newPassword: newPassword.value,
     });
-    console.warn('密码更新成功');
+    message.success('密码更新成功');
     currentPassword.value = '';
     newPassword.value = '';
     confirmPassword.value = '';
     showPasswordForm.value = false;
   } catch {
-    console.warn('密码更新失败');
+    message.error('密码更新失败');
   } finally {
     isPasswordLoading.value = false;
   }
@@ -132,11 +134,8 @@ const handlePasswordUpdate = async () => {
       </div>
 
       <div class="flex items-center justify-between">
-        <div class="dark:text-muted-foreground text-sm text-gray-600">
-          上次修改时间：2024年1月15日
-        </div>
         <button
-          class="dark:focus:ring-offset-background rounded-md px-4 py-2 text-sm font-medium text-white"
+          class="dark:focus:ring-offset-background rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           @click="showPasswordForm = !showPasswordForm"
         >
           {{ showPasswordForm ? '取消修改' : '修改密码' }}
@@ -273,14 +272,14 @@ const handlePasswordUpdate = async () => {
         <div class="flex justify-end space-x-3 pt-4">
           <button
             type="button"
-            class="dark:border-border"
+            class="dark:border-border dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted/80 dark:focus:ring-offset-background rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             @click="showPasswordForm = false"
           >
             取消
           </button>
           <button
             :disabled="!canSubmitPassword || isPasswordLoading"
-            class="dark:focus:ring-offset-background rounded-md"
+            class="dark:focus:ring-offset-background rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             @click="handlePasswordUpdate"
           >
             {{ isPasswordLoading ? '更新中...' : '更新密码' }}

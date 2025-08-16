@@ -28,15 +28,6 @@ async function getRedisMetrics() {
 }
 
 /**
- * 获取Spring监控指标
- */
-async function getSpringMetrics() {
-  return requestClient.get<MonitorTypes.SpringMetricsDTO>(
-    '/monitor/metrics/spring',
-  );
-}
-
-/**
  * 获取监控概览数据
  */
 async function getMonitorOverview() {
@@ -45,20 +36,4 @@ async function getMonitorOverview() {
   );
 }
 
-/**
- * 获取监控配置
- */
-async function getMonitorConfig() {
-  return requestClient.get<MonitorTypes.MonitorConfigDTO>(
-    '/monitor/metrics/config',
-  );
-}
-
-export {
-  getJvmMetrics,
-  getMonitorConfig,
-  getMonitorOverview,
-  getRedisMetrics,
-  getSpringMetrics,
-  getSystemMetrics,
-};
+export { getJvmMetrics, getMonitorOverview, getRedisMetrics, getSystemMetrics };

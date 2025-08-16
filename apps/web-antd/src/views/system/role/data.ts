@@ -48,7 +48,7 @@ export function useFormSchema(): VbenFormSchema[] {
         options: getDictOptions('system_status'),
         optionType: 'button',
       },
-      defaultValue: 1,
+      defaultValue: 0,
       fieldName: 'status',
       label: '状态',
     },
