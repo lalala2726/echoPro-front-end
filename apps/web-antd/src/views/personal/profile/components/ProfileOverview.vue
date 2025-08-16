@@ -318,16 +318,6 @@ onMounted(() => {
               {{ userInfo.deptName || '-' }}
             </dd>
           </div>
-          <div class="flex items-center">
-            <dt
-              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
-            >
-              性别
-            </dt>
-            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
-              {{ userInfo.gender || '-' }}
-            </dd>
-          </div>
         </dl>
       </div>
 
