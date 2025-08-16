@@ -1,4 +1,4 @@
-import type { PageResult, Recordable } from '@vben/types';
+import type {PageResult, Recordable} from '@vben/types';
 
 import type {
   SysUser,
@@ -8,8 +8,8 @@ import type {
   UserListVo,
 } from '#/api/system/user/types';
 
-import { exportFile } from '#/api/download';
-import { requestClient } from '#/api/request';
+import {exportFile} from '#/api/download';
+import {requestClient} from '#/api/request';
 
 /**
  * 获取用户列表
