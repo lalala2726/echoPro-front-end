@@ -271,31 +271,11 @@ export function useColumns<T = UserListVo>(
     },
     {
       align: 'center',
-      cellRender: {
-        attrs: {
-          nameField: 'username',
-          nameTitle: '用户',
-          onClick: onActionClick,
-        },
-        name: 'CellOperation',
-        options: [
-          {
-            code: 'edit',
-            text: '编辑',
-            show: () => hasAccessByCodes(['system:user:edit']),
-          },
-          {
-            code: 'delete',
-            text: '删除',
-            // 添加权限码检查
-            show: () => hasAccessByCodes(['system:user:delete']),
-          },
-        ],
-      },
       field: 'operation',
       fixed: 'right',
       title: '操作',
-      width: 160,
+      width: 200,
+      slots: { default: 'action' },
     },
   ];
 }
