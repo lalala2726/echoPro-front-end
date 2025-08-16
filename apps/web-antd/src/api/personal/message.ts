@@ -126,7 +126,7 @@ async function getUnreadCount() {
  * 标记消息为已读 (支持批量标记)
  * @param ids 消息ID列表
  */
-async function markMessageAsRead(ids: Array<string>) {
+async function markMessageAsRead(ids: Array<any>) {
   return requestClient.put(`/personal/message/read/${ids.join(',')}`);
 }
 
@@ -134,7 +134,7 @@ async function markMessageAsRead(ids: Array<string>) {
  * 标记消息为未读 (支持批量标记)
  * @param ids 消息ID列表
  */
-async function markMessageAsUnRead(ids: Array<string>) {
+async function markMessageAsUnRead(ids: Array<any>) {
   return requestClient.put(`/personal/message/unread/${ids.join(',')}`);
 }
 

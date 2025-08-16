@@ -7,7 +7,6 @@ import type { DashBoardMessageType } from '#/api/personal/message';
 
 import { useRouter } from 'vue-router';
 
-import { useAccess } from '@vben/access';
 import { Page } from '@vben/common-ui';
 
 import { Button, message, Modal } from 'ant-design-vue';
@@ -27,7 +26,6 @@ defineOptions({
 });
 
 const router = useRouter();
-const { hasAccessByCodes } = useAccess();
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -79,14 +77,6 @@ function onActionClick(
       onDelete(e.row);
       break;
     }
-    case 'markRead': {
-      onMarkRead(e.row);
-      break;
-    }
-    case 'markUnread': {
-      onMarkUnread(e.row);
-      break;
-    }
     case 'view': {
       onView(e.row);
       break;
@@ -119,49 +109,6 @@ function confirm(content: string, title: string) {
  */
 function onView(row: DashBoardMessageType.UserMessageListVo) {
   router.push(`/personal/message/detail?id=${row.id}`);
-}
-
-/**
- * 标记消息为已读
- */
-async function onMarkRead(row: DashBoardMessageType.UserMessageListVo) {
-  try {
-    await markMessageAsRead([row.id!]);
-    message.success({
-      content: `消息已标记为已读`,
-      key: 'mark_read_msg',
-    });
-    onRefresh();
-  } catch (error: any) {
-    message.error({
-      content: `标记失败: ${error.message || '未知错误'}`,
-      key: 'mark_read_msg',
-    });
-  }
-}
-
-/**
- * 标记消息为未读
- */
-async function onMarkUnread(row: DashBoardMessageType.UserMessageListVo) {
-  message.loading({
-    content: `正在标记消息为未读...`,
-    duration: 0,
-    key: 'mark_unread_msg',
-  });
-  try {
-    await markMessageAsUnRead([row.id!]);
-    message.success({
-      content: `消息已标记为未读`,
-      key: 'mark_unread_msg',
-    });
-    onRefresh();
-  } catch (error: any) {
-    message.error({
-      content: `标记失败: ${error.message || '未知错误'}`,
-      key: 'mark_unread_msg',
-    });
-  }
 }
 
 /**
@@ -352,28 +299,13 @@ async function onBatchDelete() {
     <Page auto-content-height>
       <Grid table-title="消息中心">
         <template #toolbar-tools>
-          <Button
-            v-if="hasAccessByCodes(['dashboard:message:read'])"
-            type="primary"
-            @click="onBatchMarkRead"
-          >
+          <Button type="primary" @click="onBatchMarkRead">
             批量标记已读
           </Button>
           <span class="mx-2"></span>
-          <Button
-            v-if="hasAccessByCodes(['dashboard:message:read'])"
-            @click="onBatchMarkUnread"
-          >
-            批量标记未读
-          </Button>
+          <Button @click="onBatchMarkUnread"> 批量标记未读 </Button>
           <span class="mx-2"></span>
-          <Button
-            v-if="hasAccessByCodes(['dashboard:message:delete'])"
-            danger
-            @click="onBatchDelete"
-          >
-            批量删除
-          </Button>
+          <Button danger @click="onBatchDelete"> 批量删除 </Button>
         </template>
       </Grid>
     </Page>
