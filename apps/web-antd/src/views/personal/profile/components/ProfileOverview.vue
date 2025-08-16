@@ -9,7 +9,7 @@ import type {
 
 import { onMounted, ref } from 'vue';
 
-import { Briefcase, Edit, MapPin } from '@vben/icons';
+import { Briefcase, Edit, Email, MapPin, Phone } from '@vben/icons';
 
 import { Input, Select, Textarea } from 'ant-design-vue';
 
@@ -321,7 +321,6 @@ onMounted(() => {
         </dl>
       </div>
 
-      <!-- Contact Information -->
       <div
         class="dark:border-border dark:bg-card rounded-lg border border-gray-200 bg-white p-6"
       >
@@ -331,24 +330,26 @@ onMounted(() => {
           联系方式
         </h4>
         <dl class="space-y-3">
-          <div>
+          <div class="flex items-center">
             <dt
-              class="dark:text-muted-foreground text-sm font-medium text-gray-600"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
-              邮箱
+              <Phone class="mr-2 h-4 w-4" />
+              手机号
             </dt>
-            <dd class="dark:text-foreground mt-1 text-sm text-gray-900">
-              {{ userInfo.email || '-' }}
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
+              {{ userInfo.phone || '-' }}
             </dd>
           </div>
-          <div>
+          <div class="flex items-center">
             <dt
-              class="dark:text-muted-foreground text-sm font-medium text-gray-600"
+              class="dark:text-muted-foreground flex items-center text-sm font-medium text-gray-600"
             >
-              手机号码
+              <Email class="mr-2 h-4 w-4" />
+              邮箱
             </dt>
-            <dd class="dark:text-foreground mt-1 text-sm text-gray-900">
-              {{ userInfo.phone || '-' }}
+            <dd class="dark:text-foreground ml-auto text-sm text-gray-900">
+              {{ userInfo.email || '-' }}
             </dd>
           </div>
         </dl>
