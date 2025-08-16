@@ -36,11 +36,4 @@ async function getMonitorOverview() {
   );
 }
 
-
-
-export {
-  getJvmMetrics,
-  getMonitorOverview,
-  getRedisMetrics,
-  getSystemMetrics,
-};
+export { getJvmMetrics, getMonitorOverview, getRedisMetrics, getSystemMetrics };

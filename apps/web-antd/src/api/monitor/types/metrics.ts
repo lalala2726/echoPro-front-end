@@ -385,8 +385,6 @@ export namespace MonitorTypes {
       timestamp?: string;
     }
   }
-
-
 }
 
 export interface SpringOverview {
