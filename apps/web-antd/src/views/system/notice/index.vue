@@ -196,7 +196,7 @@ function onBatchDelete() {
         .map((row: SysNoticeVo) => {
           return row.id;
         })
-        .filter((id: any) => !id && id !== undefined) as string[];
+        .filter((id: any) => id !== undefined && id !== null && id !== '') as string[];
 
       if (ids.length === 0) {
         message.error('选中的公告中没有有效的ID');
