@@ -8,7 +8,7 @@ import type { SysOperationLogListVo } from '#/api/system/log/types';
 import { ref } from 'vue';
 
 import { useAccess } from '@vben/access';
-import { Page, useVbenModal } from '@vben/common-ui';
+import { Page, prompt, useVbenModal } from '@vben/common-ui';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
@@ -148,10 +148,17 @@ function onBatchDelete() {
         .map((row: SysOperationLogListVo) => {
           return row.id;
         })
-        .filter((id: any) => !id && id !== undefined) as string[];
+        .filter(
+          (id: any) => id !== undefined && id !== null && id !== '',
+        ) as string[];
+
+      if (ids.length === 0) {
+        message.error('选中的操作日志中没有有效的ID');
+        return;
+      }
 
       const hideLoading = message.loading({
-        content: `正在删除 ${selectedRows.length} 条操作日志...`,
+        content: `正在删除 ${ids.length} 条操作日志...`,
         duration: 0,
         key: 'batch_delete_msg',
       });
@@ -159,7 +166,7 @@ function onBatchDelete() {
       deleteOperationLog(ids)
         .then(() => {
           message.success({
-            content: `成功删除 ${selectedRows.length} 条操作日志`,
+            content: `成功删除 ${ids.length} 条操作日志`,
             key: 'batch_delete_msg',
           });
           onRefresh();
@@ -174,32 +181,53 @@ function onBatchDelete() {
 /**
  * 清空操作日志
  */
-function onCleanAll() {
-  Modal.confirm({
-    title: '确认清空',
-    content: '确定要清空所有操作日志吗？此操作不可恢复！',
-    okText: '确定',
-    cancelText: '取消',
-    onOk: () => {
-      const hideLoading = message.loading({
-        content: '正在清空操作日志...',
-        duration: 0,
-        key: 'clean_all_msg',
-      });
+async function onCleanAll() {
+  try {
+    await prompt<string>({
+      content:
+        '确定要清空所有操作日志吗？此操作不可恢复！请输入"确认清空"来继续操作：',
+      componentProps: {
+        placeholder: '请输入"确认清空"',
+      },
+      icon: 'warning',
+      title: '确认清空操作日志',
+      async beforeClose({ isConfirm, value }) {
+        if (isConfirm && value?.trim() !== '确认清空') {
+          message.error('请输入"确认清空"以继续操作');
+          return false;
+        }
+        return true;
+      },
+    })
+      .then(async () => {
+        const hideLoading = message.loading({
+          content: '正在清空操作日志...',
+          duration: 0,
+          key: 'clean_all_msg',
+        });
 
-      cleanOperationLog()
-        .then(() => {
+        try {
+          await cleanOperationLog();
           message.success({
             content: '操作日志清空成功',
             key: 'clean_all_msg',
           });
           onRefresh();
-        })
-        .catch(() => {
+        } catch (error) {
           hideLoading();
-        });
-    },
-  });
+          console.error('清空失败:', error);
+          message.error({
+            content: '清空失败，请重试',
+            key: 'clean_all_msg',
+          });
+        }
+      })
+      .catch(() => {
+        // 用户取消操作，不需要提示
+      });
+  } catch (error) {
+    console.error('清空操作日志操作失败:', error);
+  }
 }
 
 /**
