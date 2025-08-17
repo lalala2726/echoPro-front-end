@@ -48,7 +48,7 @@ export function useFormSchema(): VbenFormSchema[] {
         options: getDictOptions('system_status'),
         optionType: 'button',
       },
-      defaultValue: 0,
+      defaultValue: '0',
       fieldName: 'status',
       label: '状态',
     },
@@ -75,10 +75,11 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Select',
       componentProps: {
         allowClear: true,
-        options: getDictOptions('system_status'), // 使用字典数据
+        options: getDictOptions('system_status'),
       },
       fieldName: 'status',
       label: '状态',
+      defaultValue: '0',
     },
     {
       component: 'Input',
