@@ -63,6 +63,16 @@ async function deleteTrashFile(ids: Array<string>) {
 }
 
 /**
+ * 删除文件记录
+ * @param ids
+ */
+async function deleteFileRecord(ids: Array<string>) {
+  return await requestClient.delete(
+    `/system/storage/file/record/${ids.join(',')}`,
+  );
+}
+
+/**
  * 导出文件列表
  *
  * @author Chuang
@@ -76,7 +86,9 @@ async function exportStorageFileList(
     params,
   });
 }
+
 export {
+  deleteFileRecord,
   deleteStorageFile,
   deleteTrashFile,
   exportStorageFileList,

@@ -51,13 +51,12 @@ export function useGridFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      component: 'Select',
+      component: 'Input',
       fieldName: 'storageKey',
       label: '存储键名',
       componentProps: {
-        placeholder: '请选择存储键名',
+        placeholder: '请输入存储键名',
         allowClear: true,
-        options: [],
       },
     },
     {

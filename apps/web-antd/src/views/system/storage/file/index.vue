@@ -5,12 +5,15 @@ import type { StorageFileListVo } from '#/api/system/storage/types';
 import { onBeforeUnmount, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
-import { Page } from '@vben/common-ui';
+import { Page, prompt } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
-import { getStorageFileById } from '#/api/system/storage/file';
+import {
+  deleteFileRecord,
+  getStorageFileById,
+} from '#/api/system/storage/file';
 
 import StorageFileList from './list.vue';
 import FileDetail from './modules/detail.vue';
@@ -114,6 +117,71 @@ async function handleBatchDelete() {
 }
 
 /**
+ * 删除文件记录
+ */
+const handleBatchDeleteRecord = async () => {
+  const currentListRef = getCurrentListRef();
+  if (!currentListRef) {
+    message.warning('组件未准备就绪');
+    return;
+  }
+
+  const selectedRows = currentListRef.getSelectedRows() || [];
+  if (selectedRows.length === 0) {
+    message.warning('请选择要删除的文件记录');
+    return;
+  }
+
+  try {
+    await prompt<string>({
+      async beforeClose({ isConfirm, value }) {
+        if (isConfirm && value?.trim() !== '确认删除') {
+          message.error('请输入"确认删除"以继续操作');
+          return false;
+        }
+      },
+      componentProps: { placeholder: '请输入"确认删除"' },
+      content:
+        '您确定要删除文件记录吗？本次操作不会删除实际文件，只会删除文件记录。',
+      icon: 'warning',
+      overlayBlur: 3,
+    })
+      .then(async () => {
+        const hideLoading = message.loading({
+          content: `正在删除 ${selectedRows.length} 个文件记录...`,
+          duration: 0,
+          key: 'delete_record_msg',
+        });
+
+        try {
+          const ids = selectedRows
+            .map((row: StorageFileListVo) => row.id!)
+            .filter(Boolean);
+          await deleteFileRecord(ids);
+          message.success({
+            content: `成功删除 ${selectedRows.length} 个文件记录`,
+            key: 'delete_record_msg',
+          });
+          // 刷新列表
+          currentListRef?.reload();
+        } catch (error) {
+          hideLoading();
+          console.error('删除文件记录失败:', error);
+          message.error({
+            content: '删除文件记录失败，请重试',
+            key: 'delete_record_msg',
+          });
+        }
+      })
+      .catch(() => {
+        // 用户取消操作，不需要提示
+      });
+  } catch (error) {
+    console.error('删除文件记录操作失败:', error);
+  }
+};
+
+/**
  * 处理导出
  */
 async function handleExport() {
@@ -148,7 +216,7 @@ function handleUpload() {
       @action-click="onActionClick"
     >
       <template #toolbar-tools>
-        <Button primary @click="handleUpload">
+        <Button type="primary" @click="handleUpload">
           <template #icon>
             <Plus />
           </template>
@@ -161,6 +229,14 @@ function handleUpload() {
           @click="handleBatchDelete"
         >
           批量删除
+        </Button>
+        <span class="mx-2"></span>
+        <Button
+          v-if="hasAccessByCodes(['system:storage-file:delete'])"
+          danger
+          @click="handleBatchDeleteRecord"
+        >
+          删除记录
         </Button>
         <span class="mx-2"></span>
         <Button
