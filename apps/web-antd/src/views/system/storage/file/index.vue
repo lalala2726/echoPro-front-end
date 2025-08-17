@@ -144,7 +144,6 @@ const handleBatchDeleteRecord = async () => {
       content:
         '您确定要删除文件记录吗？本次操作不会删除实际文件，只会删除文件记录。',
       icon: 'warning',
-      overlayBlur: 3,
     })
       .then(async () => {
         const hideLoading = message.loading({
