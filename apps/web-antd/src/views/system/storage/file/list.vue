@@ -202,7 +202,7 @@ async function handleExport() {
   if (isDestroyed.value) return;
 
   try {
-    const formValues = gridApi.formApi.getValues();
+    const formValues = await gridApi.formApi.getValues();
     await exportStorageFileList('存储文件列表', {
       ...formValues,
       ...props.extraParams,
