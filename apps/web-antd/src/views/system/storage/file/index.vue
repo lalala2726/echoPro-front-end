@@ -17,6 +17,7 @@ import {
 
 import StorageFileList from './list.vue';
 import FileDetail from './modules/detail.vue';
+import FileUploadModal from './modules/upload-modal.vue';
 
 defineOptions({
   name: 'StorageFile',
@@ -26,6 +27,7 @@ defineOptions({
 const fileListRef = ref();
 const trashListRef = ref();
 const fileDetailRef = ref();
+const fileUploadModalRef = ref();
 
 // 当前激活的标签页
 const activeTab = ref('normal');
@@ -198,11 +200,11 @@ async function handleExport() {
 }
 
 /**
- * 处理文件上传（占位功能）
+ * 处理文件上传（打开上传弹窗）
  */
 function handleUpload() {
   if (isDestroyed.value) return;
-  message.info('文件上传功能待实现');
+  fileUploadModalRef.value?.modalApi.open();
 }
 </script>
 
@@ -265,18 +267,17 @@ function handleUpload() {
           彻底删除
         </Button>
         <span class="mx-2"></span>
-        <Button
-          v-if="hasAccessByCodes(['system:storage-file:export'])"
-          @click="handleExport"
-        >
-          导出列表
-        </Button>
-        <span class="mx-2"></span>
         <Button @click="activeTab = 'normal'"> 退出回收站 </Button>
       </template>
     </StorageFileList>
 
     <!-- 文件详情弹窗 -->
     <FileDetail ref="fileDetailRef" />
+
+    <!-- 文件上传弹窗 -->
+    <FileUploadModal
+      ref="fileUploadModalRef"
+      @success="getCurrentListRef()?.reload()"
+    />
   </Page>
 </template>

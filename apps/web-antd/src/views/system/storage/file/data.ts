@@ -124,20 +124,6 @@ export function useColumns(
       },
     },
     {
-      field: 'fileSize',
-      title: '文件大小',
-      align: 'center',
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '--';
-        // 如果是字符串，尝试转换为数字
-        const size =
-          typeof cellValue === 'string'
-            ? Number.parseInt(cellValue, 10)
-            : cellValue;
-        return Number.isNaN(size) ? cellValue : formatFileSize(size);
-      },
-    },
-    {
       field: 'storageType',
       title: '存储类型',
       align: 'center',

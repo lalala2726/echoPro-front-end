@@ -137,16 +137,54 @@ async function handleUpload() {
   uploading.value = true;
 
   try {
+    // 创建一个成功计数器
+    let successCount = 0;
+
     for (const file of filesToUpload) {
       if (file.originFileObj) {
         // 更新文件状态为上传中
         file.status = 'uploading';
         file.percent = 0;
 
-        await customRequest({
-          file: file.originFileObj,
-        });
+        try {
+          await customRequest({
+            file: file.originFileObj,
+            onSuccess: (response: any) => {
+              // 更新文件状态为完成
+              file.status = 'done';
+              file.response = response;
+              successCount++;
+              emit('success', response, file as UploadFile);
+              message.success(`${file.name} 上传成功`);
+            },
+            onError: (error: Error) => {
+              // 更新文件状态为错误
+              file.status = 'error';
+              emit('error', error, file as UploadFile);
+              message.error(`${file.name} ${error.message}`);
+            },
+            onProgress: (progress: { percent: number }) => {
+              file.percent = progress.percent;
+            },
+          });
+        } catch (error) {
+          // 更新文件状态为错误
+          file.status = 'error';
+          const errorMessage =
+            error instanceof Error ? error.message : '上传失败';
+          emit('error', new Error(errorMessage), file as UploadFile);
+          message.error(`${file.name} ${errorMessage}`);
+        }
       }
+    }
+
+    // 检查是否所有文件都上传成功
+    if (successCount === filesToUpload.length) {
+      message.success(`成功上传 ${successCount} 个文件`);
+    } else {
+      message.warning(
+        `上传完成，${successCount} 个成功，${filesToUpload.length - successCount} 个失败`,
+      );
     }
   } finally {
     uploading.value = false;
@@ -164,6 +202,12 @@ const hasFilesToUpload = computed(() => {
   return fileList.value.some(
     (file) => file.status !== 'done' && file.status !== 'uploading',
   );
+});
+
+// 暴露方法给父组件
+defineExpose({
+  uploadFiles: handleUpload,
+  clearFiles: handleClear,
 });
 </script>
 
