@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
   theme: undefined,
   editable: true,
   contentFormat: 'markdown',
-  contentRetention: true,
+  contentRetention: false,
   disableAI: true,
   disableTextSelectionBubble: false,
 });
@@ -159,7 +159,11 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  editor && editor.destroy();
+  if (editor) {
+    // 清空编辑器内容，确保不会保留到下次使用
+    editor.setContent('');
+    editor.destroy();
+  }
   editor = null;
   // 清理主题监听
   stopThemeObserver();
@@ -173,10 +177,12 @@ watch(
       props.contentFormat === 'markdown'
         ? editor.getMarkdown()
         : editor.getHtml();
-    if (val !== current) {
+    // 确保空值时清空编辑器内容
+    const newValue = val || '';
+    if (newValue !== current) {
       if (props.contentFormat === 'markdown')
-        editor.setMarkdownContent(val || '');
-      else editor.setContent(val || '');
+        editor.setMarkdownContent(newValue);
+      else editor.setContent(newValue);
     }
   },
 );
