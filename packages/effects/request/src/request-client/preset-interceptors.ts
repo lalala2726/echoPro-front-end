@@ -181,9 +181,33 @@ export const errorMessageResponseInterceptor = (
         return Promise.reject(error);
       }
 
-      // 处理500内部服务器错误，如果响应数据中没有message字段，则显示默认错误信息
-      if (error?.response?.status === 500 && !responseData?.message) {
-        errorMessage = '内部服务器错误！请稍后再试！';
+      // 根据HTTP状态码处理不同的错误消息
+      const status = error?.response?.status;
+      if (!responseData?.message) {
+        switch (status) {
+          case 401: {
+            errorMessage = '未授权访问，请重新登录！';
+            break;
+          }
+          case 403: {
+            errorMessage = '权限不足，无法访问该资源！';
+            break;
+          }
+          case 404: {
+            errorMessage = '请求的资源不存在！';
+            break;
+          }
+          case 500: {
+            errorMessage = '内部服务器错误！请稍后再试！';
+            break;
+          }
+          default: {
+            if (status >= 500) {
+              errorMessage = '内部服务器错误！请稍后再试！';
+            }
+            break;
+          }
+        }
       }
 
       makeErrorMessage?.(errorMessage, error);
