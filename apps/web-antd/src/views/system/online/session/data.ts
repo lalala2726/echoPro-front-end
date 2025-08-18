@@ -66,10 +66,6 @@ export function useColumns<T = SessionListVo>(
       showOverflow: 'tooltip',
     },
     {
-      field: 'deptId',
-      title: '部门ID',
-    },
-    {
       field: 'ip',
       title: '登录IP',
     },

@@ -130,17 +130,6 @@ defineExpose({
               </span>
             </div>
           </Col>
-          <Col :span="12">
-            <div class="flex items-center">
-              <span
-                class="mr-3 w-20 text-right text-gray-600 dark:text-gray-300"
-                >部门ID:
-              </span>
-              <span class="flex-1 font-medium">{{
-                detailData.deptId || '--'
-              }}</span>
-            </div>
-          </Col>
         </Row>
       </Card>
 
