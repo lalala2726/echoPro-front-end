@@ -58,7 +58,7 @@ async function getMessageById(id: string) {
  * @param params 查询参数
  */
 async function exportMessage(params?: Recordable<SysMessageQueryRequest>) {
-  return exportFile('/system/manage/message/export', params);
+  return exportFile('/system/manage/message/export', { params });
 }
 
 export {
