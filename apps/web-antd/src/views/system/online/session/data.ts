@@ -41,17 +41,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
       fieldName: 'region',
       label: '登录地点',
     },
-    {
-      component: 'RangePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        placeholder: ['开始时间', '结束时间'],
-        showTime: { format: 'HH:mm:ss' },
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-      },
-      fieldName: 'accessTime',
-      label: '访问时间',
-    },
   ];
 }
 
@@ -112,11 +101,14 @@ export function useColumns<T = SessionListVo>(
           },
           {
             code: 'delete',
-            text: '删除',
+            text: '下线',
             danger: true,
             visible: () => hasAccessByCodes(['system:online-session:delete']),
           },
         ],
+        attrs: {
+          onClick: _onActionClick,
+        },
       },
     },
   ];
