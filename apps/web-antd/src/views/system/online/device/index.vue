@@ -157,17 +157,6 @@ async function onExport() {
             {{ isExporting ? '导出中...' : '导出' }}
           </Button>
         </template>
-        <template #action="{ row }">
-          <Button
-            v-if="hasAccessByCodes(['system:online-device:delete'])"
-            danger
-            size="small"
-            type="link"
-            @click="onActionClick({ code: 'delete', row })"
-          >
-            强制下线
-          </Button>
-        </template>
       </Grid>
     </Page>
   </div>

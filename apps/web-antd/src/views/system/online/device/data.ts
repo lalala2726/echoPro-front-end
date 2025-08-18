@@ -10,9 +10,17 @@ import { useAccess } from '@vben/access';
 export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
-      component: 'Input',
+      component: 'Select',
       componentProps: {
-        placeholder: '请输入设备类型',
+        allowClear: true,
+        placeholder: '请选择设备类型',
+        options: [
+          { label: '网页端', value: 'WEB' },
+          { label: 'PC端', value: 'PC' },
+          { label: '移动端', value: 'MOBILE' },
+          { label: '微信小程序', value: 'MINI_PROGRAM' },
+          { label: '未知', value: 'UNKNOWN' },
+        ],
       },
       fieldName: 'deviceType',
       label: '设备类型',
@@ -74,6 +82,16 @@ export function useColumns<T = DeviceList>(
     {
       field: 'deviceType',
       title: '设备类型',
+      formatter: ({ cellValue }) => {
+        const deviceTypeMap: Record<string, string> = {
+          WEB: '网页端',
+          PC: 'PC端',
+          MOBILE: '移动端',
+          MINI_PROGRAM: '微信小程序',
+          UNKNOWN: '未知',
+        };
+        return deviceTypeMap[cellValue] || cellValue || '--';
+      },
     },
     {
       field: 'deviceName',
@@ -97,6 +115,7 @@ export function useColumns<T = DeviceList>(
       showOverflow: 'tooltip',
     },
     {
+      align: 'center',
       fixed: 'right',
       title: '操作',
       width: 120,
@@ -105,11 +124,14 @@ export function useColumns<T = DeviceList>(
         options: [
           {
             code: 'delete',
-            text: '强制下线',
+            text: '退出设备',
             danger: true,
             visible: () => hasAccessByCodes(['system:device:delete']),
           },
         ],
+        attrs: {
+          onClick: _onActionClick,
+        },
       },
     },
   ];
