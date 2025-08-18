@@ -28,7 +28,6 @@ const isExporting = ref<boolean>(false);
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
-    fieldMappingTime: [['accessTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
   },
@@ -155,23 +154,6 @@ async function onExport() {
             @click="onExport"
           >
             {{ isExporting ? '导出中...' : '导出' }}
-          </Button>
-        </template>
-        <template #action="{ row }">
-          <Button
-            v-if="hasAccessByCodes(['system:online-session:query'])"
-            size="small"
-            @click="onActionClick({ code: 'detail', row })"
-          >
-            详情
-          </Button>
-          <Button
-            danger
-            v-if="hasAccessByCodes(['system:online-device:delete'])"
-            size="small"
-            @click="onActionClick({ code: 'delete', row })"
-          >
-            删除
           </Button>
         </template>
       </Grid>

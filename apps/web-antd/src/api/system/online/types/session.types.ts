@@ -10,8 +10,6 @@ export interface SessionListVo {
   accessTokenId: string;
   /** 用户名 */
   username?: string;
-  /** 部门ID */
-  deptId?: number;
   /** 登录IP地址 */
   ip?: string;
   /** 登录地点 */
@@ -44,8 +42,6 @@ export interface OnlineLoginUser {
   accessTokenId?: string;
   /** 刷新令牌ID */
   refreshTokenId?: string;
-  /** 用户ID */
-  userId?: number;
   /** 用户名 */
   username?: string;
   /** 部门ID */

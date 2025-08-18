@@ -218,27 +218,33 @@ function onBatchDelete() {
 /**
  * 导出消息列表
  */
-function onExport() {
-  isExporting.value = true;
-  const hideLoading = message.loading({
-    content: '正在导出消息列表...',
-    duration: 0,
-    key: 'export_process_msg',
-  });
-
-  exportMessage()
-    .then(() => {
-      message.success({
-        content: '消息列表导出成功',
-        key: 'export_process_msg',
-      });
-    })
-    .catch(() => {
-      hideLoading();
-    })
-    .finally(() => {
-      isExporting.value = false;
+async function onExport() {
+  try {
+    isExporting.value = true;
+    message.loading({
+      content: '正在导出消息列表...',
+      duration: 0,
+      key: 'export_loading_msg',
     });
+
+    // 获取当前搜索表单的参数
+    const formValues = await gridApi.formApi.getValues();
+    await exportMessage(formValues);
+
+    message.success({
+      content: '消息列表导出成功',
+      key: 'export_loading_msg',
+    });
+  } catch (error: any) {
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '消息列表导出失败';
+    message.error({
+      content: errorMessage,
+      key: 'export_loading_msg',
+    });
+  } finally {
+    isExporting.value = false;
+  }
 }
 </script>
 

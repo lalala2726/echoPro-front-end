@@ -51,13 +51,12 @@ export function useGridFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      component: 'Select',
+      component: 'Input',
       fieldName: 'storageKey',
       label: '存储键名',
       componentProps: {
-        placeholder: '请选择存储键名',
+        placeholder: '请输入存储键名',
         allowClear: true,
-        options: [],
       },
     },
     {
@@ -122,20 +121,6 @@ export function useColumns(
         if (cellValue.startsWith('video/')) return '视频';
         if (cellValue.startsWith('audio/')) return '音频';
         return cellValue;
-      },
-    },
-    {
-      field: 'fileSize',
-      title: '文件大小',
-      align: 'center',
-      formatter: ({ cellValue }) => {
-        if (!cellValue) return '--';
-        // 如果是字符串，尝试转换为数字
-        const size =
-          typeof cellValue === 'string'
-            ? Number.parseInt(cellValue, 10)
-            : cellValue;
-        return Number.isNaN(size) ? cellValue : formatFileSize(size);
       },
     },
     {

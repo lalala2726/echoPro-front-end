@@ -249,35 +249,53 @@ function onRefreshCache() {
 /**
  * 取消主配置
  */
+async function onCancelPrimary() {
+  try {
+    await prompt<string>({
+      content:
+        '确定要取消主配置设置吗？取消主配置可能导致无法上传文件和预览文件操作。为了保证存储服务的正常运行，请确保系统配置中有相关的存储上传配置！请输入"确认取消"来继续操作：',
+      componentProps: {
+        placeholder: '请输入"确认取消"',
+      },
+      icon: 'warning',
+      title: '确认取消主配置',
+      async beforeClose({ isConfirm, value }) {
+        if (isConfirm && value?.trim() !== '确认取消') {
+          message.error('请输入"确认取消"以继续操作');
+          return false;
+        }
+        return true;
+      },
+    })
+      .then(async () => {
+        const hideLoading = message.loading({
+          content: '正在取消主配置...',
+          duration: 0,
+          key: 'reset_primary_msg',
+        });
 
-function onCancelPrimary() {
-  Modal.confirm({
-    title: '确定取消主配置设置?',
-    content:
-      '取消主配置可能导致无法上传文件和预览文件操作?为了保证存储服务的正常运行请保证系统配置中有相关的存储上传配置!',
-    okText: '确定',
-    cancelText: '取消',
-    okType: 'danger',
-    onOk: () => {
-      const hideLoading = message.loading({
-        content: '正在取消主配置...',
-        duration: 0,
-        key: 'reset_primary_msg',
-      });
-      return cancelPrimary()
-        .then(() => {
+        try {
+          await cancelPrimary();
           message.success({
             content: '主配置取消成功',
             key: 'reset_primary_msg',
           });
           onRefresh();
-        })
-        .catch(() => {
+        } catch (error) {
           hideLoading();
-          throw new Error('取消失败');
-        });
-    },
-  });
+          console.error('取消失败:', error);
+          message.error({
+            content: '取消失败，请重试',
+            key: 'reset_primary_msg',
+          });
+        }
+      })
+      .catch(() => {
+        // 用户取消操作，不需要提示
+      });
+  } catch (error) {
+    console.error('取消主配置操作失败:', error);
+  }
 }
 
 /**

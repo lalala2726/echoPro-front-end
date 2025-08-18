@@ -42,7 +42,6 @@ const isExporting = ref<boolean>(false);
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
-    fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
   },
@@ -196,7 +195,9 @@ function onBatchDelete() {
         .map((row: SysNoticeVo) => {
           return row.id;
         })
-        .filter((id: any) => !id && id !== undefined) as string[];
+        .filter(
+          (id: any) => id !== undefined && id !== null && id !== '',
+        ) as string[];
 
       if (ids.length === 0) {
         message.error('选中的公告中没有有效的ID');
@@ -227,27 +228,33 @@ function onBatchDelete() {
 /**
  * 导出公告列表
  */
-function onExport() {
-  isExporting.value = true;
-  const hideLoading = message.loading({
-    content: '正在导出公告列表...',
-    duration: 0,
-    key: 'export_process_msg',
-  });
-
-  exportNoticeList()
-    .then(() => {
-      message.success({
-        content: '公告列表导出成功',
-        key: 'export_process_msg',
-      });
-    })
-    .catch(() => {
-      hideLoading();
-    })
-    .finally(() => {
-      isExporting.value = false;
+async function onExport() {
+  try {
+    isExporting.value = true;
+    message.loading({
+      content: '正在导出公告列表...',
+      duration: 0,
+      key: 'export_loading_msg',
     });
+
+    // 获取当前搜索表单的参数
+    const formValues = await gridApi.formApi.getValues();
+    await exportNoticeList(formValues);
+
+    message.success({
+      content: '公告列表导出成功',
+      key: 'export_loading_msg',
+    });
+  } catch (error: any) {
+    // 使用具体的错误消息，如果没有则使用默认消息
+    const errorMessage = error?.message || '公告列表导出失败';
+    message.error({
+      content: errorMessage,
+      key: 'export_loading_msg',
+    });
+  } finally {
+    isExporting.value = false;
+  }
 }
 </script>
 

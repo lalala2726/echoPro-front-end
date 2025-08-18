@@ -14,7 +14,6 @@ import { useDebounceFn } from '@vueuse/core';
 import { message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getConfigKeyOptions } from '#/api/system/storage/config';
 import {
   deleteStorageFile,
   deleteTrashFile,
@@ -203,7 +202,7 @@ async function handleExport() {
   if (isDestroyed.value) return;
 
   try {
-    const formValues = gridApi.formApi.getValues();
+    const formValues = await gridApi.formApi.getValues();
     await exportStorageFileList('存储文件列表', {
       ...formValues,
       ...props.extraParams,
@@ -225,6 +224,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     ? {
         fieldMappingTime: [['uploadTime', ['startTime', 'endTime']]],
         schema: useGridFormSchema(),
+        submitOnChange: true,
       }
     : undefined,
   gridOptions: {
@@ -292,25 +292,9 @@ const [Grid, gridApi] = useVbenVxeGrid({
   },
 });
 
-// 初始化存储键名选项
-onMounted(async () => {
-  try {
-    const storageKeyOptions = await getConfigKeyOptions();
-    // 更新表单配置中的存储键名选项
-    const formApi = gridApi.formApi;
-    if (formApi && formApi.updateSchema) {
-      formApi.updateSchema([
-        {
-          fieldName: 'storageKey',
-          componentProps: {
-            options: storageKeyOptions,
-          },
-        },
-      ]);
-    }
-  } catch (error) {
-    console.error('获取存储键名选项失败:', error);
-  }
+// 组件挂载时的初始化逻辑
+onMounted(() => {
+  // 存储键名已改为输入框，无需动态加载选项
 });
 
 // 暴露方法给父组件

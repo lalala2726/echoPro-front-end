@@ -57,7 +57,7 @@ async function deleteNotice(ids: Array<string>) {
  * @param params 查询参数
  */
 async function exportNoticeList(params?: Recordable<any>) {
-  return exportFile('/system/notice/export', params);
+  return exportFile('/system/notice/export', { params });
 }
 
 export {

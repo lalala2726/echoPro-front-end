@@ -1,4 +1,4 @@
-import type { BaseType, TimeRange } from '@vben/types';
+import type { BaseType } from '@vben/types';
 
 /**
  * 岗位查询请求参数
@@ -15,7 +15,9 @@ export interface PostQueryRequest {
   /** 状态(0-正常,1-停用) */
   status?: number;
   /** 创建时间 */
-  createTime?: TimeRange;
+  stratTime?: string;
+  /** 结束时间 */
+  endTime?: string;
 }
 
 /**

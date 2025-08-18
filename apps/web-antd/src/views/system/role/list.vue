@@ -56,8 +56,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
     proxyConfig: {
       ajax: {
-        query: async () => {
-          return await getRoleList();
+        query: async ({ page }, formValues) => {
+          return await getRoleList({
+            pageNum: page?.currentPage,
+            pageSize: page?.pageSize,
+            ...formValues,
+          });
         },
       },
     },
